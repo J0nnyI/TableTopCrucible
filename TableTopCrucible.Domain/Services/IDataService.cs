@@ -10,15 +10,15 @@ using DynamicData;
 
 namespace TableTopCrucible.Domain.Services
 {
-    public interface IDataService<T, Tid, TChangeset> :IDisposable
-        where T : IEntity<Tid> 
+    public interface IDataService<Tentity, Tid, TChangeset> :IDisposable
+        where Tentity : IEntity<Tid> 
         where Tid : ITypedId
     {
-        public IObservable<IChangeSet<T,Tid>> Get();
-        public IObservable<Change<T,Tid>> Get(Tid id);
-        public IObservable<IChangeSet<T,Tid>> Get(IEnumerable<Tid> ids);
-        public void Patch(TChangeset data);
-        public void Patch(IEnumerable<TChangeset> data);
+        public IObservable<IChangeSet<Tentity,Tid>> Get();
+        public IObservable<Change<Tentity,Tid>> Get(Tid id);
+        public IObservable<IChangeSet<Tentity,Tid>> Get(IEnumerable<Tid> ids);
+        public Tentity Patch(TChangeset data);
+        public IEnumerable<Tentity> Patch(IEnumerable<TChangeset> data);
         public void Delete(Tid key);
         public void Delete(IEnumerable<Tid> key);
     }

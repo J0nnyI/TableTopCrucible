@@ -19,6 +19,7 @@ namespace TableTopCrucible.Domain.ValueTypes.IDs
         public override int GetHashCode() => this._guid.GetHashCode();
         public Guid ToGuid() => this._guid;
 
+        public override string ToString() => _guid.ToString();
         public static bool operator ==(ItemId id1, ItemId id2)
             => id1._guid == id2._guid;
         public static bool operator !=(ItemId id1, ItemId id2)

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Windows.Data;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using TableTopCrucible.Domain.ValueTypes;
 
 namespace TableTopCrucible.WPF.Converters
@@ -19,6 +21,8 @@ namespace TableTopCrucible.WPF.Converters
             {
                 case Thumbnail thumbnail when targetType == typeof(string) || targetType == typeof(object):
                     return (string)thumbnail;
+                case Thumbnail thumbnail when targetType == typeof(ImageSource):
+                    return new BitmapImage(new Uri((string)thumbnail));
                 case string path when targetType == typeof(Thumbnail):
                     return (Thumbnail)path;
                 default:

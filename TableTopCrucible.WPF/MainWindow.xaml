@@ -9,6 +9,7 @@
         xmlns:cv="clr-namespace:TableTopCrucible.WPF.Converters"
         xmlns:controls="clr-namespace:TableTopCrucible.WPF.Controls"
         xmlns:srcModels="clr-namespace:TableTopCrucible.Domain.Models.Sources;assembly=TableTopCrucible.Domain"
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="450"
@@ -22,10 +23,13 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <ListView ItemsSource="{Binding Items}"
+                  x:Name="lstvw"
+                  md:RippleAssist.IsDisabled="True"
                   Grid.Row="0"
-                  Grid.RowSpan="2"
+                  Grid.RowSpan="3"
                   Grid.Column="1">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
@@ -39,11 +43,20 @@
             </ListView.ItemTemplate>
         </ListView>
 
+
         <ContentControl Content="{Binding ItemEditor}"
                         Grid.Row="0"
                         Grid.Column="0"/>
         <ContentControl Content="{Binding ItemList}"
                         Grid.Row="1"
                         Grid.Column="0"/>
+
+        <StackPanel Grid.Row="2"
+                    Grid.Column="0">
+            <Button Content="+"
+                Command="{Binding CreateItem}"/>
+            <Label Content="{Binding ElementName=lstvw, Path=SelectedItem}"/>
+            <Label Content="{Binding SelectedItem}"/>
+        </StackPanel>
     </Grid>
 </Window>

@@ -9,39 +9,57 @@
              mc:Ignorable="d" 
              d:DesignHeight="450"
              d:DesignWidth="800"
+            Margin="5px"
              x:Name="self">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150px"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+    <md:Card Padding="16px">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150px"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-        <Image Grid.Column="0"
-               Grid.Row="0"
-               Grid.RowSpan="2"/>
+            <Image Source="{Binding ElementName=self, Path=ItemChangeset.Thumbnail, Converter={StaticResource cv_Thumbnail}}"
+                   Grid.Column="0"
+                   Grid.Row="0"
+                   Grid.RowSpan="2"/>
 
-        <TextBox Text="{Binding ElementName=self, Path=ItemChangeset.Name, Converter={StaticResource cv_itemName}}"
-                 Grid.Column="1"
-                 Grid.Row="0"/>
-        <StackPanel Orientation="Horizontal"
-                    Grid.Column="2"
-                    Grid.Row="0"
-                    Grid.RowSpan="2">
+            <TextBox Text="{Binding ElementName=self, Path=ItemChangeset.Name, Converter={StaticResource cv_itemName}}"
+                     VerticalAlignment="Center"
+                     Margin="6px"
+                     Grid.Column="1"
+                     Grid.Row="0"/>
+            <StackPanel Visibility="{Binding ElementName=self, Path=IsMouseOver, Converter={StaticResource cv_visibillity}}"
+                        Orientation="Horizontal"
+                        Grid.Column="2"
+                        Grid.Row="0"
+                        Grid.RowSpan="2">
 
-            <Button Style="{StaticResource MaterialDesignIconButton}">
-                <md:PackIcon Kind="ContentSave" Foreground="{StaticResource SecondaryAccentBrush}"/>
-            </Button>
-            <Button Style="{StaticResource MaterialDesignIconButton}">
-                <md:PackIcon Kind="Delete"/>
-            </Button>
-        </StackPanel>
-        <local:TagEditor Tags="{Binding ElementName=self, Path=ItemChangeset.Tags}" 
-                         Grid.Column="1"
-                         Grid.Row="1"/>
-    </Grid>
+                <Button Click="enterEdit_Click"
+                        Visibility="{Binding ElementName=self, Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=invert_collapsed}"
+                        Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="Edit" 
+                                 Foreground="{StaticResource SecondaryAccentBrush}"/>
+                </Button>
+                <Button Click="save_Click"
+                        Visibility="{Binding ElementName=self, Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}"
+                        Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="ContentSave"
+                                 Foreground="{StaticResource SecondaryAccentBrush}"/>
+                </Button>
+                <Button Click="delete_Click"
+                        Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="Delete"
+                                 Foreground="{StaticResource AttentionToActionBrush}"/>
+                </Button>
+            </StackPanel>
+            <local:TagEditor Tags="{Binding ElementName=self, Path=ItemChangeset.Tags}" 
+                             Grid.Column="1"
+                             Grid.Row="1"/>
+        </Grid>
+    </md:Card>
 </UserControl>

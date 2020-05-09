@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
+using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.WPF.ViewModels;
 
 namespace TableTopCrucible.WPF
@@ -39,6 +40,9 @@ namespace TableTopCrucible.WPF
             services.AddScoped<MainViewModel>();
             services.AddScoped<ItemListViewModel>();
             services.AddScoped<ItemEditorViewModel>();
+
+            // commands
+            services.AddSingleton<CreateItemCommand>();
 
             return services.BuildServiceProvider();
         }

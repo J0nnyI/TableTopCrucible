@@ -5,4 +5,6 @@
     <local:DebugConverter x:Key="cv_dbg"/>
     <local:ItemNameConverter x:Key="cv_itemName"/>
     <local:TagConverter x:Key="cv_tag"/>
+    <local:ThumbnailConverter x:Key="cv_Thumbnail"/>
+    <local:VisibillityConverter x:Key="cv_visibillity"/>
 </ResourceDictionary>

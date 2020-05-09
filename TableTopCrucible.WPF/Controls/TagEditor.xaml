@@ -9,15 +9,27 @@
              mc:Ignorable="d" 
              d:DesignHeight="450"
              d:DesignWidth="800">
-    <ListBox ItemsSource="{Binding ElementName=self, Path=Tags}" 
-             Style="{StaticResource MaterialDesignFilterChipListBox}">
-        <ListBox.ItemContainerStyle>
-            <Style TargetType="ListBoxItem"
-                   BasedOn="{StaticResource MaterialDesignFilterChipListBoxItem}">
-                <Setter Property="Focusable"
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"
+                              MinWidth="300px"/>
+        </Grid.ColumnDefinitions>
+        <ListBox ItemsSource="{Binding ElementName=self, Path=Tags}" 
+                 VerticalAlignment="Center"
+                 Style="{StaticResource MaterialDesignFilterChipListBox}">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem"
+                       BasedOn="{StaticResource MaterialDesignFilterChipListBoxItem}">
+                    <Setter Property="Focusable"
                         Value="False"/>
-            </Style>
-        </ListBox.ItemContainerStyle>
-        
-    </ListBox>
+                </Style>
+            </ListBox.ItemContainerStyle>
+
+        </ListBox>
+        <md:Chip Content="+"
+                 VerticalAlignment="Center"
+                 Margin="3px"
+                 Grid.Column="1"/>
+    </Grid>
 </UserControl>

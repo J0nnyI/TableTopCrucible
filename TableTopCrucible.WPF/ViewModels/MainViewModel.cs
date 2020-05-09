@@ -12,6 +12,7 @@ using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.Domain.ValueTypes;
 using TableTopCrucible.Domain.ValueTypes.IDs;
+using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
@@ -24,24 +25,45 @@ namespace TableTopCrucible.WPF.ViewModels
             set => this.onPropertyChange(value, ref _items);
         }
 
+        private Item _selectedItem;
+        public Item SelectedItem
+        {
+            get => _selectedItem;
+            set => this.onPropertyChange(value, ref _selectedItem);
+        }
+
         private List<IDisposable> subs = new List<IDisposable>();
         IItemService itemService;
         public ItemEditorViewModel ItemEditor { get; } = new ItemEditorViewModel();
         public ItemListViewModel ItemList { get; } = new ItemListViewModel();
-        public MainViewModel(IItemService itemService)
+        public CreateItemCommand CreateItem { get; }
+
+
+
+        public MainViewModel(IItemService itemService,CreateItemCommand createItem)
         {
             this.itemService = itemService;
-            addItem("test 1");
-            addItem("test 2");
+            this.CreateItem = createItem;
+            this.CreateItem.ItemCreated += this.CreateItem_ItemCreated;
+
+
+            //addItem("test 1");
+            //addItem("test 2");
             subs.Add(itemService
                 .Get()
                 .Bind(out this._items)
                 .Subscribe());
-            addItem("test 3");
-            addItems("test 2.1", "test 2.2", "test 2.3");
+            //addItem("test 3");
+            //addItems("test 2.1", "test 2.2", "test 2.3");
 
             this.raisePropertyChanged(nameof(this.Items));
         }
+
+        private void CreateItem_ItemCreated(object sender, ItemCreatedEventArgs e)
+        {
+            this.SelectedItem = e.Item;
+        }
+
         private void addItem(string name)
         {
             itemService.Patch(getItem(name));
@@ -55,7 +77,9 @@ namespace TableTopCrucible.WPF.ViewModels
             return new ItemChangeset()
             {
                 Name = (ItemName)name,
-                Tags = new List<Tag> { (Tag)"Tag 1", (Tag)"Tag 2" }
+                Tags = new List<Tag> { (Tag)"Tag 1", (Tag)"Tag 2" },
+                Thumbnail = (Thumbnail)"https://i.etsystatic.com/19002916/r/il/617e49/1885302518/il_fullxfull.1885302518_9ovo.jpg"
+                //Thumbnail = (Thumbnail)@"D:\__MANAGED_FILES__\DnD\__Thumbnails__\20200126_191331.jpg"
             };
         }
 

@@ -35,20 +35,24 @@ namespace TableTopCrucible.Domain.Services
             return this.cache.Connect().Filter(item => ids.Contains(item.Id));
         }
         // patch
-        public void Patch(Tchangeset change)
+        public Tentity Patch(Tchangeset change)
         {
+            Tentity entity;
             if (change.Origin.HasValue)
-                cache.AddOrUpdate(change.Apply());
+                entity=change.Apply();
             else
-                cache.AddOrUpdate(change.ToEntity());
+                entity=change.ToEntity();
+            cache.AddOrUpdate(entity);
+            return entity;
         }
-        public void Patch(IEnumerable<Tchangeset> changeSet)
+        public IEnumerable<Tentity> Patch(IEnumerable<Tchangeset> changeSet)
         {
             var changes = changeSet.Select(change =>
                 change.Origin != null
                 ? change.Apply()
                 : change.ToEntity());
             cache.AddOrUpdate(changes);
+            return changes;
         }
 
         protected DataServiceBase()

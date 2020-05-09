@@ -35,6 +35,6 @@ namespace TableTopCrucible.Domain.Models.Sources
             this.LastChange = origin.LastChange;
             this.Thumbnail = thumbnail;
         }
-        public override string ToString() => "Tilename:" + (string)this.Name;
+        public override string ToString() => $"Tile {Id} ({Name})";
     }
 }

@@ -5,14 +5,17 @@ using System.Windows.Data;
 
 namespace TableTopCrucible.WPF.Converters
 {
+    /// <summary>
+    /// parameters: invert, hidden, collapsed
+    /// </summary>
     public class VisibillityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            => _convert(value, targetType, parameter as string);
+            => Convert(value, targetType, parameter as string);
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-            => _convert(value, targetType, parameter as string);
+            => Convert(value, targetType, parameter as string);
 
-        private object _convert(object value, Type targetType, string parameter)
+        public static object Convert(object value, Type targetType, string parameter)
         {
             bool invert = false;
             Visibility hiddenVisibillity = Visibility.Hidden;

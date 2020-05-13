@@ -8,6 +8,7 @@
             <ResourceDictionary.MergedDictionaries>
 
                 <ResourceDictionary Source=".\Converters\Converters.xaml"/>
+                <ResourceDictionary Source=".\MultiConverters\MultiConverters.xaml"/>
 
                 <ResourceDictionary Source=".\Views\DataTemplates.xaml"/>
 

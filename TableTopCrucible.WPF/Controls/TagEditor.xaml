@@ -28,8 +28,37 @@
 
         </ListBox>
         <md:Chip Content="+"
+                 Click="newTagClicked"
+                 MinWidth="{Binding ElementName=self, Path=Editing, Converter={StaticResource cv_valueSwitch}, ConverterParameter=0_200}"
+                 x:Name="newTagChip"
+                 Visibility="{Binding ElementName=self, Path=Editable, Converter={StaticResource cv_visibillity}}"
                  VerticalAlignment="Center"
                  Margin="3px"
                  Grid.Column="1"/>
+        <md:PopupBox PlacementMode="BottomAndAlignCentres"
+                     PopupMode="Click">
+            <Label>md popup</Label>
+        </md:PopupBox>
+        <Popup x:Name="popup"
+               StaysOpen="True"
+               IsOpen="{Binding ElementName=self, Path=Editing}"
+               Width="{Binding ElementName=newTagChip, Path=ActualWidth}"
+               Placement="Bottom" 
+               PlacementTarget="{Binding ElementName=newTagChip}"
+               Visibility="{Binding ElementName=self, Path=Editable, Converter={StaticResource cv_visibillity}}"
+               >
+            <Label HorizontalContentAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   Background="green">
+                <Label.Effect>
+                    <DropShadowEffect ShadowDepth="4"
+                                      Direction="315"
+                                      Color="Black"
+                                      Opacity=".5"
+                                      BlurRadius="4"/>
+                </Label.Effect>
+                popup
+            </Label>
+        </Popup>
     </Grid>
 </UserControl>

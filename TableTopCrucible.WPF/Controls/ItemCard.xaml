@@ -29,6 +29,7 @@
                    Grid.RowSpan="2"/>
 
             <TextBox Text="{Binding ElementName=self, Path=ItemChangeset.Name, Converter={StaticResource cv_itemName}}"
+                     IsReadOnly="{Binding ElementName=self, Path=EditMode, Converter={StaticResource cv_Invert}}"
                      VerticalAlignment="Center"
                      Margin="6px"
                      Grid.Column="1"
@@ -40,8 +41,18 @@
                         Grid.RowSpan="2">
 
                 <Button Click="enterEdit_Click"
-                        Visibility="{Binding ElementName=self, Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=invert_collapsed}"
                         Style="{StaticResource MaterialDesignIconButton}">
+                    <Button.Visibility>
+                        <MultiBinding Converter="{StaticResource mvc_visibillity}" ConverterParameter="and_collapsed">
+                            <MultiBinding.Bindings>
+                                <Binding ElementName="self"
+                                         Path="EditMode"
+                                         Converter="{StaticResource cv_Invert}"/>
+                                <Binding ElementName="self"
+                                         Path="Editable"/>
+                            </MultiBinding.Bindings>
+                        </MultiBinding>
+                    </Button.Visibility>
                     <md:PackIcon Kind="Edit" 
                                  Foreground="{StaticResource SecondaryAccentBrush}"/>
                 </Button>
@@ -58,6 +69,7 @@
                 </Button>
             </StackPanel>
             <local:TagEditor Tags="{Binding ElementName=self, Path=ItemChangeset.Tags}" 
+                             Editable="{Binding ElementName=self, Path=EditMode}"
                              Grid.Column="1"
                              Grid.Row="1"/>
         </Grid>

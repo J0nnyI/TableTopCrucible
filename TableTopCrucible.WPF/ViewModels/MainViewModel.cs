@@ -44,7 +44,7 @@ namespace TableTopCrucible.WPF.ViewModels
             this.CreateItem.ItemCreated += this.CreateItem_ItemCreated;
 
 
-            //addItem("test 1");
+            addItem("test 1");
             //addItem("test 2");
             subs.Add(itemService
                 .Get()
@@ -52,6 +52,8 @@ namespace TableTopCrucible.WPF.ViewModels
                 .Subscribe());
             //addItem("test 3");
             //addItems("test 2.1", "test 2.2", "test 2.3");
+
+            
 
             this.raisePropertyChanged(nameof(this.Items));
         }

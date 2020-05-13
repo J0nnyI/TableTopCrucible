@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
-using System.Text;
+
 using TableTopCrucible.Domain.ValueTypes;
 using TableTopCrucible.Domain.ValueTypes.IDs;
 

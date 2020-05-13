@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using TableTopCrucible.Domain.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Models.Sources

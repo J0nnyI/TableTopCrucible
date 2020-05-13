@@ -1,6 +1,8 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
+
 using System;
+
 using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.ValueTypes.IDs;
 namespace TableTopCrucible.WPF.ViewModels

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.DirectoryServices;
-using System.Linq;
-using System.Text;
-using System.Windows.Automation;
+
 using TableTopCrucible.Domain.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Models.Sources

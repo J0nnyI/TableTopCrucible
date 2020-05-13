@@ -1,17 +1,14 @@
 ﻿using DynamicData;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Windows.Automation;
+
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.Domain.ValueTypes;
-using TableTopCrucible.Domain.ValueTypes.IDs;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
@@ -40,7 +37,7 @@ namespace TableTopCrucible.WPF.ViewModels
 
 
 
-        public MainViewModel(IItemService itemService,CreateItemCommand createItem)
+        public MainViewModel(IItemService itemService, CreateItemCommand createItem)
         {
             this.itemService = itemService;
             this.CreateItem = createItem;

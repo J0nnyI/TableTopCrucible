@@ -1,16 +1,7 @@
-﻿using MaterialDesignThemes.Wpf;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 using TableTopCrucible.Domain.ValueTypes;
 
 namespace TableTopCrucible.WPF.Controls
@@ -29,6 +20,16 @@ namespace TableTopCrucible.WPF.Controls
         }
         public static readonly DependencyProperty TagsProperty =
             DependencyProperty.Register(nameof(Tags), typeof(IEnumerable<Tag>), typeof(TagEditor), new PropertyMetadata(null));
+
+
+
+        public bool Editable
+        {
+            get { return (bool)GetValue(EditableProperty); }
+            set { SetValue(EditableProperty, value); }
+        }
+        public static readonly DependencyProperty EditableProperty =
+            DependencyProperty.Register(nameof(Editable), typeof(bool), typeof(TagEditor), new PropertyMetadata(true));
 
 
 

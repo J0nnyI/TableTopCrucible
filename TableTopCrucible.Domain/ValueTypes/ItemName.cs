@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Navigation;
-
-namespace TableTopCrucible.Domain.ValueTypes
+﻿namespace TableTopCrucible.Domain.ValueTypes
 {
     public struct ItemName
     {

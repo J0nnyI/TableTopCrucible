@@ -1,9 +1,8 @@
 ﻿using System;
-using TableTopCrucible.Domain.ValueTypes;
 
 namespace TableTopCrucible.Domain.ValueTypes.IDs
 {
-    public struct CommentId:ITypedId
+    public struct CommentId : ITypedId
     {
         private Guid _guid;
         public CommentId(Guid guid)
@@ -11,7 +10,7 @@ namespace TableTopCrucible.Domain.ValueTypes.IDs
         public override bool Equals(object obj)
         {
             if (obj is CommentId id)
-                return this._guid== id._guid;
+                return this._guid == id._guid;
             return false;
         }
 
@@ -23,7 +22,7 @@ namespace TableTopCrucible.Domain.ValueTypes.IDs
         public static bool operator !=(CommentId id1, CommentId id2)
             => id1._guid != id2._guid;
 
-        public static  explicit operator Guid (CommentId id)
+        public static explicit operator Guid(CommentId id)
             => id._guid;
         public static explicit operator CommentId(Guid id)
             => new CommentId(id);

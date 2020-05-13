@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+
 using TableTopCrucible.Domain.ValueTypes;
 
 namespace TableTopCrucible.WPF.Converters

@@ -1,12 +1,12 @@
 ﻿using DynamicData;
+
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+
+using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.ValueTypes.IDs;
-using System.Linq;
-using TableTopCrucible.Domain.Models;
-using System.Windows.Input;
 
 namespace TableTopCrucible.Domain.Services
 {
@@ -39,9 +39,9 @@ namespace TableTopCrucible.Domain.Services
         {
             Tentity entity;
             if (change.Origin.HasValue)
-                entity=change.Apply();
+                entity = change.Apply();
             else
-                entity=change.ToEntity();
+                entity = change.ToEntity();
             cache.AddOrUpdate(entity);
             return entity;
         }

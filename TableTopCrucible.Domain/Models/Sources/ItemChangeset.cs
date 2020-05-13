@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+
 using TableTopCrucible.Domain.ValueTypes;
 using TableTopCrucible.Domain.ValueTypes.IDs;
 
@@ -38,9 +37,9 @@ namespace TableTopCrucible.Domain.Models.Sources
         }
 
         public override Item Apply()
-            => new Item(this.Origin.Value, this.Name, this.Tags,this.Thumbnail);
+            => new Item(this.Origin.Value, this.Name, this.Tags, this.Thumbnail);
         public override Item ToEntity()
-            => new Item(this.Name, this.Tags,this.Thumbnail);
+            => new Item(this.Name, this.Tags, this.Thumbnail);
         public override IEnumerable<string> GetErrors() => throw new NotImplementedException();
 
         public override string ToString()

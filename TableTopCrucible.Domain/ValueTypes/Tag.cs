@@ -1,11 +1,19 @@
-﻿namespace TableTopCrucible.Domain.ValueTypes
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace TableTopCrucible.Domain.ValueTypes
 {
     public struct Tag
     {
         private readonly string _tag;
         public Tag(string tag)
         {
-            this._tag = tag;
+            var errors = Validate(tag);
+            if (errors.Any())
+                throw new Exception($"could not create tag {Environment.NewLine}{string.Join(Environment.NewLine, errors)}");
+            this._tag = tag.Trim();
         }
         public override string ToString() => this._tag;
         public override bool Equals(object obj)
@@ -30,6 +38,14 @@
         public static bool operator !=(Tag tag1, Tag tag2)
         {
             return tag1._tag != tag2._tag;
+        }
+        public static IEnumerable<string> Validate(string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+            {
+                return new string[] { "The tag must not be empty" };
+            }
+            return new string[] { };
         }
 
     }

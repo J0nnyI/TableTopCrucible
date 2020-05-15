@@ -51,18 +51,43 @@
                 </ListBox.ItemContainerStyle>
 
             </ListBox>
-            <ComboBox Grid.Column="1"
-                      ItemsSource="{Binding ElementName=self, Path=Tags}"
-                      IsEditable="True"
-                      KeyDown="ComboBox_KeyDown"
-                      SelectionChanged="onNewTag"
-                      >
-                <!--<ComboBox.Style>
-                    <Style>
-                    
-                    </Style>
-                </ComboBox.Style>-->
-            </ComboBox>
+            <md:Chip Click="newTagClicked"
+                 MinWidth="{Binding ElementName=self, Path=Editing, Converter={StaticResource cv_valueSwitch}, ConverterParameter=0_200}"
+                 x:Name="newTagChip"
+                 Visibility="{Binding ElementName=self, Path=Editable, Converter={StaticResource cv_visibillity}}"
+                 VerticalAlignment="Center"
+                 Margin="3px"
+                 Grid.Column="1">
+                <md:Chip.Content>
+                    <Grid VerticalAlignment="Center"
+                      HorizontalAlignment="Stretch"
+                      Background="Green">
+                        <md:PackIcon Kind="Add"
+                                 Visibility="{Binding ElementName=self, Path=Editing, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Center"/>
+                        <TextBox Visibility="{Binding ElementName=self, Path=Editing, Converter={StaticResource cv_visibillity}}"/>
+                    </Grid>
+                </md:Chip.Content>
+            </md:Chip>
+            <Popup x:Name="popup"
+               IsOpen="{Binding ElementName=self, Path=Editing}"
+               Width="{Binding ElementName=newTagChip, Path=ActualWidth}"
+               Placement="Bottom" 
+               PlacementTarget="{Binding ElementName=newTagChip}"
+               Visibility="{Binding ElementName=self, Path=Editable, Converter={StaticResource cv_visibillity}}"
+               >
+                <Label HorizontalContentAlignment="Stretch"
+                   VerticalAlignment="Stretch">
+                    <Label.Effect>
+                        <DropShadowEffect ShadowDepth="4"
+                                      Direction="315"
+                                      Color="Black"
+                                      Opacity=".5"
+                                      BlurRadius="4"/>
+                    </Label.Effect>
+                </Label>
+            </Popup>
         </Grid>
     </StackPanel>
 </UserControl>

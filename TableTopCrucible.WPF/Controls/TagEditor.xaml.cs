@@ -15,7 +15,6 @@ namespace TableTopCrucible.WPF.Controls
         public TagEditor()
         {
             InitializeComponent();
-            this.Loaded += this.TagEditor_Loaded;
         }
 
         private void TagEditor_Loaded(object sender, RoutedEventArgs e)
@@ -24,13 +23,14 @@ namespace TableTopCrucible.WPF.Controls
             {
                 window.SizeChanged += (_, __) => updatePopupPos();
                 window.LocationChanged += (_,__)=>updatePopupPos();
+                window.Deactivated += (_, __) => this.Editing = false;
             }
-            this.LostFocus += this.TagEditor_LostFocus;
         }
 
-        private void TagEditor_LostFocus(object sender, RoutedEventArgs e)
+        private void self_IsKeyboardFocusWithinChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            this.Editing = false;
+            if(!this.IsKeyboardFocusWithin)
+                this.Editing = false;
         }
 
         private void updatePopupPos()
@@ -40,6 +40,14 @@ namespace TableTopCrucible.WPF.Controls
             popup.HorizontalOffset = offset;
 
         }
+
+
+        private void newTagClicked(object sender, RoutedEventArgs e)
+        {
+            this.Editing = true;
+        }
+
+        #region dep props
 
         public IEnumerable<Tag> Tags
         {
@@ -64,10 +72,7 @@ namespace TableTopCrucible.WPF.Controls
         }
         public static readonly DependencyProperty ShowPopupProperty =
             DependencyProperty.Register(nameof(Editing), typeof(bool), typeof(TagEditor), new PropertyMetadata(false));
+        #endregion
 
-        private void newTagClicked(object sender, RoutedEventArgs e)
-        {
-            this.Editing = true;
-        }
     }
 }

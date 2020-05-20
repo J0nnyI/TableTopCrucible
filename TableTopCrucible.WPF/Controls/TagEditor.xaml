@@ -11,58 +11,51 @@
              d:DesignWidth="800"
              IsKeyboardFocusWithinChanged="self_IsKeyboardFocusWithinChanged"
              Loaded="TagEditor_Loaded">
-    <UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"
+                                MaxWidth="{Binding ElementName=self, Path=Width, Converter={StaticResource cv_minMaxMod}, ConverterParameter=70%_70%_70%}"/>
+            <ColumnDefinition Width="*"
+                                MinWidth="200px"/>
+        </Grid.ColumnDefinitions>
+        <ListBox ItemsSource="{Binding ElementName=self, Path=Tags}" 
+                    VerticalAlignment="Center"
+                    Style="{StaticResource MaterialDesignFilterChipListBox}"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.RowSpan="2">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem"
+                        BasedOn="{StaticResource MaterialDesignFilterChipListBoxItem}">
+                    <Setter Property="Focusable"
+                            Value="False"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
 
-        <Style TargetType="Control">
-            <Setter Property="Background" Value="green"/>
-        </Style>
-        <Style TargetType="ListBox">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <Label Content="test"/>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
-    <StackPanel Orientation="Vertical">
-        <ListView ItemsSource="{Binding ElementName=self, Path=NewTagErrors}"/>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"
-                                  MinWidth="300px"/>
-            </Grid.ColumnDefinitions>
-            <ListBox ItemsSource="{Binding ElementName=self, Path=Tags}" 
-                     VerticalAlignment="Center"
-                     Style="{StaticResource MaterialDesignFilterChipListBox}"
-                     Grid.Column="0">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem"
-                           BasedOn="{StaticResource MaterialDesignFilterChipListBoxItem}">
-                        <Setter Property="Focusable"
-                                Value="False"/>
-                    </Style>
-                </ListBox.ItemContainerStyle>
+        </ListBox>
 
-            </ListBox>
-            <ComboBox Grid.Column="1"
-                      ItemsSource="{Binding ElementName=self, Path=Tags}"
-                      IsEditable="True"
-                      KeyDown="ComboBox_KeyDown"
-                      SelectionChanged="onNewTag"
-                      >
-                <!--<ComboBox.Style>
-                    <Style>
-                    
-                    </Style>
-                </ComboBox.Style>-->
-            </ComboBox>
-        </Grid>
-    </StackPanel>
+        <ListView ItemsSource="{Binding ElementName=self, Path=NewTagErrors}"
+                    Grid.Column="1"
+                    Grid.Row="0">
+                
+        </ListView>
+            
+        <ComboBox ItemsSource="{Binding ElementName=self, Path=Tags}"
+                    IsEditable="True"
+                    KeyDown="ComboBox_KeyDown"
+                    SelectionChanged="onNewTag"
+                    StaysOpenOnEdit="True"
+                    Grid.Column="1"
+                    Grid.Row="1">
+            <ComboBox.Resources>
+                <Style TargetType="Popup">
+                    <Setter Property="Height" Value="300px"/>
+                </Style>
+            </ComboBox.Resources>
+        </ComboBox>
+    </Grid>
 </UserControl>

@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
+using TableTopCrucible.WPF.Helper;
+
 namespace TableTopCrucible.WPF.ViewModels
 {
     public class ViewModelBase : INotifyPropertyChanged
@@ -8,11 +10,7 @@ namespace TableTopCrucible.WPF.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
         protected void onPropertyChange<T>(T value, ref T field, [CallerMemberName] string propName = "")
         {
-            if (field?.Equals(value) != true)
-            {
-                field = value;
-                this.raisePropertyChanged(propName);
-            }
+            ((INotifyPropertyChanged)this).OnPropertyChange(PropertyChanged, value,ref field, propName);
         }
         protected void raisePropertyChanged(string propName)
         {

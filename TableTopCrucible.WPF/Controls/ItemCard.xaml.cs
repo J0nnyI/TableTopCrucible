@@ -40,17 +40,17 @@ namespace TableTopCrucible.WPF.Controls
             InitializeComponent();
         }
 
-        private void delete_Click(object sender, RoutedEventArgs e)
+        private void _delete_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("delete?");
         }
 
-        private void save_Click(object sender, RoutedEventArgs e)
+        private void _save_Click(object sender, RoutedEventArgs e)
         {
             this.EditMode = false;
         }
 
-        private void enterEdit_Click(object sender, RoutedEventArgs e)
+        private void _enterEdit_Click(object sender, RoutedEventArgs e)
         {
             this.EditMode = true;
         }

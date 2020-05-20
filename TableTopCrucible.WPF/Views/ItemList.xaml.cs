@@ -10,7 +10,6 @@ namespace TableTopCrucible.WPF.Views
         public ItemList()
         {
             InitializeComponent();
-            this.DataContext = new ViewModels.ItemListViewModel();
         }
     }
 }

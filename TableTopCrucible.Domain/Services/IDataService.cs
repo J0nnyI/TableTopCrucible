@@ -12,8 +12,8 @@ namespace TableTopCrucible.Domain.Services
         where Tentity : IEntity<Tid>
         where Tid : ITypedId
     {
-        public IObservable<IChangeSet<Tentity, Tid>> Get();
-        public IObservable<Change<Tentity, Tid>> Get(Tid id);
+        public IObservableCache<Tentity, Tid> Get();
+        public IObservable<Tentity> Get(Tid id);
         public IObservable<IChangeSet<Tentity, Tid>> Get(IEnumerable<Tid> ids);
         public Tentity Patch(TChangeset data);
         public IEnumerable<Tentity> Patch(IEnumerable<TChangeset> data);

@@ -9,4 +9,10 @@
     <DataTemplate DataType="{x:Type viewModels:ItemListViewModel}">
         <views:ItemList/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:ItemCardViewModel}">
+        <views:ItemCard/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:TagListViewModel}">
+        <views:TagList/>
+    </DataTemplate>
 </ResourceDictionary>

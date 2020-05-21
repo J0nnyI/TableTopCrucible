@@ -12,12 +12,14 @@ namespace TableTopCrucible.Domain.Services
         where Tentity : IEntity<Tid>
         where Tid : ITypedId
     {
-        public IObservableCache<Tentity, Tid> Get();
-        public IObservable<Tentity> Get(Tid id);
-        public IObservable<IChangeSet<Tentity, Tid>> Get(IEnumerable<Tid> ids);
-        public Tentity Patch(TChangeset data);
-        public IEnumerable<Tentity> Patch(IEnumerable<TChangeset> data);
-        public void Delete(Tid key);
-        public void Delete(IEnumerable<Tid> key);
+        IObservableCache<Tentity, Tid> Get();
+        IObservable<Tentity> Get(Tid id);
+        IObservable<IChangeSet<Tentity, Tid>> Get(IEnumerable<Tid> ids);
+        Tentity Patch(TChangeset data);
+        IEnumerable<Tentity> Patch(IEnumerable<TChangeset> data);
+        bool CanPatch(TChangeset changeset);
+        void Delete(Tid key);
+        void Delete(IEnumerable<Tid> key);
+        bool CanDelete(Tid key);
     }
 }

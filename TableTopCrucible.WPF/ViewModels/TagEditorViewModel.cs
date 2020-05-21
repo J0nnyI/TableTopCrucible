@@ -10,7 +10,7 @@ using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
-    public class TagListViewModel : ValidatingViewModelBase
+    public class TagEditorViewModel : ValidatingViewModelBase
     {
         private string _newTag;
         public string NewTag
@@ -40,7 +40,7 @@ namespace TableTopCrucible.WPF.ViewModels
         public RelayCommand LeaveEditmode { get; }
         public RelayCommand AddTag { get; }
 
-        public TagListViewModel(IItemTagService tagService)
+        public TagEditorViewModel(IItemTagService tagService)
         {
             this.EnterEditmode = new RelayCommand((_) => this.IsEditmode = true, (_) => !this.IsEditmode);
             this.LeaveEditmode= new RelayCommand((_) => this.IsEditmode = false, (_) => this.IsEditmode);

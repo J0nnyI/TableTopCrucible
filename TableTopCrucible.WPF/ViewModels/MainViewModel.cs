@@ -25,7 +25,6 @@ namespace TableTopCrucible.WPF.ViewModels
 
         private readonly List<IDisposable> _subs = new List<IDisposable>();
         private readonly IItemService _itemService;
-        public ItemEditorViewModel ItemEditor { get; }
         public ItemListViewModel ItemList { get; }
         public ItemListViewModel ItemList2 { get; }
         public CreateItemCommand CreateItem { get; }
@@ -39,8 +38,7 @@ namespace TableTopCrucible.WPF.ViewModels
             CreateItemCommand createItem,
             // views
             ItemListViewModel itemList,
-            ItemListViewModel itemList2,
-            ItemEditorViewModel itemEditor
+            ItemListViewModel itemList2
             )
         {
             // services
@@ -52,7 +50,6 @@ namespace TableTopCrucible.WPF.ViewModels
             this.ItemList2 = itemList2 ?? throw new NullReferenceException("got no itemlist");
             if (object.ReferenceEquals(itemList, itemList2))
                 throw new InvalidDataException("the viewmodesl must not be the same");
-            this.ItemEditor = itemEditor ?? throw new NullReferenceException("got no item editor");
 
 
             this.CreateItem.ItemCreated += this._createItem_ItemCreated;

@@ -79,11 +79,13 @@ namespace TableTopCrucible.WPF
             // viewModels
             services.AddTransient<MainViewModel>();
             services.AddTransient<ItemListViewModel>();
-            services.AddTransient<ItemEditorViewModel>();
             services.AddTransient<ItemCardViewModel>();
+            services.AddTransient<TagEditorViewModel>();
 
             // commands
             services.AddSingleton<CreateItemCommand>();
+            services.AddSingleton<DeleteItemCommand>();
+            services.AddSingleton<SaveItemCommand>();
 
             return services.BuildServiceProvider();
         }

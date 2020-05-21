@@ -4,11 +4,105 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:TableTopCrucible.WPF.ViewModels"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance Type=viewModels:ItemCardViewModel}">
-    <Grid>
-        <Label>card</Label>
-        <Label Content="{Binding Item?.Name}"></Label>
-    </Grid>
+             d:DesignHeight="160"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=viewModels:ItemCardViewModel}"
+             Name="self">
+    <md:Card Padding="16px">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150px"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!--Source="{Binding Path=ItemChangeset.Thumbnail, Converter=}"-->
+            <Image 
+                   Grid.Column="0"
+                   Grid.Row="0"
+                   Grid.RowSpan="2">
+                <Image.Source>
+                    <PriorityBinding>
+                        <Binding Path="Changeset.Thumbnail"
+                                 Converter="{StaticResource cv_Thumbnail}"/>
+                        <Binding Path="Item.Thumbnail"
+                                 Converter="{StaticResource cv_Thumbnail}"/>
+                    </PriorityBinding>
+                </Image.Source>
+            </Image>
+
+            <TextBox IsReadOnly="{Binding Path=EditMode, Converter={StaticResource cv_Invert}}"
+                     VerticalAlignment="Center"
+                     Margin="6px"
+                     md:TextFieldAssist.DecorationVisibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}}"
+                     Grid.Column="1"
+                     Grid.Row="0">
+                <TextBox.Text>
+                    <PriorityBinding>
+                        <Binding Path="Changeset.Name" 
+                                 Converter="{StaticResource cv_itemName}"/>
+                        <Binding Path="Item.Name" 
+                                 Converter="{StaticResource cv_itemName}"
+                                 Mode="OneWay"/>
+                    </PriorityBinding>
+                </TextBox.Text>
+            </TextBox>
+            <StackPanel 
+                        Orientation="Horizontal"
+                        Grid.Column="2"
+                        Grid.Row="0"
+                        Grid.RowSpan="2">
+                <StackPanel.Visibility>
+                    <MultiBinding Converter="{StaticResource mvc_visibillity}" ConverterParameter="or_hidden">
+                        <MultiBinding.Bindings>
+                            <Binding ElementName="self"
+                                     Path="IsMouseOver"/>
+                        </MultiBinding.Bindings>
+                    </MultiBinding>
+                </StackPanel.Visibility>
+
+                <Button Command="{Binding EnterEditmode}"
+                        Style="{StaticResource MaterialDesignIconButton}">
+                    <Button.Visibility>
+                        <MultiBinding Converter="{StaticResource mvc_visibillity}" ConverterParameter="and_collapsed">
+                            <MultiBinding.Bindings>
+                                <Binding Path="EditMode"
+                                         Converter="{StaticResource cv_Invert}"/>
+                                <Binding Path="Editable"/>
+                            </MultiBinding.Bindings>
+                        </MultiBinding>
+                    </Button.Visibility>
+                    <md:PackIcon Kind="Edit" 
+                                 Foreground="{StaticResource SecondaryAccentBrush}"/>
+                </Button>
+                <Button Command="{Binding SaveItemCommand}"
+                        CommandParameter="{Binding Path=Changeset}"
+                        Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}"
+                        Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="ContentSave"
+                                 Foreground="{StaticResource SecondaryAccentBrush}"/>
+                </Button>
+                <Button Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="Undo"
+                                 Foreground="{StaticResource AttentionToActionBrush}"/>
+                </Button>
+                <Button Command="{Binding DeleteItemCommand}" CommandParameter="{Binding Path=Item.Id}"
+                        Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="Delete"
+                                 Foreground="{StaticResource AttentionToActionBrush}"/>
+                </Button>
+            </StackPanel>
+            <ContentControl Content="{Binding TagList}"/>
+            <!--<local:TagEditor Tags="{Binding ElementName=self, Path=ItemChangeset.Tags}" 
+                             Editable="{Binding ElementName=self, Path=EditMode}"
+                             VerticalAlignment="Stretch"
+                             Grid.Column="1"
+                             Grid.Row="1"/>-->
+        </Grid>
+    </md:Card>
 </UserControl>

@@ -25,6 +25,8 @@ namespace TableTopCrucible.Domain.Services
             => cache.Remove(key);
         public void Delete(IEnumerable<Tid> keys)
             => cache.Remove(keys);
+        public virtual bool CanDelete(Tid key)
+            => cache.Keys.Contains(key);
         // get
         public IObservableCache<Tentity, Tid> Get()
             => _readOnlyCache;
@@ -51,6 +53,12 @@ namespace TableTopCrucible.Domain.Services
                 : change.ToEntity());
             cache.AddOrUpdate(changes);
             return changes;
+        }
+        public bool CanPatch(Tchangeset changeset)
+        {
+            if (!changeset.Origin.HasValue)
+                return true;
+            return this.cache.Keys.Contains(changeset.Origin.Value.Id);
         }
 
         protected DataServiceBase()
@@ -80,6 +88,7 @@ namespace TableTopCrucible.Domain.Services
         {
             Dispose(true);
         }
+
         #endregion
     }
 }

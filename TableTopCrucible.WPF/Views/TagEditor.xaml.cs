@@ -16,9 +16,9 @@ namespace TableTopCrucible.WPF.Views
     /// <summary>
     /// Interaction logic for TagList.xaml
     /// </summary>
-    public partial class TagList : UserControl
+    public partial class TagEditor : UserControl
     {
-        public TagList()
+        public TagEditor()
         {
             InitializeComponent();
         }

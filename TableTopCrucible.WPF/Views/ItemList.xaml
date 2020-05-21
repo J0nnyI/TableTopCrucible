@@ -15,7 +15,6 @@
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:ItemListViewModel}"
              >
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -23,13 +22,23 @@
         </Grid.RowDefinitions>
         
         <ListView ItemsSource="{Binding Items}"
+                  SelectedItem="{Binding SelectedItemVm}"
                   md:RippleAssist.IsDisabled="True"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  SelectionMode="Single"
                   Grid.Row="0" 
                   Grid.Column="1">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="HorizontalContentAlignment" 
+                            Value="Stretch" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected"
+                                 Value="True">
+                            <Setter Property="Background"
+                                    Value="{StaticResource MaterialDesignSelection}"/>
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
@@ -37,6 +46,8 @@
                     <ContentControl Content="{Binding}"/>
                 </DataTemplate>
             </ListView.ItemTemplate>
+            <ListView.Resources>
+            </ListView.Resources>
         </ListView>
         <Button Command="{Binding CreateItemCommand}" 
                 Grid.Row="1">

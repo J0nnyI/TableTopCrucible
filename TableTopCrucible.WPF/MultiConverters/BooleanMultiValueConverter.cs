@@ -14,11 +14,11 @@ namespace TableTopCrucible.WPF.MultiConverters
             switch (parameter)
             {
                 case string par when par.Contains("and"):
-                    return !values.Any(x => (bool)x == false);
+                    return !values.Any(x => x as bool? != true);
                 case string par when par.Contains("or"):
-                    return values.Any(x => (bool)x);
+                    return values.Any(x => x as bool? == true);
                 case string par when par.Contains("xor"):
-                    return (bool)values[0] ^ (bool)values[1];
+                    return values[0] as bool? == true ^ values[1] as bool? == true;
                 case string par when par.Contains("equals"):
                     return values.Any(x => x != values[0]);
                 default:

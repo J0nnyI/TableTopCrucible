@@ -2,13 +2,16 @@
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
+using ReactiveUI;
 using System;
 using System.CodeDom;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
@@ -17,17 +20,42 @@ using TableTopCrucible.WPF.Views;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
-    public class ItemListViewModel : ViewModelBase, IDisposable
+    public class ItemListViewModel : DisposableReactiveObject, IDisposable
     {
         private readonly IItemService _itemService;
         private readonly IInjectionProviderService _injectionProviderService;
-        private readonly Subject<Unit> _destroy = new Subject<Unit>();
         public CreateItemCommand CreateItemCommand { get; }
 
         ReadOnlyObservableCollection<ItemCardViewModel> _items;
-        public ReadOnlyObservableCollection<ItemCardViewModel> Items 
-            => _items;
+        public ReadOnlyObservableCollection<ItemCardViewModel> Items => _items;
 
+
+        #region reactive properties
+
+        private readonly BehaviorSubject<ItemCardViewModel> _selectedItemVmChanges = new BehaviorSubject<ItemCardViewModel>(null);
+        private IObservable<ItemCardViewModel> SelectedItemVmChanges => _selectedItemVmChanges;
+        private readonly ObservableAsPropertyHelper<ItemCardViewModel> _selectedItemVm;
+        public ItemCardViewModel SelectedItemVm
+        {
+            get => _selectedItemVm.Value;
+            set => _selectedItemVmChanges.OnNext(value);
+        }
+        public IObservable<Item?> SelectedItemChanges { get; }
+        private readonly ObservableAsPropertyHelper<Item?> _selectedItem;
+        public Item? SelectedItem
+        {
+            get => _selectedItem.Value;
+            set => selectItem(value);
+        }
+
+        #endregion
+
+        private void selectItem(Item? item)
+        {
+            if (!item.HasValue)
+                this.SelectedItemVm = null;
+            this.SelectedItemVm = Items.FirstOrDefault(curItem => curItem?.Item?.Id == item?.Id);
+        }
 
         public ItemListViewModel(
             IItemService itemService,
@@ -54,46 +82,24 @@ namespace TableTopCrucible.WPF.ViewModels
                 })
                 .DisposeMany()
                 .Bind(out _items)
-                .TakeUntil(_destroy)
+                .TakeUntil(destroy)
                 .Subscribe();
             });
+
+            this.SelectedItemChanges =
+                _selectedItemVmChanges
+                .Select(vm => vm?.Item)
+                .TakeUntil(destroy);
+
+            this._selectedItem =
+                SelectedItemChanges
+                .TakeUntil(destroy)
+                .ToProperty(this, nameof(SelectedItem));
+            this._selectedItemVm =
+                SelectedItemVmChanges
+                .TakeUntil(destroy)
+                .ToProperty(this, nameof(SelectedItemVm));
         }
 
-        #region IDisposable Support
-        private bool _disposedValue = false; // To detect redundant calls
-
-        protected virtual void dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                    _destroy.OnNext(Unit.Default);
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
-                _disposedValue = true;
-            }
-        }
-
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~ItemListViewModel()
-        // {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

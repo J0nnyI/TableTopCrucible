@@ -20,15 +20,12 @@ namespace TableTopCrucible.Domain.ValueTypes
         public override string ToString() => this._tag;
         public override bool Equals(object obj)
         {
-            switch (obj)
+            return obj switch
             {
-                case Tag tag:
-                    return this._tag == tag._tag;
-                case string tag:
-                    return this._tag == tag;
-                default:
-                    return false;
-            }
+                Tag tag => this._tag == tag._tag,
+                string tag => this._tag == tag,
+                _ => false,
+            };
         }
         public override int GetHashCode() => this._tag.GetHashCode();
         public static explicit operator Tag(string tag) => new Tag(tag);
@@ -49,7 +46,7 @@ namespace TableTopCrucible.Domain.ValueTypes
                 .ToArray();
         }
         public static IEnumerable<Validator<string>> Validators { get; } = new Validator<string>[] { 
-            new Validator<string>(tag=>!string.IsNullOrWhiteSpace(tag),"The Tag mustn not be empty")
+            new Validator<string>(tag=>!string.IsNullOrWhiteSpace(tag),"The tag must not be empty")
         };
 
     }

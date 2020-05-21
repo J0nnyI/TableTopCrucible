@@ -9,7 +9,7 @@
              d:DesignHeight="2010"
              d:DesignWidth="1000"
              d:DataContext="{d:DesignInstance Type=viewModels:ItemCardViewModel}"
-             Height="200px"
+             Height="180px"
              Name="self">
     <md:Card Padding="16px">
         <Grid>

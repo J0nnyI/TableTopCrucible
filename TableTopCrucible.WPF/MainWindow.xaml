@@ -21,51 +21,20 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <!--<ListView ItemsSource="{Binding Items}"
-                  x:Name="lstvw"
-                  md:RippleAssist.IsDisabled="True"
-                  Grid.Row="0">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <controls:ItemCard ItemChangeset="{Binding Converter={StaticResource cv_itemChangeset}}"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <Button Content="+"
-                Command="{Binding CreateItem}"
-                Grid.Row="1"/>-->
-
-        
-        
-        <!--<ListView ItemsSource="{Binding Items2}"
-                  md:RippleAssist.IsDisabled="True"
-                  Grid.Row="0" 
-                  Grid.Column="1">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <controls:ItemCard ItemChangeset="{Binding Converter={StaticResource cv_itemChangeset}}"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <Button Content="+"
-                Command="{Binding CreateItem}"
-                Grid.Row="1"/>-->
 
         <ContentPresenter Content="{Binding Path=ItemList}"
                           Grid.Column="0"/>
         <ContentPresenter Content="{Binding Path=ItemList2}"
                           Grid.Column="1"/>
+
+        <Label Content="{Binding Path=ItemList.SelectedItemVm}"
+               Grid.Column="0"
+               Grid.Row="1"/>
+        <Label Content="{Binding Path=ItemList.SelectedItem}"
+               Grid.Column="1"
+               Grid.Row="1"/>
 
     </Grid>
 </Window>

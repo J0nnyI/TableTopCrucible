@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-
+using System.Windows.Forms;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.Domain.ValueTypes;
@@ -17,13 +17,24 @@ namespace TableTopCrucible.WPF.ViewModels
 {
     public class MainViewModel : DisposableReactiveObject
     {
-        [Reactive]
-        public Item SelectedItem { get; set; }
 
         private readonly IItemService _itemService;
         public ItemListViewModel ItemList { get; }
         public ItemListViewModel ItemList2 { get; }
         public CreateItemCommand CreateItem { get; }
+
+        private ObservableAsPropertyHelper<Item?> _selectedItem;
+        public Item? SelectedItem
+        {
+            get => _selectedItem.Value;
+            set => this.ItemList.SelectedItem = value;
+        }
+        private ObservableAsPropertyHelper<Item?> _selectedItem2;
+        public Item? SelectedItem2
+        {
+            get => _selectedItem2.Value;
+            set => this.ItemList.SelectedItem = value;
+        }
 
 
 
@@ -47,6 +58,14 @@ namespace TableTopCrucible.WPF.ViewModels
             if (object.ReferenceEquals(itemList, itemList2))
                 throw new InvalidDataException("the viewmodesl must not be the same");
 
+            this._selectedItem = ItemList.SelectedItemChanges
+                .TakeUntil(destroy)
+                .ToProperty(this, nameof(SelectedItem));
+            this._selectedItem2 = ItemList.SelectedItemChanges
+                .TakeUntil(destroy)
+                .ToProperty(this, nameof(SelectedItem2));
+
+
 
             this.CreateItem.ItemCreated += this._createItem_ItemCreated;
 
@@ -54,12 +73,12 @@ namespace TableTopCrucible.WPF.ViewModels
             _addItem("test 1");
         }
 
-        private void _createItem_ItemCreated(object sender, ItemCreatedEventArgs e) 
+        private void _createItem_ItemCreated(object sender, ItemCreatedEventArgs e)
             => this.SelectedItem = e.Item;
 
-        private void _addItem(string name) 
+        private void _addItem(string name)
             => _itemService.Patch(_getItem(name));
-        private void _addItems(params string[] names) 
+        private void _addItems(params string[] names)
             => _itemService.Patch(names.Select(name => _getItem(name)));
         private ItemChangeset _getItem(string name)
         {
@@ -76,7 +95,7 @@ namespace TableTopCrucible.WPF.ViewModels
             return new ItemChangeset()
             {
                 Name = (ItemName)name,
-                Tags = new List<Tag> { (Tag)"Tag 1", (Tag)"Tag 2", (Tag)"Tag 3", (Tag)"Tag 4" , (Tag)"Tag 5", (Tag)"Tag 6" },
+                Tags = new List<Tag> { (Tag)"Tag 1", (Tag)"Tag 2", (Tag)"Tag 3", (Tag)"Tag 4", (Tag)"Tag 5", (Tag)"Tag 6" },
                 Thumbnail = (Thumbnail)"https://i.etsystatic.com/19002916/r/il/617e49/1885302518/il_fullxfull.1885302518_9ovo.jpg"
                 //Thumbnail = (Thumbnail)@"D:\__MANAGED_FILES__\DnD\__Thumbnails__\20200126_191331.jpg"
             };

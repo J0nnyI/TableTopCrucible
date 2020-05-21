@@ -97,7 +97,9 @@
                                  Foreground="{StaticResource AttentionToActionBrush}"/>
                 </Button>
             </StackPanel>
-            <ContentControl Content="{Binding TagList}"/>
+            <ContentControl Content="{Binding TagList}"
+                            Grid.Column="0"
+                            Grid.Row="0"/>
             <!--<local:TagEditor Tags="{Binding ElementName=self, Path=ItemChangeset.Tags}" 
                              Editable="{Binding ElementName=self, Path=EditMode}"
                              VerticalAlignment="Stretch"

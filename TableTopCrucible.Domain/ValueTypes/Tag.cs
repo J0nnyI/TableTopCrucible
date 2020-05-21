@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Windows.Controls;
 
 namespace TableTopCrucible.Domain.ValueTypes
 {
@@ -41,12 +43,25 @@ namespace TableTopCrucible.Domain.ValueTypes
         }
         public static IEnumerable<string> Validate(string tag)
         {
-            if (string.IsNullOrWhiteSpace(tag))
-            {
-                return new string[] { "The tag must not be empty" };
-            }
-            return new string[] { };
+            return Validators
+                .Where(x => !x.IsValid(tag))
+                .Select(x => x.Message)
+                .ToArray();
         }
+        public static IEnumerable<Validator<string>> Validators { get; } = new Validator<string>[] { 
+            new Validator<string>(tag=>!string.IsNullOrWhiteSpace(tag),"The Tag mustn not be empty")
+        };
 
+    }
+    public struct Validator<T>
+    {
+        public Func<T, bool> IsValid { get; }
+        public string Message;
+
+        public Validator(Func<T, bool> isValid, string error)
+        {
+            this.IsValid = isValid ?? throw new ArgumentNullException(nameof(isValid));
+            this.Message = error ?? throw new ArgumentNullException(nameof(error));
+        }
     }
 }

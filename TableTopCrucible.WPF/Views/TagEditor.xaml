@@ -7,6 +7,48 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Label>tagList</Label> 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"
+                                MaxWidth="{Binding ElementName=self, Path=Width, Converter={StaticResource cv_minMaxMod}, ConverterParameter=70%_70%_70%}"/>
+            <ColumnDefinition Width="*"
+                                MinWidth="200px"/>
+        </Grid.ColumnDefinitions>
+        <ListBox ItemsSource="{Binding Path=Tags}" 
+                    VerticalAlignment="Center"
+                    Style="{StaticResource MaterialDesignFilterChipListBox}"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.RowSpan="2">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem"
+                        BasedOn="{StaticResource MaterialDesignFilterChipListBoxItem}">
+                    <Setter Property="Focusable"
+                            Value="False"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+
+        </ListBox>
+
+        <ListView ItemsSource="{Binding Path=NewTagErrors}"
+                    Grid.Column="1"
+                    Grid.Row="0">
+
+        </ListView>
+
+        <ComboBox ItemsSource="{Binding Path=Tags}"
+                    IsEditable="True"
+                    StaysOpenOnEdit="True"
+                    Grid.Column="1"
+                    Grid.Row="1">
+            <ComboBox.Resources>
+                <Style TargetType="Popup">
+                    <Setter Property="Height" Value="300px"/>
+                </Style>
+            </ComboBox.Resources>
+        </ComboBox>
     </Grid>
 </UserControl>

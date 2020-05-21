@@ -1,5 +1,6 @@
 ﻿using DynamicData;
-
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,16 +15,11 @@ using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
-    public class MainViewModel : ViewModelBase, IDisposable
+    public class MainViewModel : DisposableReactiveObject
     {
-        private Item _selectedItem;
-        public Item SelectedItem
-        {
-            get => _selectedItem;
-            set => this.onPropertyChange(value, ref _selectedItem);
-        }
+        [Reactive]
+        public Item SelectedItem { get; set; }
 
-        private readonly List<IDisposable> _subs = new List<IDisposable>();
         private readonly IItemService _itemService;
         public ItemListViewModel ItemList { get; }
         public ItemListViewModel ItemList2 { get; }
@@ -75,25 +71,5 @@ namespace TableTopCrucible.WPF.ViewModels
                 //Thumbnail = (Thumbnail)@"D:\__MANAGED_FILES__\DnD\__Thumbnails__\20200126_191331.jpg"
             };
         }
-
-        #region IDisposable Support
-        private bool _disposedValue = false; // To detect redundant calls
-
-        protected virtual void dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    _subs.ForEach(sub => sub.Dispose());
-                }
-                _disposedValue = true;
-            }
-        }
-        public void Dispose()
-        {
-            dispose(true);
-        }
-        #endregion
     }
 }

@@ -29,15 +29,14 @@ namespace TableTopCrucible.WPF.Converters
                     hiddenVisibillity = Visibility.Collapsed;
             }
 
-            switch (value)
+            return value switch
             {
-                case Visibility visibillity when targetType == typeof(bool):
-                    return invert ^ visibillity != Visibility.Visible;
-                case bool show when targetType == typeof(Visibility):
-                    return invert ^ show ? Visibility.Visible : hiddenVisibillity;
-                default:
-                    throw new InvalidOperationException($"cant convert value '{value}' to '{targetType}'");
-            }
+                Visibility visibillity when targetType == typeof(bool)
+                    => invert ^ visibillity != Visibility.Visible,
+                bool show when targetType == typeof(Visibility)
+                    => invert ^ show ? Visibility.Visible : hiddenVisibillity,
+                _ => throw new InvalidOperationException($"cant convert value '{value}' to '{targetType}'")
+            };
         }
     }
 }

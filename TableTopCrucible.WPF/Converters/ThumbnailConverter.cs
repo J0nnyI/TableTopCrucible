@@ -24,6 +24,8 @@ namespace TableTopCrucible.WPF.Converters
                     return new BitmapImage(new Uri((string)thumbnail));
                 case string path when targetType == typeof(Thumbnail):
                     return (Thumbnail)path;
+                case null:
+                    return null;
                 default:
                     throw new InvalidOperationException("invalid conversion");
             }

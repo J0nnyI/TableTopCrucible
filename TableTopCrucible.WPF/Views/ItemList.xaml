@@ -10,9 +10,11 @@
              xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:TableTopCrucible.WPF.Views"
              mc:Ignorable="d" 
+             Name="self"
              d:DesignHeight="450"
              d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:ItemListViewModel}">
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:ItemListViewModel}"
+             >
 
     <Grid>
         <Grid.RowDefinitions>
@@ -22,6 +24,7 @@
         
         <ListView ItemsSource="{Binding Items}"
                   md:RippleAssist.IsDisabled="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   Grid.Row="0" 
                   Grid.Column="1">
             <ListView.ItemContainerStyle>

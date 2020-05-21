@@ -1,4 +1,6 @@
-﻿using ReactiveUI;
+﻿using DynamicData;
+using ReactiveUI;
+using ReactiveUI.Validation.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Reactive;
@@ -8,12 +10,13 @@ using System.Text;
 using System.Windows.Forms;
 using System.Windows.Input;
 using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Domain.ValueTypes.IDs;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.WPF.Helper;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
-    public class ItemCardViewModel : DisposableReactiveObject
+    public class ItemCardViewModel : DisposableReactiveValidationObject<ItemCardViewModel>
     {
         public SubjectBase<Item?> ItemChanges { get; } = new BehaviorSubject<Item?>(null);
         private readonly ObservableAsPropertyHelper<Item?> _item;
@@ -48,6 +51,7 @@ namespace TableTopCrucible.WPF.ViewModels
         public ICommand DeleteItemCommand { get; }
         public ICommand SaveItemCommand { get; }
         public ICommand EnterEditmode { get; }
+        public ICommand UndoCommand { get; }
 
         #endregion
 
@@ -66,15 +70,15 @@ namespace TableTopCrucible.WPF.ViewModels
             saveItemCommand.ItemSaved += this.SaveItemCommand_ItemSaved;
 
             // properties
-            this._item = 
+            this._item =
                 ItemChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(Item));
-            this._editable = 
+            this._editable =
                 this._editableChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(Editable));
-            this._editMode = 
+            this._editMode =
                 this._changesetChanges
                 .Select(x => x != null)
                 .TakeUntil(destroy)
@@ -83,22 +87,40 @@ namespace TableTopCrucible.WPF.ViewModels
                 this._changesetChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(Changeset));
+            this.TagEditor.TagsChanges
+                .TakeUntil(destroy)
+                .Subscribe(tags =>
+                {
+                    if(Changeset != null)
+                        Changeset.Tags = tags;
+                });
+
+            this.ItemChanges
+                .TakeUntil(destroy)
+                .Subscribe(item => this.TagEditor.Tags = item?.Tags);
+            this._changesetChanges
+                .TakeUntil(destroy)
+                .Subscribe(changeset => this.TagEditor.IsEditmode = Changeset == null);
             // relay commands
-            this.EnterEditmode = new RelayCommand(_ =>this._enterEditMode() , _ => this._canEnterEditMode());
-            
+            this.EnterEditmode = new RelayCommand(_ => this._enterEditMode(), _ => this._canEnterEditMode());
+            this.UndoCommand = new RelayCommand(_ => this._undo());
+
         }
 
         private void SaveItemCommand_ItemSaved(object sender, ItemSavedEventArgs e)
         {
-            if(e.Item.Id == this.Item?.Id)
+            if (e.Item.Id == this.Item?.Id)
                 this.Changeset = null;
         }
         private void _enterEditMode()
             => this.Changeset = new ItemChangeset(Item);
         private bool _canEnterEditMode()
             => this.Editable;
+        private void _undo()
+        {
+            this.Changeset = null;
+        }
 
 
-        
     }
 }

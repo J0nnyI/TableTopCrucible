@@ -16,7 +16,7 @@ namespace TableTopCrucible.Domain.Services
     public interface IItemTagService
     {
         IObservable<IEnumerable<Tag>> Get(ItemId item);
-        IObservable<IDistinctChangeSet<Tag>> Get();
+        IObservable<IEnumerable<Tag>> Get();
     }
     public class ItemTagService : IItemTagService
     {
@@ -28,7 +28,16 @@ namespace TableTopCrucible.Domain.Services
 
         public IObservable<IEnumerable<Tag>> Get(ItemId item)
             => _itemService.Get(item).Select(item => item.Tags);
-        public IObservable<IDistinctChangeSet<Tag>> Get()
-            => this._itemService.Get().Connect().TransformMany(x => x.Tags, x => x).DistinctValues(x => x);
+        public IObservable<IEnumerable<Tag>> Get()
+            => this._itemService
+                .Get()
+                .Connect()
+                .RemoveKey()
+                .QueryWhenChanged(items =>
+                    items.SelectMany(x => x.Tags)
+                .Distinct());
+
+                    
+            
     }
 }

@@ -6,9 +6,10 @@
              xmlns:viewModels="clr-namespace:TableTopCrucible.WPF.ViewModels"
              xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-             d:DesignHeight="160"
-             d:DesignWidth="800"
+             d:DesignHeight="2010"
+             d:DesignWidth="1000"
              d:DataContext="{d:DesignInstance Type=viewModels:ItemCardViewModel}"
+             Height="200px"
              Name="self">
     <md:Card Padding="16px">
         <Grid>
@@ -22,8 +23,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <!--Source="{Binding Path=ItemChangeset.Thumbnail, Converter=}"-->
-            <Image 
-                   Grid.Column="0"
+            <Image Grid.Column="0"
                    Grid.Row="0"
                    Grid.RowSpan="2">
                 <Image.Source>
@@ -52,54 +52,51 @@
                     </PriorityBinding>
                 </TextBox.Text>
             </TextBox>
-            <StackPanel 
-                        Orientation="Horizontal"
-                        Grid.Column="2"
-                        Grid.Row="0"
-                        Grid.RowSpan="2">
-                <StackPanel.Visibility>
+            <Grid Grid.Column="2"
+                  Grid.Row="0"
+                  Grid.RowSpan="2">
+                <Grid.Visibility>
                     <MultiBinding Converter="{StaticResource mvc_visibillity}" ConverterParameter="or_hidden">
                         <MultiBinding.Bindings>
                             <Binding ElementName="self"
                                      Path="IsMouseOver"/>
+                            <Binding Path="EditMode"/>
                         </MultiBinding.Bindings>
                     </MultiBinding>
-                </StackPanel.Visibility>
+                </Grid.Visibility>
 
-                <Button Command="{Binding EnterEditmode}"
-                        Style="{StaticResource MaterialDesignIconButton}">
-                    <Button.Visibility>
-                        <MultiBinding Converter="{StaticResource mvc_visibillity}" ConverterParameter="and_collapsed">
-                            <MultiBinding.Bindings>
-                                <Binding Path="EditMode"
-                                         Converter="{StaticResource cv_Invert}"/>
-                                <Binding Path="Editable"/>
-                            </MultiBinding.Bindings>
-                        </MultiBinding>
-                    </Button.Visibility>
-                    <md:PackIcon Kind="Edit" 
+                <!-- viewmode buttons -->
+                <StackPanel Visibility="{Binding EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=invert_collapsed}">
+                    <Button Command="{Binding EnterEditmode}"
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            Visibility="{Binding Editable, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}">
+                        <md:PackIcon Kind="Edit" 
                                  Foreground="{StaticResource SecondaryAccentBrush}"/>
-                </Button>
-                <Button Command="{Binding SaveItemCommand}"
-                        CommandParameter="{Binding Path=Changeset}"
-                        Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}"
-                        Style="{StaticResource MaterialDesignIconButton}">
-                    <md:PackIcon Kind="ContentSave"
-                                 Foreground="{StaticResource SecondaryAccentBrush}"/>
-                </Button>
-                <Button Style="{StaticResource MaterialDesignIconButton}">
-                    <md:PackIcon Kind="Undo"
-                                 Foreground="{StaticResource AttentionToActionBrush}"/>
-                </Button>
-                <Button Command="{Binding DeleteItemCommand}" CommandParameter="{Binding Path=Item.Id}"
-                        Style="{StaticResource MaterialDesignIconButton}">
-                    <md:PackIcon Kind="Delete"
-                                 Foreground="{StaticResource AttentionToActionBrush}"/>
-                </Button>
-            </StackPanel>
-            <ContentControl Content="{Binding TagList}"
-                            Grid.Column="0"
-                            Grid.Row="0"/>
+                    </Button>
+                </StackPanel>
+                <!-- editmode buttons -->
+                <StackPanel Visibility="{Binding EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}">
+                    <Button Command="{Binding SaveItemCommand}"
+                            CommandParameter="{Binding Path=Changeset}"
+                            Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}"
+                            Style="{StaticResource MaterialDesignIconButton}" >
+                        <md:PackIcon Kind="ContentSave"
+                                     Foreground="{StaticResource SecondaryAccentBrush}"/>
+                    </Button>
+                    <Button Command="{Binding UndoCommand}" Style="{StaticResource MaterialDesignIconButton}">
+                        <md:PackIcon Kind="Undo"
+                                     Foreground="{StaticResource AttentionToActionBrush}"/>
+                    </Button>
+                    <Button Command="{Binding DeleteItemCommand}" CommandParameter="{Binding Path=Item.Id}"
+                            Style="{StaticResource MaterialDesignIconButton}">
+                        <md:PackIcon Kind="Delete"
+                                     Foreground="{StaticResource AttentionToActionBrush}"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <ContentControl Content="{Binding TagEditor}"
+                            Grid.Column="1"
+                            Grid.Row="1"/>
             <!--<local:TagEditor Tags="{Binding ElementName=self, Path=ItemChangeset.Tags}" 
                              Editable="{Binding ElementName=self, Path=EditMode}"
                              VerticalAlignment="Stretch"

@@ -71,5 +71,15 @@ namespace TableTopCrucible.WPF.ViewModels
                 //Thumbnail = (Thumbnail)@"D:\__MANAGED_FILES__\DnD\__Thumbnails__\20200126_191331.jpg"
             };
         }
+        private ItemChangeset _getTaggyItem(string name)
+        {
+            return new ItemChangeset()
+            {
+                Name = (ItemName)name,
+                Tags = new List<Tag> { (Tag)"Tag 1", (Tag)"Tag 2", (Tag)"Tag 3", (Tag)"Tag 4" , (Tag)"Tag 5", (Tag)"Tag 6" },
+                Thumbnail = (Thumbnail)"https://i.etsystatic.com/19002916/r/il/617e49/1885302518/il_fullxfull.1885302518_9ovo.jpg"
+                //Thumbnail = (Thumbnail)@"D:\__MANAGED_FILES__\DnD\__Thumbnails__\20200126_191331.jpg"
+            };
+        }
     }
 }

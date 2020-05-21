@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TableTopCrucible.WPF.ViewModels;
 
 namespace TableTopCrucible.WPF.Views
 {
@@ -21,6 +22,14 @@ namespace TableTopCrucible.WPF.Views
         public TagEditor()
         {
             InitializeComponent();
+        }
+        private void _addTag(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter && this.DataContext is TagEditorViewModel viewModel)
+            {
+                if (viewModel.AddTag.CanExecute(viewModel.NewTag))
+                    viewModel.AddTag.Execute(viewModel.NewTag);
+            }
         }
     }
 }

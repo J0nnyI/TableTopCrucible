@@ -7,7 +7,6 @@
         xmlns:viewModels="clr-namespace:TableTopCrucible.WPF.ViewModels"
         xmlns:views="clr-namespace:TableTopCrucible.WPF.Views"
         xmlns:cv="clr-namespace:TableTopCrucible.WPF.Converters"
-        xmlns:controls="clr-namespace:TableTopCrucible.WPF.Controls"
         xmlns:srcModels="clr-namespace:TableTopCrucible.Domain.Models.Sources;assembly=TableTopCrucible.Domain"
         xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"

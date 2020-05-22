@@ -1,18 +1,12 @@
-﻿using DynamicData;
-using ReactiveUI;
-using ReactiveUI.Validation.Helpers;
+﻿using ReactiveUI;
+
 using System;
-using System.Collections.Generic;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-using System.Windows.Forms;
 using System.Windows.Input;
+
 using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.ValueTypes.IDs;
 using TableTopCrucible.WPF.Commands;
-using TableTopCrucible.WPF.Helper;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
@@ -91,7 +85,7 @@ namespace TableTopCrucible.WPF.ViewModels
                 .TakeUntil(destroy)
                 .Subscribe(tags =>
                 {
-                    if(Changeset != null)
+                    if (Changeset != null)
                         Changeset.Tags = tags;
                 });
 

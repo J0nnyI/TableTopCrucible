@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HelixToolkit.Core.Wpf" Version="2.11.0" />
     <PackageReference Include="MaterialDesignThemes" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="ReactiveUI" Version="11.3.8" />
     <PackageReference Include="ReactiveUI.Fody" Version="11.3.8" />
     <PackageReference Include="ReactiveUI.Validation" Version="1.4.13" />

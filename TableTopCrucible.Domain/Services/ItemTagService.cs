@@ -1,13 +1,11 @@
 ﻿using DynamicData;
 using DynamicData.Alias;
-using ReactiveUI;
+
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
+
 using TableTopCrucible.Domain.ValueTypes;
 using TableTopCrucible.Domain.ValueTypes.IDs;
 
@@ -37,7 +35,7 @@ namespace TableTopCrucible.Domain.Services
                     items.SelectMany(x => x.Tags)
                 .Distinct());
 
-                    
-            
+
+
     }
 }

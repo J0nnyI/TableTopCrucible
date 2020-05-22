@@ -1,14 +1,13 @@
 ﻿using ReactiveUI.Validation.Helpers;
+
 using System;
-using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
-using System.Text;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
-    public class DisposableReactiveValidationObject<T> :ReactiveValidationObject<T>,IDisposable
+    public class DisposableReactiveValidationObject<T> : ReactiveValidationObject<T>, IDisposable
     {
         private readonly Subject<Unit> _destroy = new Subject<Unit>();
         protected readonly CompositeDisposable disposables = new CompositeDisposable();

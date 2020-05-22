@@ -4,8 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:TableTopCrucible.WPF.ViewModels"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mvc="clr-namespace:TableTopCrucible.WPF.MultiConverters"
              xmlns:local="clr-namespace:TableTopCrucible.WPF.Views"
              mc:Ignorable="d" 
+             x:Name="self"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type={x:Type viewModels:TagEditorViewModel}}">
     <Grid>
@@ -15,12 +18,18 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
+        <Label Content="{Binding IsEditmode}"></Label>
+        <Label Content="{Binding Changeset}"></Label>
         <ListBox ItemsSource="{Binding Path=Tags}" 
+                 SelectionMode="Extended"
+                 
                  VerticalAlignment="Stretch"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
                  Style="{StaticResource MaterialDesignFilterChipListBox}"
+                 md:ListBoxAssist.IsToggle="{Binding IsEditmode}"
                  Grid.Column="0"
                  Grid.Row="0">
             <ListBox.ItemsPanel>
@@ -35,7 +44,6 @@
                             Value="False"/>
                 </Style>
             </ListBox.ItemContainerStyle>
-
         </ListBox>
 
         <ComboBox ItemsSource="{Binding Path=AvailableTags}"
@@ -52,5 +60,16 @@
                 </Style>
             </ComboBox.Resources>
         </ComboBox>
+        <Button Style="{StaticResource MaterialDesignIconButton}"
+                Grid.Column="1"
+                Grid.Row="1">
+            <md:PackIcon Kind="TagAdd"/>
+        </Button>
+        <Button Style="{StaticResource MaterialDesignIconButton}"
+                Grid.Column="1"
+                Grid.Row="0"
+                md:ColorZoneAssist.Mode="Light">
+            <md:PackIcon Kind="TagRemove"/>
+        </Button>
     </Grid>
 </UserControl>

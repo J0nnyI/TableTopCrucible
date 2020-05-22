@@ -1,9 +1,7 @@
-﻿using MaterialDesignThemes.Wpf.Converters;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
+
 using TableTopCrucible.WPF.Converters;
 
 namespace TableTopCrucible.WPF.MultiConverters
@@ -14,7 +12,7 @@ namespace TableTopCrucible.WPF.MultiConverters
         {
             object res = base.Convert(values, targetType, parameter, culture);
 
-            return VisibillityConverter.Convert(res,targetType, parameter as string);
+            return VisibillityConverter.Convert(res, targetType, parameter as string);
         }
     }
 }

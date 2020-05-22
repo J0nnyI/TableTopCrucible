@@ -2,11 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows;
-using System.Windows.Documents;
+
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.WPF.ViewModels;
@@ -81,6 +79,7 @@ namespace TableTopCrucible.WPF
             services.AddTransient<ItemListViewModel>();
             services.AddTransient<ItemCardViewModel>();
             services.AddTransient<TagEditorViewModel>();
+            services.AddTransient<ItemEditorViewModel>();
 
             // commands
             services.AddSingleton<CreateItemCommand>();

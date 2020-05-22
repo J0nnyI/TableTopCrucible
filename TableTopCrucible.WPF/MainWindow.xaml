@@ -25,9 +25,10 @@
         </Grid.RowDefinitions>
 
         <ContentPresenter Content="{Binding Path=ItemList}"
-                          Grid.Column="0"/>
-        <ContentPresenter Content="{Binding Path=ItemList2}"
                           Grid.Column="1"/>
+
+        <ContentPresenter Content="{Binding Path=ItemEditor}"
+                          Grid.Column="0"/>
 
         <Label Content="{Binding Path=ItemList.SelectedItemVm}"
                Grid.Column="0"

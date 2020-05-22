@@ -81,16 +81,18 @@
                             Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}"
                             Style="{StaticResource MaterialDesignIconButton}" >
                         <md:PackIcon Kind="ContentSave"
+                                     Foreground="{StaticResource PrimaryHueLightBrush}"/>
+                    </Button>
+                    <Button Command="{Binding UndoCommand}"
+                            Style="{StaticResource MaterialDesignIconButton}">
+                        <md:PackIcon Kind="Undo"
                                      Foreground="{StaticResource SecondaryAccentBrush}"/>
                     </Button>
-                    <Button Command="{Binding UndoCommand}" Style="{StaticResource MaterialDesignIconButton}">
-                        <md:PackIcon Kind="Undo"
-                                     Foreground="{StaticResource AttentionToActionBrush}"/>
-                    </Button>
-                    <Button Command="{Binding DeleteItemCommand}" CommandParameter="{Binding Path=Item.Id}"
+                    <Button Command="{Binding DeleteItemCommand}"
+                            CommandParameter="{Binding Path=Item.Id}"
                             Style="{StaticResource MaterialDesignIconButton}">
                         <md:PackIcon Kind="Delete"
-                                     Foreground="{StaticResource AttentionToActionBrush}"/>
+                                     Foreground="{StaticResource SecondaryAccentBrush}"/>
                     </Button>
                 </StackPanel>
             </Grid>

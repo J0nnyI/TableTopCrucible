@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Windows.Data;
 
 namespace TableTopCrucible.WPF.Converters
@@ -44,7 +41,7 @@ namespace TableTopCrucible.WPF.Converters
         private double parseNumber(string rawValue, double inputSize)
         {
             double value = double.Parse(rawValue.Replace("%", ""));
-            return rawValue.EndsWith("%") ?  inputSize * (value / 100): value;
+            return rawValue.EndsWith("%") ? inputSize * (value / 100) : value;
         }
     }
 }

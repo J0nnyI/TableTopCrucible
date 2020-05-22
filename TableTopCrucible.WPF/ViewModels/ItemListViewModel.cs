@@ -1,22 +1,19 @@
 ﻿
 using DynamicData;
-using DynamicData.Binding;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using ReactiveUI;
+
 using System;
-using System.CodeDom;
 using System.Collections.ObjectModel;
-using System.ComponentModel.Design;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Runtime.CompilerServices;
-using System.Threading;
+
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
-using TableTopCrucible.WPF.Views;
 
 namespace TableTopCrucible.WPF.ViewModels
 {

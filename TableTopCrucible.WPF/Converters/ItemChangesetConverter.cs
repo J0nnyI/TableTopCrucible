@@ -21,7 +21,7 @@ namespace TableTopCrucible.WPF.Converters
                     => new ItemChangeset(item),
                 ItemChangeset _ when targetType == typeof(Item)
                     => throw new InvalidOperationException("the way back should be explicit"),
-                null 
+                null
                     => value,
                 _ => throw new InvalidOperationException("invalid cast"),
             };

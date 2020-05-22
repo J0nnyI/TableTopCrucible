@@ -1,13 +1,11 @@
-﻿using DynamicData;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+﻿using ReactiveUI;
+
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows.Forms;
+
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.Domain.ValueTypes;
@@ -20,19 +18,13 @@ namespace TableTopCrucible.WPF.ViewModels
 
         private readonly IItemService _itemService;
         public ItemListViewModel ItemList { get; }
-        public ItemListViewModel ItemList2 { get; }
         public CreateItemCommand CreateItem { get; }
+        public ItemEditorViewModel ItemEditor { get; }
 
         private ObservableAsPropertyHelper<Item?> _selectedItem;
         public Item? SelectedItem
         {
             get => _selectedItem.Value;
-            set => this.ItemList.SelectedItem = value;
-        }
-        private ObservableAsPropertyHelper<Item?> _selectedItem2;
-        public Item? SelectedItem2
-        {
-            get => _selectedItem2.Value;
             set => this.ItemList.SelectedItem = value;
         }
 
@@ -45,7 +37,7 @@ namespace TableTopCrucible.WPF.ViewModels
             CreateItemCommand createItem,
             // views
             ItemListViewModel itemList,
-            ItemListViewModel itemList2
+            ItemEditorViewModel itemEditor
             )
         {
             // services
@@ -54,17 +46,11 @@ namespace TableTopCrucible.WPF.ViewModels
             this.CreateItem = createItem ?? throw new NullReferenceException("got no create item commend");
             // views
             this.ItemList = itemList ?? throw new NullReferenceException("got no itemlist");
-            this.ItemList2 = itemList2 ?? throw new NullReferenceException("got no itemlist");
-            if (object.ReferenceEquals(itemList, itemList2))
-                throw new InvalidDataException("the viewmodesl must not be the same");
+            this.ItemEditor = itemEditor ?? throw new NullReferenceException("got no itemEditor");
 
             this._selectedItem = ItemList.SelectedItemChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(SelectedItem));
-            this._selectedItem2 = ItemList.SelectedItemChanges
-                .TakeUntil(destroy)
-                .ToProperty(this, nameof(SelectedItem2));
-
 
 
             this.CreateItem.ItemCreated += this._createItem_ItemCreated;

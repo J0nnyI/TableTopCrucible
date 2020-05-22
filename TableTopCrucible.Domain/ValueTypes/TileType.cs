@@ -1,10 +1,7 @@
-﻿using DynamicData;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Text;
-using System.Windows.Controls;
 using System.Windows.Media;
+
 using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.ValueTypes.IDs;

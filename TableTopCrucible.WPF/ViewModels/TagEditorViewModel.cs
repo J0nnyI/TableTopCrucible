@@ -1,18 +1,16 @@
 ﻿using DynamicData;
+
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using ReactiveUI.Validation.Abstractions;
-using ReactiveUI.Validation.Contexts;
 using ReactiveUI.Validation.Extensions;
-using ReactiveUI.Validation.Helpers;
-using System;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
+
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.Domain.ValueTypes;
 using TableTopCrucible.WPF.Commands;
@@ -39,6 +37,7 @@ namespace TableTopCrucible.WPF.ViewModels
             set => TagsChanges.OnNext(value);
         }
 
+
         private ObservableAsPropertyHelper<IEnumerable<Tag>> _availableTags;
         public IEnumerable<Tag> AvailableTags => _availableTags.Value;
 
@@ -56,7 +55,6 @@ namespace TableTopCrucible.WPF.ViewModels
             this._tags = this.TagsChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(Tags));
-
             this._availableTags = tagService
                 .Get()
                 .CombineLatest(TagsChanges, (available, used) => available != null && used != null ? available?.Except(used) : null)

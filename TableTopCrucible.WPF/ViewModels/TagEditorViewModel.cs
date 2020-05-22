@@ -10,10 +10,14 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-
+using System.Windows.Input;
+using System.Windows.Controls;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.Domain.ValueTypes;
 using TableTopCrucible.WPF.Commands;
+using System.Collections;
+using TableTopCrucible.Domain.Models.Sources;
+using Microsoft.Xaml.Behaviors.Layout;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
@@ -37,34 +41,52 @@ namespace TableTopCrucible.WPF.ViewModels
             set => TagsChanges.OnNext(value);
         }
 
+        private readonly BehaviorSubject<IEnumerable<Tag>> SelectedTagsChanges = new BehaviorSubject<IEnumerable<Tag>>(null);
+        private readonly ObservableAsPropertyHelper<IEnumerable<Tag>> _selectedTags;
+        public IEnumerable<Tag> SelectedTags => _selectedTags.Value;
 
         private ObservableAsPropertyHelper<IEnumerable<Tag>> _availableTags;
         public IEnumerable<Tag> AvailableTags => _availableTags.Value;
 
-        public RelayCommand EnterEditmode { get; }
-        public RelayCommand LeaveEditmode { get; }
-        public RelayCommand AddTag { get; }
+        public ICommand AddTag { get; }
+        public ICommand SelectedTagsChanged { get; }
+        public ICommand RemoveTags { get; }
 
         public TagEditorViewModel(IItemTagService tagService)
         {
-            this.EnterEditmode = new RelayCommand((_) => this.IsEditmode = true, (_) => !this.IsEditmode);
-            this.LeaveEditmode = new RelayCommand((_) => this.IsEditmode = false, (_) => this.IsEditmode);
+            #region commands
             this.AddTag = new RelayCommand((tag) => _addTag(tag as string), (tag) => _canAddTag(tag as string));
-            //this.AddTag = new RelayCommand((_) => this.addTag(), (_) => this.ErrorList.Any());
+            this.SelectedTagsChanged = new RelayCommand(items =>
+                this.SelectedTagsChanges.OnNext((items as IEnumerable).Cast<Tag>()));
+            this.RemoveTags = new RelayCommand(tags => _removeTags(tags as IEnumerable<Tag>), _ => this.SelectedTags?.Any()==true);
+            #endregion
 
+            #region observables to property
             this._tags = this.TagsChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(Tags));
+
             this._availableTags = tagService
                 .Get()
-                .CombineLatest(TagsChanges, (available, used) => available != null && used != null ? available?.Except(used) : null)
+                .CombineLatest(TagsChanges, 
+                    (available, used) 
+                        => available != null && used != null 
+                        ? available?.Except(used) 
+                        : null)
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(AvailableTags));
 
+            this._selectedTags = this.SelectedTagsChanges
+                .TakeUntil(destroy)
+                .ToProperty(this, nameof(SelectedTags));
+            #endregion
+
+            #region validations
             this.ValidationRule(
                 vm => vm.NewTag,
                 tag => !isTagSelected(tag),
-                "This tag has already been added");
+                "This tag has already been added")
+                .DisposeWith(disposables);
 
             foreach (Validator<string> validator in Tag.Validators)
             {
@@ -74,6 +96,7 @@ namespace TableTopCrucible.WPF.ViewModels
                     validator.Message)
                     .DisposeWith(disposables);
             }
+            #endregion
         }
         private void _addTag(string tag)
         {
@@ -84,10 +107,24 @@ namespace TableTopCrucible.WPF.ViewModels
         }
         private bool isTagSelected(string tag)
             => Tags?.Any(curTag => (string)curTag == tag) == true;
+
+        private void _removeTags(IEnumerable<Tag> tags)
+        {
+            var tagList = this.Tags.ToList();
+            tagList.RemoveMany(tags);
+            this.Tags = tagList;
+        }
         private bool _canAddTag(string tag)
         {
             return !Tag.Validate(tag).Any() && !isTagSelected(tag);
         }
-
+        protected override void OnDispose()
+        {
+            this.TagsChanges.OnCompleted();
+            this.TagsChanges.Dispose();
+            this.SelectedTagsChanges.OnCompleted();
+            this.SelectedTagsChanges.Dispose();
+            base.OnDispose();
+        }
     }
 }

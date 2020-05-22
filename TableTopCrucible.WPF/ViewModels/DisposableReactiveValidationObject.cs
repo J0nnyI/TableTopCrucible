@@ -18,17 +18,17 @@ namespace TableTopCrucible.WPF.ViewModels
             this.disposables.Dispose();
         }
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        public bool IsDisposed {get; private set; } = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!IsDisposed)
             {
                 if (disposing)
                 {
                     OnDispose();
                 }
-                disposedValue = true;
+                IsDisposed = true;
             }
         }
         public void Dispose()

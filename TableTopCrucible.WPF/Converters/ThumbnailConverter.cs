@@ -21,7 +21,7 @@ namespace TableTopCrucible.WPF.Converters
                 case Thumbnail thumbnail when targetType == typeof(string) || targetType == typeof(object):
                     return (string)thumbnail;
                 case Thumbnail thumbnail when targetType == typeof(ImageSource):
-                    return new BitmapImage(new Uri((string)thumbnail));
+                    return  new BitmapImage(new Uri((string)thumbnail));
                 case string path when targetType == typeof(Thumbnail):
                     return (Thumbnail)path;
                 case null:

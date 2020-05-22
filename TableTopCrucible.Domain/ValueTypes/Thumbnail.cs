@@ -1,10 +1,17 @@
-﻿namespace TableTopCrucible.Domain.ValueTypes
+﻿using System;
+using System.IO;
+using System.Security.Policy;
+
+namespace TableTopCrucible.Domain.ValueTypes
 {
     public struct Thumbnail
     {
         private readonly string _thumbnail;
         public Thumbnail(string thumbnail)
         {
+            
+            if (!Uri.IsWellFormedUriString(thumbnail, UriKind.RelativeOrAbsolute))
+                throw new InvalidOperationException("could find no image at" + thumbnail);
             this._thumbnail = thumbnail;
         }
         public override string ToString() => this._thumbnail;

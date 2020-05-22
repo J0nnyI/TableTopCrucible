@@ -12,12 +12,15 @@ namespace TableTopCrucible.WPF.ViewModels
 {
     public class ItemCardViewModel : DisposableReactiveValidationObject<ItemCardViewModel>
     {
+
+        #region observable properties
+
         public SubjectBase<Item?> ItemChanges { get; } = new BehaviorSubject<Item?>(null);
         private readonly ObservableAsPropertyHelper<Item?> _item;
         public Item? Item
             => _item.Value;
 
-
+        public IObservable<bool> EditModeChanges { get; }
         private readonly ObservableAsPropertyHelper<bool> _editMode;
         public bool EditMode
         {
@@ -40,8 +43,10 @@ namespace TableTopCrucible.WPF.ViewModels
             set => _changesetChanges.OnNext(value);
         }
 
+        #endregion
+
         public TagEditorViewModel TagEditor { get; }
-        #region todo props
+        #region Commands
         public ICommand DeleteItemCommand { get; }
         public ICommand SaveItemCommand { get; }
         public ICommand EnterEditmode { get; }
@@ -56,16 +61,19 @@ namespace TableTopCrucible.WPF.ViewModels
             SaveItemCommand saveItemCommand
             )
         {
-            // viewModels
             this.TagEditor = tagEditorViewModel;
-            // commands
-            this.DeleteItemCommand = deleteItemCommand;
-            this.SaveItemCommand = saveItemCommand;
-            saveItemCommand.ItemSaved += this.SaveItemCommand_ItemSaved;
+
+
+            #region Observables 
+
+            // reader
+            this.EditModeChanges =
+                this._changesetChanges
+                .Select(x => x != null);
 
             // properties
             this._item =
-                ItemChanges
+                this.ItemChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(Item));
             this._editable =
@@ -73,14 +81,15 @@ namespace TableTopCrucible.WPF.ViewModels
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(Editable));
             this._editMode =
-                this._changesetChanges
-                .Select(x => x != null)
+                this.EditModeChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(EditMode));
             this._changeset =
                 this._changesetChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(Changeset));
+
+            // subscriptions
             this.TagEditor.TagsChanges
                 .TakeUntil(destroy)
                 .Subscribe(tags =>
@@ -92,18 +101,25 @@ namespace TableTopCrucible.WPF.ViewModels
             this.ItemChanges
                 .TakeUntil(destroy)
                 .Subscribe(item => this.TagEditor.Tags = item?.Tags);
-            this._changesetChanges
+            this.EditModeChanges
                 .TakeUntil(destroy)
-                .Subscribe(changeset => this.TagEditor.IsEditmode = Changeset == null);
-            // relay commands
+                .Subscribe(changeset => this.TagEditor.IsEditmode = this.EditMode);
+            #endregion
+            #region commands
+            // DI
+            this.DeleteItemCommand = deleteItemCommand;
+            this.SaveItemCommand = saveItemCommand;
+            saveItemCommand.ItemSaved += this.SaveItemCommand_ItemSaved;
+            // Relays
             this.EnterEditmode = new RelayCommand(_ => this._enterEditMode(), _ => this._canEnterEditMode());
             this.UndoCommand = new RelayCommand(_ => this._undo());
+            #endregion
 
         }
 
         private void SaveItemCommand_ItemSaved(object sender, ItemSavedEventArgs e)
         {
-            if (e.Item.Id == this.Item?.Id)
+            if (e.Item.Id == this.Item?.Id && !this.IsDisposed)
                 this.Changeset = null;
         }
         private void _enterEditMode()
@@ -115,6 +131,18 @@ namespace TableTopCrucible.WPF.ViewModels
             this.Changeset = null;
         }
 
+        protected override void OnDispose()
+        {
+            this.ItemChanges.OnCompleted();
+            this.ItemChanges.Dispose();
 
+            this._editableChanges.OnCompleted();
+            this._editableChanges.Dispose();
+
+            this._changesetChanges.OnCompleted();
+            this._changesetChanges.Dispose();
+
+            base.OnDispose();
+        }
     }
 }

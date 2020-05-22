@@ -34,7 +34,7 @@ namespace TableTopCrucible.WPF.Commands
             var item = new ItemChangeset()
             {
                 Name = (ItemName)"new Item",
-                Thumbnail = (Thumbnail)@"D:\__MANAGED_FILES__\DnD\__Thumbnails__\20200126_191331.jpg",
+                Thumbnail = (Thumbnail)@"https://i.etsystatic.com/19002916/r/il/617e49/1885302518/il_fullxfull.1885302518_9ovo.jpg",
                 Tags = new Tag[] { (Tag)"new" }
             };
             var entity = this._itemService.Patch(item);

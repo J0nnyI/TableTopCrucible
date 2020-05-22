@@ -10,14 +10,14 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-
+using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
-    public class ItemListViewModel : DisposableReactiveObject, IDisposable
+    public class ItemListViewModel : DisposableReactiveObject
     {
         private readonly IItemService _itemService;
         private readonly IInjectionProviderService _injectionProviderService;

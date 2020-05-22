@@ -1,11 +1,16 @@
 ﻿using ReactiveUI;
-
+using ReactiveUI.Validation.Extensions;
 using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Windows.Controls;
 using System.Windows.Input;
-
+using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Domain.ValueTypes;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
@@ -53,7 +58,6 @@ namespace TableTopCrucible.WPF.ViewModels
         public ICommand UndoCommand { get; }
 
         #endregion
-
         public ItemCardViewModel(
             TagEditorViewModel tagEditorViewModel,
 
@@ -114,7 +118,20 @@ namespace TableTopCrucible.WPF.ViewModels
             this.EnterEditmode = new RelayCommand(_ => this._enterEditMode(), _ => this._canEnterEditMode());
             this.UndoCommand = new RelayCommand(_ => this._undo());
             #endregion
+            #region validators
 
+            this.ValidationRule(vm => 
+            {
+                return vm._changesetChanges
+                 .Where(x => x != null)
+                 .Select(cs => cs.NameChanges)
+                 .Switch()
+                 .Select(itemName => ItemName.Validate(itemName).Any())
+                 .TakeUntil(destroy);
+            } , (vm, res) =>res?"noERror": "error");
+
+            
+            #endregion
         }
 
         private void SaveItemCommand_ItemSaved(object sender, ItemSavedEventArgs e)

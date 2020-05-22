@@ -1,10 +1,17 @@
-﻿namespace TableTopCrucible.Domain.ValueTypes
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace TableTopCrucible.Domain.ValueTypes
 {
     public struct ItemName
     {
         private string _name { get; }
         public ItemName(string name)
         {
+            var errors = Validate(name);
+            if (errors.Any())
+                throw new Exception($"could not create itemName {Environment.NewLine}{string.Join(Environment.NewLine, errors)}");
             this._name = name;
         }
         public override string ToString()
@@ -28,5 +35,15 @@
         public static explicit operator string(ItemName name)
             => name._name;
 
+        public static IEnumerable<string> Validate(string tag)
+        {
+            return Validators
+                .Where(x => !x.IsValid(tag))
+                .Select(x => x.Message)
+                .ToArray();
+        }
+        public static IEnumerable<Validator<string>> Validators { get; } = new Validator<string>[] {
+            new Validator<string>(itemName=>!string.IsNullOrWhiteSpace(itemName),"The name must not be empty")
+        };
     }
 }

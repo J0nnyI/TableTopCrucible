@@ -12,7 +12,7 @@
              Height="180px"
              MinHeight="180px"
              Name="self">
-    <md:Card Padding="16px">
+    <md:Card Padding="17px">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150px"/>
@@ -44,8 +44,7 @@
                      Grid.Row="0">
                 <TextBox.Text>
                     <PriorityBinding>
-                        <Binding Path="Changeset.Name" 
-                                 Converter="{StaticResource cv_itemName}"/>
+                        <Binding Path="Changeset.Name"/>
                         <Binding Path="Item.Name" 
                                  Converter="{StaticResource cv_itemName}"
                                  Mode="OneWay"/>
@@ -147,6 +146,7 @@
                 </Button>
             </Grid>
             <ContentControl Content="{Binding TagEditor}"
+                            Validation.ErrorTemplate="{x:Null}"
                             Grid.Column="1"
                             Grid.Row="1"/>
             <!--<local:TagEditor Tags="{Binding ElementName=self, Path=ItemChangeset.Tags}" 

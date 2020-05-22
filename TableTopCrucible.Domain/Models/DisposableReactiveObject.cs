@@ -4,7 +4,7 @@ using System;
 using System.Reactive;
 using System.Reactive.Subjects;
 
-namespace TableTopCrucible.WPF.ViewModels
+namespace TableTopCrucible.Domain.Models
 {
     public class DisposableReactiveObject : ReactiveObject, IDisposable
     {

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Policy;
 
 namespace TableTopCrucible.Domain.ValueTypes
@@ -9,9 +11,9 @@ namespace TableTopCrucible.Domain.ValueTypes
         private readonly string _thumbnail;
         public Thumbnail(string thumbnail)
         {
-            
-            if (!Uri.IsWellFormedUriString(thumbnail, UriKind.RelativeOrAbsolute))
-                throw new InvalidOperationException("could find no image at" + thumbnail);
+            var errors = Validate(thumbnail);
+            if (errors.Any())
+                throw new Exception($"could not create thumbnail {Environment.NewLine}{string.Join(Environment.NewLine, errors)}");
             this._thumbnail = thumbnail;
         }
         public override string ToString() => this._thumbnail;
@@ -39,5 +41,16 @@ namespace TableTopCrucible.Domain.ValueTypes
             return thumbnail1._thumbnail != thumbnail2._thumbnail;
         }
 
+        public static IEnumerable<string> Validate(string tag)
+        {
+            return Validators
+                .Where(x => !x.IsValid(tag))
+                .Select(x => x.Message)
+                .ToArray();
+        }
+        public static IEnumerable<Validator<string>> Validators { get; } = new Validator<string>[] {
+            new Validator<string>(thumbnail=>Uri.IsWellFormedUriString(thumbnail, UriKind.RelativeOrAbsolute),
+                "the path could not be resolved")
+        };
     }
 }

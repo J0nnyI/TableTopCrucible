@@ -18,6 +18,7 @@ using TableTopCrucible.WPF.Commands;
 using System.Collections;
 using TableTopCrucible.Domain.Models.Sources;
 using Microsoft.Xaml.Behaviors.Layout;
+using TableTopCrucible.Domain.Models;
 
 namespace TableTopCrucible.WPF.ViewModels
 {

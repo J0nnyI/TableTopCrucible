@@ -1,5 +1,6 @@
 ﻿using System.Reactive.Subjects;
 
+using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
 
 namespace TableTopCrucible.WPF.ViewModels

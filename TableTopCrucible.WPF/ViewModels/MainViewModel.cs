@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-
+using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.Domain.ValueTypes;
@@ -72,9 +72,9 @@ namespace TableTopCrucible.WPF.ViewModels
         {
             return new ItemChangeset()
             {
-                Name = (ItemName)name,
+                Name = name,
                 Tags = new List<Tag> { (Tag)"Tag 1", (Tag)"Tag 2" },
-                Thumbnail = (Thumbnail)"https://i.etsystatic.com/19002916/r/il/617e49/1885302518/il_fullxfull.1885302518_9ovo.jpg"
+                Thumbnail = "https://i.etsystatic.com/19002916/r/il/617e49/1885302518/il_fullxfull.1885302518_9ovo.jpg"
                 //Thumbnail = (Thumbnail)@"D:\__MANAGED_FILES__\DnD\__Thumbnails__\20200126_191331.jpg"
             };
         }
@@ -82,12 +82,12 @@ namespace TableTopCrucible.WPF.ViewModels
         {
             return new ItemChangeset()
             {
-                Name = (ItemName)name,
+                Name = name,
                 Tags = new List<Tag> { (Tag)"Tag 0", (Tag)"Tag 1", (Tag)"Tag 2", (Tag)"Tag 3", (Tag)"Tag 4", 
                                        (Tag)"Tag 5", (Tag)"Tag 6", (Tag)"Tag 7", (Tag)"Tag 8", (Tag)"Tag 9",
                                        (Tag)"Tag 10", (Tag)"Tag 11", (Tag)"Tag 12", (Tag)"Tag 13", (Tag)"Tag 14",
                                        (Tag)"Tag 15", (Tag)"Tag 16", (Tag)"Tag 17", (Tag)"Tag 18", (Tag)"Tag 19", },
-                Thumbnail = (Thumbnail)"https://i.etsystatic.com/19002916/r/il/617e49/1885302518/il_fullxfull.1885302518_9ovo.jpg"
+                Thumbnail = "https://i.etsystatic.com/19002916/r/il/617e49/1885302518/il_fullxfull.1885302518_9ovo.jpg"
                 //Thumbnail = (Thumbnail)@"D:\__MANAGED_FILES__\DnD\__Thumbnails__\20200126_191331.jpg"
             };
         }

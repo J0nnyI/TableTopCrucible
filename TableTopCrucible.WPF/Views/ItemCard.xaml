@@ -24,32 +24,27 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <!--Source="{Binding Path=ItemChangeset.Thumbnail, Converter=}"-->
-            <Image Grid.Column="0"
+            <Image Source="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_Thumbnail}}" 
+                   Grid.Column="0"
                    Grid.Row="0"
                    Grid.RowSpan="2">
-                <Image.Source>
-                    <PriorityBinding>
-                        <Binding Path="Changeset.Thumbnail"
-                                 Converter="{StaticResource cv_Thumbnail}"/>
-                        <Binding Path="Item.Thumbnail"
-                                 Converter="{StaticResource cv_Thumbnail}"/>
-                    </PriorityBinding>
-                </Image.Source>
             </Image>
             <TextBox IsReadOnly="{Binding Path=EditMode, Converter={StaticResource cv_Invert}}"
                      VerticalAlignment="Center"
                      Margin="6px"
                      md:TextFieldAssist.DecorationVisibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}}"
+                     md:ValidationAssist.Suppress="False"
+                     Text="{Binding ItemName}"
                      Grid.Column="1"
                      Grid.Row="0">
-                <TextBox.Text>
+                <!--<TextBox.Text>
                     <PriorityBinding>
-                        <Binding Path="Changeset.Name"/>
+                        <Binding Path="ItemName"/>
                         <Binding Path="Item.Name" 
                                  Converter="{StaticResource cv_itemName}"
                                  Mode="OneWay"/>
                     </PriorityBinding>
-                </TextBox.Text>
+                </TextBox.Text>-->
             </TextBox>
             <Grid Grid.Column="2"
                   Grid.Row="0"

@@ -1,4 +1,5 @@
 ﻿using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Extensions;
 using System;
 using System.Diagnostics;
@@ -20,16 +21,26 @@ namespace TableTopCrucible.WPF.ViewModels
 
         #region observable properties
 
+        public BehaviorSubject<string> ItemNameChanges = new BehaviorSubject<string>(null);
+        private readonly ObservableAsPropertyHelper<string> _itemName;
+        public string ItemName
+        {
+            get => _itemName.Value;
+            set => ItemNameChanges.OnNext(value);
+        }
+        [Reactive] public ItemChangeset Changeset { get; private set; }
+
         public SubjectBase<Item?> ItemChanges { get; } = new BehaviorSubject<Item?>(null);
         private readonly ObservableAsPropertyHelper<Item?> _item;
         public Item? Item
             => _item.Value;
 
-        public IObservable<bool> EditModeChanges { get; }
+        public BehaviorSubject<bool> EditModeChanges { get; } = new BehaviorSubject<bool>(false);
         private readonly ObservableAsPropertyHelper<bool> _editMode;
         public bool EditMode
         {
             get => _editMode.Value;
+            set => this.EditModeChanges.OnNext(value);
         }
 
         private readonly BehaviorSubject<bool> _editableChanges = new BehaviorSubject<bool>(true);
@@ -40,13 +51,6 @@ namespace TableTopCrucible.WPF.ViewModels
             set => _editableChanges.OnNext(value);
         }
 
-        private readonly BehaviorSubject<ItemChangeset> _changesetChanges = new BehaviorSubject<ItemChangeset>(null);
-        private readonly ObservableAsPropertyHelper<ItemChangeset> _changeset;
-        public ItemChangeset Changeset
-        {
-            get => _changeset.Value;
-            set => _changesetChanges.OnNext(value);
-        }
 
         #endregion
 
@@ -70,10 +74,6 @@ namespace TableTopCrucible.WPF.ViewModels
 
             #region Observables 
 
-            // reader
-            this.EditModeChanges =
-                this._changesetChanges
-                .Select(x => x != null);
 
             // properties
             this._item =
@@ -88,26 +88,33 @@ namespace TableTopCrucible.WPF.ViewModels
                 this.EditModeChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(EditMode));
-            this._changeset =
-                this._changesetChanges
+            this._itemName =
+                this.ItemNameChanges
                 .TakeUntil(destroy)
-                .ToProperty(this, nameof(Changeset));
+                .ToProperty(this, nameof(ItemName));
 
-            // subscriptions
-            this.TagEditor.TagsChanges
-                .TakeUntil(destroy)
-                .Subscribe(tags =>
-                {
-                    if (Changeset != null)
-                        Changeset.Tags = tags;
-                });
 
             this.ItemChanges
                 .TakeUntil(destroy)
                 .Subscribe(item => this.TagEditor.Tags = item?.Tags);
+            this.ItemNameChanges
+                .TakeUntil(destroy)
+                .Subscribe(name => { if (this.Changeset != null) { this.Changeset.Name = name; } });
+            this.TagEditor.TagsChanges
+                .TakeUntil(destroy)
+                .Subscribe(tags => { if (this.Changeset != null) { this.Changeset.Tags = tags; } });
             this.EditModeChanges
                 .TakeUntil(destroy)
-                .Subscribe(changeset => this.TagEditor.IsEditmode = this.EditMode);
+                .Subscribe(editMode =>
+                {
+                    if (editMode)
+                        this.Changeset = new ItemChangeset(this.Item);
+                    else
+                        this.Changeset = null;
+                    this.TagEditor.IsEditmode = this.EditMode;
+                    this.ItemName = (string)Item?.Name;
+
+                });
             #endregion
             #region commands
             // DI
@@ -115,34 +122,29 @@ namespace TableTopCrucible.WPF.ViewModels
             this.SaveItemCommand = saveItemCommand;
             saveItemCommand.ItemSaved += this.SaveItemCommand_ItemSaved;
             // Relays
-            this.EnterEditmode = new RelayCommand(_ => this._enterEditMode(), _ => this._canEnterEditMode());
+            this.EnterEditmode = new RelayCommand(_ => this.EditMode=true, _ => this.Editable);
             this.UndoCommand = new RelayCommand(_ => this._undo());
             #endregion
+
+
             #region validators
 
-            this.ValidationRule(vm => 
+            foreach (Validator<string> validator in Domain.ValueTypes.ItemName.Validators)
             {
-                return vm._changesetChanges
-                 .Where(x => x != null)
-                 .Select(cs => cs.NameChanges)
-                 .Switch()
-                 .Select(itemName => ItemName.Validate(itemName).Any())
-                 .TakeUntil(destroy);
-            } , (vm, res) =>res?"noERror": "error");
-
-            
+                this.ValidationRule(
+                    vm => vm.ItemName,
+                    name => validator.IsValid(name),
+                    validator.Message)
+                    .DisposeWith(disposables);
+            }
             #endregion
         }
 
         private void SaveItemCommand_ItemSaved(object sender, ItemSavedEventArgs e)
         {
             if (e.Item.Id == this.Item?.Id && !this.IsDisposed)
-                this.Changeset = null;
+                this.EditMode = false;
         }
-        private void _enterEditMode()
-            => this.Changeset = new ItemChangeset(Item);
-        private bool _canEnterEditMode()
-            => this.Editable;
         private void _undo()
         {
             this.Changeset = null;
@@ -155,9 +157,6 @@ namespace TableTopCrucible.WPF.ViewModels
 
             this._editableChanges.OnCompleted();
             this._editableChanges.Dispose();
-
-            this._changesetChanges.OnCompleted();
-            this._changesetChanges.Dispose();
 
             base.OnDispose();
         }

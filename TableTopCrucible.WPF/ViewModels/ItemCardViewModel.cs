@@ -96,7 +96,11 @@ namespace TableTopCrucible.WPF.ViewModels
 
             this.ItemChanges
                 .TakeUntil(destroy)
-                .Subscribe(item => this.TagEditor.Tags = item?.Tags);
+                .Subscribe(item =>
+                {
+                    this.ItemName = (string)item?.Name;
+                    this.TagEditor.Tags = item?.Tags;
+                });
             this.ItemNameChanges
                 .TakeUntil(destroy)
                 .Subscribe(name => { if (this.Changeset != null) { this.Changeset.Name = name; } });

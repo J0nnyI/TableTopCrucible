@@ -4,16 +4,21 @@ using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Windows.Data;
 using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
+using TableTopCrucible.Domain.ValueTypes;
 using TableTopCrucible.WPF.Commands;
+using TableTopCrucible.WPF.Helper;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
@@ -25,7 +30,8 @@ namespace TableTopCrucible.WPF.ViewModels
 
         ReadOnlyObservableCollection<ItemCardViewModel> _items;
         public ReadOnlyObservableCollection<ItemCardViewModel> Items => _items;
-
+        [Reactive]
+        public CollectionViewSource ItemsDataView { get; private set; }
 
         #region reactive properties
 
@@ -80,7 +86,16 @@ namespace TableTopCrucible.WPF.ViewModels
                 .DisposeMany()
                 .Bind(out _items)
                 .TakeUntil(destroy)
-                .Subscribe();
+                .Subscribe(x=> { 
+                    if(this.ItemsDataView == null)
+                    {
+                        this.ItemsDataView = new CollectionViewSource()
+                        {
+                            Source = this.Items,
+                        };
+                        this.Sort(nameof(ItemName));
+                    }
+                });
 
             });
 
@@ -98,6 +113,12 @@ namespace TableTopCrucible.WPF.ViewModels
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(SelectedItemVm));
         }
-
+        private void Sort(string sortBy, ListSortDirection direction = ListSortDirection.Ascending)
+        {
+            ItemsDataView.SortDescriptions.Clear();
+            SortDescription sd = new SortDescription(sortBy, direction);
+            ItemsDataView.SortDescriptions.Add(sd);
+            ItemsDataView.View.Refresh();
+        }
     }
 }

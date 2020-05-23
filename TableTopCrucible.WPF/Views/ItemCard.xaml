@@ -9,8 +9,9 @@
              d:DesignHeight="2010"
              d:DesignWidth="1000"
              d:DataContext="{d:DesignInstance Type=viewModels:ItemCardViewModel}"
-             Height="180px"
+             Height="{Binding Path=IsExpanded, Converter={StaticResource cv_valueSwitch}, ConverterParameter='180_NaN'}"
              MinHeight="180px"
+             MaxHeight="500px"
              Name="self">
     <md:Card Padding="17px">
         <Grid>
@@ -79,10 +80,16 @@
                 <!-- editmode buttons -->
                 <!--tags-->
                 <Button ToolTip="expand"
+                        Command="{Binding ToggleExpansionCommand}"
                         Style="{StaticResource MaterialDesignIconButton}"
                         Grid.Column="0"
                         Grid.Row="0">
-                    <md:PackIcon Kind="ExpandMore"/>
+                    <Grid>
+                        <md:PackIcon Kind="ExpandMore" 
+                                     Visibility="{Binding IsExpanded, Converter={StaticResource cv_visibillity}, ConverterParameter=inverted_collapsed}"/>
+                        <md:PackIcon Kind="ExpandLess" 
+                                     Visibility="{Binding IsExpanded, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}"/>
+                    </Grid>
                 </Button>
                 <Button ToolTip="Remove Tag"
                         Command="{Binding TagEditor.RemoveTags}"

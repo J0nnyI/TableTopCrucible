@@ -51,6 +51,8 @@ namespace TableTopCrucible.WPF.ViewModels
             set => _editableChanges.OnNext(value);
         }
 
+        [Reactive]
+        public bool IsExpanded { get; set; }
 
         #endregion
 
@@ -60,6 +62,7 @@ namespace TableTopCrucible.WPF.ViewModels
         public ICommand SaveItemCommand { get; }
         public ICommand EnterEditmode { get; }
         public ICommand UndoCommand { get; }
+        public ICommand ToggleExpansionCommand { get; }
 
         #endregion
         public ItemCardViewModel(
@@ -128,6 +131,7 @@ namespace TableTopCrucible.WPF.ViewModels
             // Relays
             this.EnterEditmode = new RelayCommand(_ => this.EditMode=true, _ => this.Editable);
             this.UndoCommand = new RelayCommand(_ => this._undo());
+            this.ToggleExpansionCommand = new RelayCommand(_ => this.IsExpanded = !this.IsExpanded);
             #endregion
 
 

@@ -7,6 +7,7 @@ namespace TableTopCrucible.WPF.Converters
 {
     public class ValueSwitchConverter : IValueConverter
     {
+        // param: 100_0
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (parameter is string param && value is bool val)

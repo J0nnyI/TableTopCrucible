@@ -3,10 +3,11 @@ using System.Globalization;
 using System.Windows.Data;
 
 using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.WPF.ViewModels;
 
 namespace TableTopCrucible.WPF.Converters
 {
-    public class ItemChangesetConverter : IValueConverter
+    public class ItemViewModelConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             => _convert(value, targetType);
@@ -15,15 +16,15 @@ namespace TableTopCrucible.WPF.Converters
 
         private object _convert(object value, Type targetType)
         {
+            if (targetType != typeof(Item) && targetType != typeof(Item?))
+                throw new InvalidCastException($"value {value} of type {value.GetType()} is not convertable to {typeof(Item)}");
             return value switch
             {
-                Item item when targetType == typeof(ItemChangeset)
-                    => new ItemChangeset(item),
-                ItemChangeset _ when targetType == typeof(Item)
-                    => throw new InvalidOperationException("the way back should be explicit"),
-                null
-                    => value,
-                _ => throw new InvalidOperationException("invalid cast"),
+                ItemCardViewModel itemCardVm
+                    => itemCardVm.Item,
+                null when targetType == typeof(Item?)
+                    => null,
+                _ => throw new InvalidOperationException()
             };
         }
     }

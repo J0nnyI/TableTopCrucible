@@ -9,4 +9,6 @@
     <local:VisibillityConverter x:Key="cv_visibillity"/>
     <local:InvertConverter x:Key="cv_Invert"/>
     <local:ValueSwitchConverter x:Key="cv_valueSwitch"/>
+    <local:MinMaxModConverter x:Key="cv_minMaxMod"/>
+    <local:ItemViewModelConverter x:Key="cv_itemVm"/>
 </ResourceDictionary>

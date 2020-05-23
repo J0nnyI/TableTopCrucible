@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 
 namespace TableTopCrucible.WPF.Converters
@@ -10,11 +8,11 @@ namespace TableTopCrucible.WPF.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             => convert(value);
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) 
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => convert(value);
         private object convert(object value)
         {
-            if(value is bool boolean)
+            if (value is bool boolean)
             {
                 return !boolean;
             }

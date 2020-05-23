@@ -7,14 +7,13 @@
         xmlns:viewModels="clr-namespace:TableTopCrucible.WPF.ViewModels"
         xmlns:views="clr-namespace:TableTopCrucible.WPF.Views"
         xmlns:cv="clr-namespace:TableTopCrucible.WPF.Converters"
-        xmlns:controls="clr-namespace:TableTopCrucible.WPF.Controls"
         xmlns:srcModels="clr-namespace:TableTopCrucible.Domain.Models.Sources;assembly=TableTopCrucible.Domain"
         xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="850"
         Width="1600"
-        >
+        d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:MainViewModel}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -22,41 +21,21 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <ListView ItemsSource="{Binding Items}"
-                  x:Name="lstvw"
-                  md:RippleAssist.IsDisabled="True"
-                  Grid.Row="0"
-                  Grid.RowSpan="3"
-                  Grid.Column="1">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <controls:ItemCard ItemChangeset="{Binding Converter={StaticResource cv_itemChangeset}}"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
 
+        <ContentPresenter Content="{Binding Path=ItemList}"
+                          Grid.Column="1"/>
 
-        <ContentControl Content="{Binding ItemEditor}"
-                        Grid.Row="0"
-                        Grid.Column="0"/>
-        <ContentControl Content="{Binding ItemList}"
-                        Grid.Row="1"
-                        Grid.Column="0"/>
+        <ContentPresenter Content="{Binding Path=ItemEditor}"
+                          Grid.Column="0"/>
 
-        <StackPanel Grid.Row="2"
-                    Grid.Column="0">
-            <Button Content="+"
-                Command="{Binding CreateItem}"/>
-            <Label Content="{Binding ElementName=lstvw, Path=SelectedItem}"/>
-            <Label Content="{Binding SelectedItem}"/>
-        </StackPanel>
+        <Label Content="{Binding Path=ItemList.SelectedItemVm}"
+               Grid.Column="0"
+               Grid.Row="1"/>
+        <Label Content="{Binding Path=ItemList.SelectedItem}"
+               Grid.Column="1"
+               Grid.Row="1"/>
+
     </Grid>
 </Window>

@@ -21,7 +21,8 @@ namespace TableTopCrucible.WPF.Converters
                 case string name when targetType == typeof(ItemName):
                     return (ItemName)name;
                 default:
-                    throw new InvalidOperationException("invalid conversion");
+                    throw new InvalidOperationException(
+                        $"itemName converter: invalid conversion from {value} ({value.GetType()}) to {targetType}");
             }
         }
     }

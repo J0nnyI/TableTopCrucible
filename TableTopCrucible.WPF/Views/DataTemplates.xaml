@@ -3,10 +3,16 @@
                     xmlns:local="clr-namespace:TableTopCrucible.WPF.Views"
                     xmlns:views="clr-namespace:TableTopCrucible.WPF.Views"
                     xmlns:viewModels="clr-namespace:TableTopCrucible.WPF.ViewModels">
-    <DataTemplate DataType="{x:Type viewModels:ItemEditorViewModel}">
-        <views:ItemEditorL/>
-    </DataTemplate>
     <DataTemplate DataType="{x:Type viewModels:ItemListViewModel}">
         <views:ItemList/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:ItemCardViewModel}">
+        <views:ItemCard/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:TagEditorViewModel}">
+        <views:TagEditor/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:ItemEditorViewModel}">
+        <views:ItemEditor/>
     </DataTemplate>
 </ResourceDictionary>

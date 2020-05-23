@@ -1,8 +1,4 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:TableTopCrucible.WPF.Styles">
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="./Colors.xaml"/>
-        <ResourceDictionary Source="./ButtonStyles.xaml"/>
-    </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

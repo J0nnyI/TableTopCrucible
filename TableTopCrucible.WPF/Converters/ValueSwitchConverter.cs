@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows.Data;
 
 namespace TableTopCrucible.WPF.Converters
 {
     public class ValueSwitchConverter : IValueConverter
     {
+        // param: 100_0
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(parameter is string param && value is bool val)
+            if (parameter is string param && value is bool val)
             {
-                var parameters = 
+                var parameters =
                     param
                     .Replace(" ", "")
                     .Split("_")
-                    .Select(x=>double.Parse(x))
+                    .Select(x => double.Parse(x))
                     .ToArray();
                 if (val)
                     return parameters[1];

@@ -1,10 +1,19 @@
-﻿namespace TableTopCrucible.Domain.ValueTypes
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Policy;
+
+namespace TableTopCrucible.Domain.ValueTypes
 {
     public struct Thumbnail
     {
         private readonly string _thumbnail;
         public Thumbnail(string thumbnail)
         {
+            var errors = Validate(thumbnail);
+            if (errors.Any())
+                throw new Exception($"could not create thumbnail {Environment.NewLine}{string.Join(Environment.NewLine, errors)}");
             this._thumbnail = thumbnail;
         }
         public override string ToString() => this._thumbnail;
@@ -32,5 +41,16 @@
             return thumbnail1._thumbnail != thumbnail2._thumbnail;
         }
 
+        public static IEnumerable<string> Validate(string tag)
+        {
+            return Validators
+                .Where(x => !x.IsValid(tag))
+                .Select(x => x.Message)
+                .ToArray();
+        }
+        public static IEnumerable<Validator<string>> Validators { get; } = new Validator<string>[] {
+            new Validator<string>(thumbnail=>Uri.IsWellFormedUriString(thumbnail, UriKind.RelativeOrAbsolute),
+                "the path could not be resolved")
+        };
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,15 +17,12 @@ namespace TableTopCrucible.Domain.ValueTypes
         public override string ToString() => this._tag;
         public override bool Equals(object obj)
         {
-            switch (obj)
+            return obj switch
             {
-                case Tag tag:
-                    return this._tag == tag._tag;
-                case string tag:
-                    return this._tag == tag;
-                default:
-                    return false;
-            }
+                Tag tag => this._tag == tag._tag,
+                string tag => this._tag == tag,
+                _ => false,
+            };
         }
         public override int GetHashCode() => this._tag.GetHashCode();
         public static explicit operator Tag(string tag) => new Tag(tag);
@@ -41,12 +37,14 @@ namespace TableTopCrucible.Domain.ValueTypes
         }
         public static IEnumerable<string> Validate(string tag)
         {
-            if (string.IsNullOrWhiteSpace(tag))
-            {
-                return new string[] { "The tag must not be empty" };
-            }
-            return new string[] { };
+            return Validators
+                .Where(x => !x.IsValid(tag))
+                .Select(x => x.Message)
+                .ToArray();
         }
+        public static IEnumerable<Validator<string>> Validators { get; } = new Validator<string>[] {
+            new Validator<string>(tag=>!string.IsNullOrWhiteSpace(tag),"The tag must not be empty")
+        };
 
     }
 }

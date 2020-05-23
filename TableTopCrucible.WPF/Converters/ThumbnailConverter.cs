@@ -21,11 +21,18 @@ namespace TableTopCrucible.WPF.Converters
                 case Thumbnail thumbnail when targetType == typeof(string) || targetType == typeof(object):
                     return (string)thumbnail;
                 case Thumbnail thumbnail when targetType == typeof(ImageSource):
-                    return new BitmapImage(new Uri((string)thumbnail));
+                    return  new BitmapImage(new Uri((string)thumbnail));
                 case string path when targetType == typeof(Thumbnail):
                     return (Thumbnail)path;
+                case string path when targetType == typeof(ImageSource):
+                    if (!Uri.IsWellFormedUriString(path, UriKind.RelativeOrAbsolute))
+                        return null;
+                    return  new BitmapImage(new Uri(path));
+                case null:
+                    return null;
                 default:
-                    throw new InvalidOperationException("invalid conversion");
+                    throw new InvalidOperationException(
+                        $"thumbnail converter: invalid conversion from {value} ({value.GetType()}) to {targetType}");
             }
         }
     }

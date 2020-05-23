@@ -1,13 +1,38 @@
-﻿using System;
+﻿using ReactiveUI;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
+using TableTopCrucible.Domain.ValueTypes;
 using TableTopCrucible.Domain.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Models.Sources
 {
+    public abstract class ReactiveEntityBase<Tself, Tentity, Tid> : DisposableReactiveValidationObject<Tself>, IEntityChangeset<Tentity, Tid>
+        where Tentity : struct, IEntity<Tid>
+        where Tid : ITypedId
+        where Tself : ReactiveEntityBase<Tself, Tentity, Tid>
+    {
+        public Tentity? Origin { get; private set; }
+
+        public abstract Tentity Apply();
+        public virtual IEnumerable<string> GetErrors()
+        {
+            return Validators
+                .Where(x => !x.IsValid(this as Tself))
+                .Select(x => x.Message);
+        }
+        public abstract IEnumerable<Validator<Tself>> Validators { get; }
+        public abstract Tentity ToEntity();
+        public ReactiveEntityBase(Tentity? origin)
+        {
+            this.Origin = origin;
+        }
+    }
+
     public abstract class EntityChangesetBase<Tentity, Tid> : IEntityChangeset<Tentity, Tid>, INotifyPropertyChanged
         where Tentity : struct, IEntity<Tid>
         where Tid : ITypedId
@@ -25,15 +50,16 @@ namespace TableTopCrucible.Domain.Models.Sources
         {
             this.Origin = origin;
         }
-        protected T getValue<T>(T field, T originalValue, [CallerMemberName]string propertyName = "")
+        protected Tchangeset getValue<Tchangeset, Torigin>(Tchangeset field, Torigin originalValue, Func<Torigin, Tchangeset> converter, [CallerMemberName] string propertyName = "")
+            => changedValues.Contains(propertyName) || Origin == null ? field : converter(originalValue);
+
+        protected T getValue<T>(T field, T originalValue, [CallerMemberName] string propertyName = "")
             => changedValues.Contains(propertyName) || Origin == null ? field : originalValue;
         protected T getStructValue<T>(T field, T? originalValue, [CallerMemberName] string propertyName = "") where T : struct
+            => changedValues.Contains(propertyName) || Origin == null ? field : originalValue.Value;
+        protected void setValue<Tchangeset, Torigin>(Tchangeset value, ref Tchangeset field, Torigin originalValue, Func<Tchangeset, Torigin, bool> comparer, [CallerMemberName] string propName = "")
         {
-            return changedValues.Contains(propertyName) || Origin == null ? field : originalValue.Value;
-        }
-        protected void setValue<T>(T value, ref T field, T originalValue, [CallerMemberName] string propName = "")
-        {
-            if (value == null && originalValue == null || value?.Equals(originalValue) == true)
+            if (value == null && originalValue == null || comparer(value, originalValue))
                 this._changedValues.Remove(propName);
             else
             {
@@ -46,6 +72,9 @@ namespace TableTopCrucible.Domain.Models.Sources
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
             }
         }
+        protected void setValue<T>(T value, ref T field, T originalValue, [CallerMemberName] string propName = "")
+            => this.setValue<T, T>(value, ref field, originalValue, (c, o) => c?.Equals(o) == true);
+
         protected void setStructValue<T>(T value, ref T field, T? originalValue, [CallerMemberName] string propName = "")
             where T : struct
         {

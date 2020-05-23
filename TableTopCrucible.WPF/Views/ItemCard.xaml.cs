@@ -3,11 +3,11 @@
 namespace TableTopCrucible.WPF.Views
 {
     /// <summary>
-    /// Interaction logic for ItemList.xaml
+    /// Interaction logic for ItemCard.xaml
     /// </summary>
-    public partial class ItemList : UserControl
+    public partial class ItemCard : UserControl
     {
-        public ItemList()
+        public ItemCard()
         {
             InitializeComponent();
         }

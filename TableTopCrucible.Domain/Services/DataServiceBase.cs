@@ -18,22 +18,22 @@ namespace TableTopCrucible.Domain.Services
         // fields
         protected SourceCache<Tentity, Tid> cache
             = new SourceCache<Tentity, Tid>(entity => entity.Id);
-        private IObservableCache<Tentity, Tid> readOnlyCache;
+        private IObservableCache<Tentity, Tid> _readOnlyCache;
 
         // delete
         public void Delete(Tid key)
             => cache.Remove(key);
         public void Delete(IEnumerable<Tid> keys)
             => cache.Remove(keys);
+        public virtual bool CanDelete(Tid key)
+            => cache.Keys.Contains(key);
         // get
-        public IObservable<IChangeSet<Tentity, Tid>> Get()
-            => cache.Connect();
-        public IObservable<Change<Tentity, Tid>> Get(Tid id)
-            => this.cache.Watch(id);
+        public IObservableCache<Tentity, Tid> Get()
+            => _readOnlyCache;
+        public IObservable<Tentity> Get(Tid id)
+            => this.cache.WatchValue(id);
         public IObservable<IChangeSet<Tentity, Tid>> Get(IEnumerable<Tid> ids)
-        {
-            return this.cache.Connect().Filter(item => ids.Contains(item.Id));
-        }
+            => _readOnlyCache.Connect().Filter(item => ids.Contains(item.Id));
         // patch
         public Tentity Patch(Tchangeset change)
         {
@@ -54,18 +54,24 @@ namespace TableTopCrucible.Domain.Services
             cache.AddOrUpdate(changes);
             return changes;
         }
+        public bool CanPatch(Tchangeset changeset)
+        {
+            if (!changeset.Origin.HasValue)
+                return true;
+            return this.cache.Keys.Contains(changeset.Origin.Value.Id);
+        }
 
         protected DataServiceBase()
         {
-            readOnlyCache = cache.AsObservableCache();
+            _readOnlyCache = cache.AsObservableCache();
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -74,7 +80,7 @@ namespace TableTopCrucible.Domain.Services
                 }
                 // large fields, unmanaged
                 this.cache = null;
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
@@ -82,6 +88,7 @@ namespace TableTopCrucible.Domain.Services
         {
             Dispose(true);
         }
+
         #endregion
     }
 }

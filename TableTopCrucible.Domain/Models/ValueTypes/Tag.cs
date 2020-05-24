@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TableTopCrucible.Domain.ValueTypes
+namespace TableTopCrucible.Domain.Models.ValueTypes
 {
     public struct Tag
     {

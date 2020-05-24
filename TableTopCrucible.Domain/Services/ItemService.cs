@@ -1,5 +1,5 @@
 ﻿using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.ValueTypes.IDs;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Services
 {

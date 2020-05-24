@@ -4,7 +4,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-using TableTopCrucible.Domain.ValueTypes;
+using TableTopCrucible.Domain.Models.ValueTypes;
 
 namespace TableTopCrucible.WPF.Converters
 {

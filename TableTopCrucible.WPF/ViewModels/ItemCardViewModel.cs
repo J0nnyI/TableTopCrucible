@@ -11,7 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.ValueTypes;
+using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
@@ -137,7 +137,7 @@ namespace TableTopCrucible.WPF.ViewModels
 
             #region validators
 
-            foreach (Validator<string> validator in Domain.ValueTypes.ItemName.Validators)
+            foreach (Validator<string> validator in Domain.Models.ValueTypes.ItemName.Validators)
             {
                 this.ValidationRule(
                     vm => vm.ItemName,

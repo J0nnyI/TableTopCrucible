@@ -13,7 +13,7 @@ using System.Reactive.Subjects;
 using System.Windows.Input;
 using System.Windows.Controls;
 using TableTopCrucible.Domain.Services;
-using TableTopCrucible.Domain.ValueTypes;
+using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.WPF.Commands;
 using System.Collections;
 using TableTopCrucible.Domain.Models.Sources;

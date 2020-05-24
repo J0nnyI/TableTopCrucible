@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using TableTopCrucible.Domain.ValueTypes;
-using TableTopCrucible.Domain.ValueTypes.IDs;
+using TableTopCrucible.Domain.Models.ValueTypes;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Models.Sources
 {

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-using TableTopCrucible.Domain.ValueTypes;
+using TableTopCrucible.Domain.Models.ValueTypes;
 
 namespace TableTopCrucible.WPF.Converters
 {

@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 
-using TableTopCrucible.Domain.ValueTypes;
-using TableTopCrucible.Domain.ValueTypes.IDs;
+using TableTopCrucible.Domain.Models.ValueTypes;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Services
 {

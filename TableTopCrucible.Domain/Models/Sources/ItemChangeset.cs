@@ -12,8 +12,8 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Automation;
 
-using TableTopCrucible.Domain.ValueTypes;
-using TableTopCrucible.Domain.ValueTypes.IDs;
+using TableTopCrucible.Domain.Models.ValueTypes;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Models.Sources
 {
@@ -104,7 +104,7 @@ namespace TableTopCrucible.Domain.Models.Sources
         new Validator<ItemChangeset>[][]
         {
             ItemName.Validators.Select(x=>new Validator<ItemChangeset>(changeset=>x.IsValid(changeset.Name), x.Message)).ToArray(),
-            ValueTypes.Thumbnail.Validators.Select(x=>new Validator<ItemChangeset>(changeset=>x.IsValid(changeset.Thumbnail), x.Message)).ToArray(),
+            Models.ValueTypes.Thumbnail.Validators.Select(x=>new Validator<ItemChangeset>(changeset=>x.IsValid(changeset.Thumbnail), x.Message)).ToArray(),
         }.SelectMany(x => x);
 
 

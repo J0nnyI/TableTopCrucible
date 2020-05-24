@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TableTopCrucible.Domain.ValueTypes.IDs
+namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
 {
     public struct TileTypeId : ITypedId
     {

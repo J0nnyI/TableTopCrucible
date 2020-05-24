@@ -4,9 +4,9 @@ using System.Windows.Media;
 
 using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.ValueTypes.IDs;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
-namespace TableTopCrucible.Domain.ValueTypes
+namespace TableTopCrucible.Domain.Models.ValueTypes
 {
     public interface ITileTypeChangeset : IEntityChangeset<TileType, TileTypeId> { }
 

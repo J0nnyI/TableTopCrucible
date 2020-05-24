@@ -4,7 +4,7 @@ using DynamicData.Binding;
 using System;
 
 using TableTopCrucible.Domain.Models;
-using TableTopCrucible.Domain.ValueTypes.IDs;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 namespace TableTopCrucible.WPF.ViewModels
 {
     public class ProxyUpdater<Tentity, Tid> : IObservableCollectionAdaptor<Tentity, Tid>

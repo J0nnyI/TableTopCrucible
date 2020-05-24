@@ -9,10 +9,36 @@
              d:DesignHeight="2010"
              d:DesignWidth="1000"
              d:DataContext="{d:DesignInstance Type=viewModels:ItemCardViewModel}"
-             Height="{Binding Path=IsExpanded, Converter={StaticResource cv_valueSwitch}, ConverterParameter='180_NaN'}"
              MinHeight="180px"
-             MaxHeight="500px"
              Name="self">
+    <UserControl.Style>
+        <Style TargetType="UserControl">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsExpanded}"
+                             Value="true">
+                    <DataTrigger.EnterActions>
+                        <StopStoryboard BeginStoryboardName="retract"/>
+                        <BeginStoryboard Name="expand">
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="MaxHeight" From="180" To="500" Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=IsExpanded, Converter={StaticResource cv_Invert}}"
+                             Value="true">
+                    <DataTrigger.EnterActions>
+                        <StopStoryboard BeginStoryboardName="expand"/>
+                        <BeginStoryboard Name="retract">
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="MaxHeight" From="500" To="180" Duration="0:0:0.3"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>                    
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
     <md:Card Padding="17px">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -38,7 +64,8 @@
                      Grid.Column="1"
                      Grid.Row="0">
             </TextBox>
-            <Grid Grid.Column="2"
+            <Grid VerticalAlignment="Bottom"
+                  Grid.Column="2"
                   Grid.Row="0"
                   Grid.RowSpan="2">
                 <Grid.RowDefinitions>

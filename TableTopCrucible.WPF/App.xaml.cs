@@ -73,6 +73,8 @@ namespace TableTopCrucible.WPF
             services.AddSingleton<IItemService, ItemService>();
             services.AddSingleton<IInjectionProviderService, InjectionProviderService>();
             services.AddSingleton<IItemTagService, ItemTagService>();
+            services.AddSingleton<IFileInfoService, FileInfoService>();
+
             // viewModels
             services.AddTransient<MainViewModel>();
             services.AddTransient<ItemListViewModel>();

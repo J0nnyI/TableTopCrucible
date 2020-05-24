@@ -17,13 +17,7 @@ using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Models.Sources
 {
-    public interface IItemChangeset : IEntityChangeset<Item, ItemId>
-    {
-        string Thumbnail { get; set; }
-        string Name { get; set; }
-        IEnumerable<Tag> Tags { get; set; }
-    }
-    public class ItemChangeset : ReactiveEntityBase<ItemChangeset, Item, ItemId>, IItemChangeset
+    public class ItemChangeset : ReactiveEntityBase<ItemChangeset, Item, ItemId>, IEntityChangeset<Item, ItemId>
     {
         public BehaviorSubject<string> NameChanges { get; } = new BehaviorSubject<string>(null);
         private readonly ObservableAsPropertyHelper<string> _name;

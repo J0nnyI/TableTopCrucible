@@ -24,21 +24,43 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Path=IsExpanded, Converter={StaticResource cv_Invert}}"
-                             Value="true">
-                    <DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
                         <StopStoryboard BeginStoryboardName="expand"/>
                         <BeginStoryboard Name="retract">
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetProperty="MaxHeight" From="500" To="180" Duration="0:0:0.3"/>
                             </Storyboard>
                         </BeginStoryboard>
-                    </DataTrigger.EnterActions>                    
+                    </DataTrigger.ExitActions>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
     </UserControl.Style>
+    <UserControl.Resources>
+
+
+        <Style x:Key="editModeButtonSecondary"
+              TargetType="Button" 
+              BasedOn="{StaticResource MaterialDesignIconButton}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=EditMode}"
+                             Value="false">
+                    <DataTrigger.EnterActions>
+                        <StopStoryboard BeginStoryboardName="fadeOut"/>
+                        <BeginStoryboard Name="fadeIn" Storyboard="{StaticResource fadeIn}">
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <StopStoryboard BeginStoryboardName="fadeIn"/>
+                        <BeginStoryboard Name="fadeOut" Storyboard="{StaticResource fadeOut}">
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+            <Setter Property="Visibility"
+                    Value="Hidden"/>
+        </Style>
+    </UserControl.Resources>
     <md:Card Padding="17px">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -77,16 +99,33 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                
-                <Grid.Visibility>
-                    <MultiBinding Converter="{StaticResource mvc_visibillity}" ConverterParameter="or_hidden">
-                        <MultiBinding.Bindings>
-                            <Binding ElementName="self"
-                                     Path="IsMouseOver"/>
-                            <Binding Path="EditMode"/>
-                        </MultiBinding.Bindings>
-                    </MultiBinding>
-                </Grid.Visibility>
+                <!--<Grid.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger>
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource mvc_boolean}" ConverterParameter="or">
+                                        <MultiBinding.Bindings>
+                                            <Binding ElementName="self"
+                                                     Path="IsMouseOver"/>
+                                            <Binding Path="EditMode"/>
+                                        </MultiBinding.Bindings>
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <DataTrigger.ExitActions>
+                                    <StopStoryboard BeginStoryboardName="fadeOut"/>
+                                    <BeginStoryboard Name="fadeIn" Storyboard="{StaticResource fadeIn}">
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                                <DataTrigger.EnterActions>
+                                    <StopStoryboard BeginStoryboardName="fadeIn"/>
+                                    <BeginStoryboard Name="fadeOut" Storyboard="{StaticResource fadeOut}">
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>-->
 
                 <!-- viewmode buttons -->
                 <Button Command="{Binding EnterEditmode}"
@@ -141,8 +180,7 @@
                 <Button Command="{Binding SaveItemCommand}"
                         CommandParameter="{Binding Path=Changeset}"
                         ToolTip="Save Item"
-                        Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=hidden}"
-                        Style="{StaticResource MaterialDesignIconForegroundButton}"
+                        Style="{StaticResource editModeButtonSecondary}"
                         IsEnabled="{Binding HasErrors, Converter={StaticResource cv_Invert}}"
                         Grid.Column="1"
                         Grid.Row="0">
@@ -150,8 +188,7 @@
                 </Button>
                 <Button Command="{Binding UndoCommand}"
                         ToolTip="Discard Changes"
-                        Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=hidden}"
-                        Style="{StaticResource MaterialDesignIconButton}"
+                        Style="{StaticResource editModeButtonSecondary}"
                         Grid.Column="1"
                         Grid.Row="1">
                     <md:PackIcon Kind="Undo"/>

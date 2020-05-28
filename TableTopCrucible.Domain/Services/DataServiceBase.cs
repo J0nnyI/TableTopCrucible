@@ -3,6 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
 
 using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
@@ -15,10 +18,14 @@ namespace TableTopCrucible.Domain.Services
         where Tid : ITypedId
         where Tchangeset : IEntityChangeset<Tentity, Tid>
     {
+
         // fields
+        protected readonly CompositeDisposable disposables = new CompositeDisposable();
         protected SourceCache<Tentity, Tid> cache
             = new SourceCache<Tentity, Tid>(entity => entity.Id);
         private IObservableCache<Tentity, Tid> _readOnlyCache;
+        private readonly SubjectBase<Unit> _destroy = new Subject<Unit>();
+        protected IObservable<Unit> destroy =>_destroy;
 
         // delete
         public void Delete(Tid key)
@@ -64,6 +71,7 @@ namespace TableTopCrucible.Domain.Services
         protected DataServiceBase()
         {
             _readOnlyCache = cache.AsObservableCache();
+            this.cache.DisposeWith(disposables);
         }
 
         #region IDisposable Support

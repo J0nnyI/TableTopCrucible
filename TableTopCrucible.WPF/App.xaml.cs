@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Reactive.Subjects;
 using System.Windows;
 
+using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.WPF.ViewModels;
@@ -55,6 +57,21 @@ namespace TableTopCrucible.WPF
             serviceProvider.GetRequiredService<IInjectionProviderService>()
                 .Provider
                 .OnNext(serviceProvider);
+
+
+            var dss = serviceProvider.GetRequiredService<IDirectorySetupService>();
+            dss.Patch(new DirectorySetupChangeset()
+            {
+                Path= new Uri(@"F:\tmp\Folder A"),
+                Name=@"Folder A"
+            });
+            dss.Patch(new DirectorySetupChangeset()
+            {
+                Path = new Uri(@"F:\tmp\Folder B"),
+                Name = @"Folder B"
+            });
+            var fileInfoService = serviceProvider.GetRequiredService<IFileInfoService>();
+            fileInfoService.Synchronize();
 
             this._disposables.Add(serviceProvider);
 

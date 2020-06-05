@@ -7,13 +7,15 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
 {
     public struct FilePath
     {
-        private Uri _rootPath { get; }
-        private Uri _path { get; }
+        public Uri RootPath { get; }
+        public Uri Path { get; }
 
-        public FilePath(string rootPath, string relativePath)
+        public FilePath(Uri rootPath, Uri relativePath)
         {
-            this._rootPath = new Uri(rootPath);
-            this._path = new Uri(relativePath);
+            this.RootPath = rootPath;
+            this.Path = relativePath.IsAbsoluteUri 
+                ? rootPath.MakeRelativeUri(relativePath) 
+                : relativePath;
             this._asAbsolute = null;
         }
         private string _asAbsolute;
@@ -22,28 +24,28 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
             get
             {
                 if (this._asAbsolute == null)
-                    this._asAbsolute = this._rootPath.MakeRelativeUri(_path).LocalPath;
+                    this._asAbsolute = this.RootPath.MakeRelativeUri(Path).LocalPath;
                 return _asAbsolute;
             }
         }
         public override string ToString()
-            => this._path.ToString();
+            => this.Path.ToString();
         public override bool Equals(object obj)
         {
             switch (obj)
             {
                 case string str:
-                    return this._path == new Uri(str);
+                    return this.Path == new Uri(str);
                 case Uri uri:
-                    return this._path == uri;
+                    return this.Path == uri;
                 case FilePath path:
-                    return this._path == path._path;
+                    return this.Path == path.Path;
                 default:
                     return false;
             }
         }
         public override int GetHashCode()
-            => _path.GetHashCode();
+            => Path.GetHashCode();
 
         public static IEnumerable<string> Validate(string tag)
         {

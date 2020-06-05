@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes
 {
-    public class FileInfo
+    public struct FileHash
     {
     }
 }

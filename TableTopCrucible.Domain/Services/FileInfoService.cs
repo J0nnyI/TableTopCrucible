@@ -17,75 +17,18 @@ using System.Reactive.Subjects;
 using System.Reactive;
 using TableTopCrucible.Domain.Models;
 using ReactiveUI;
+using System.Windows.Navigation;
+using System.Security.Cryptography;
+using TableTopCrucible.Domain.Models.ValueTypes;
+using TableTopCrucible.Domain.Models.Views;
 
 namespace TableTopCrucible.Domain.Services
 {
-    public class DirectoryObserver : IDisposable
-    {
-        internal struct fileEntry
-        {
-            public fileEntry(Guid id, string path)
-            {
-                this.Id = id;
-                this.Path = path ?? throw new ArgumentNullException(nameof(path));
-                this.fileChanged = new Subject<Unit>();
-            }
-            public fileEntry(string path)
-            {
-                this.Id = Guid.NewGuid();
-                this.Path = path ?? throw new ArgumentNullException(nameof(path));
-                this.fileChanged = new Subject<Unit>();
-            }
-
-            internal readonly Subject<Unit> fileChanged;
-            public IObservable<Unit> FileChanged => fileChanged;
-
-            public Guid Id { get; }
-            public string Path { get; }
-        }
-
-        private SourceCache<fileEntry, Guid> cache = new SourceCache<fileEntry, Guid>(file => file.Id);
-        internal ISourceCache<fileEntry, Guid> Cache => cache;
-        private FileSystemWatcher fileWatcher;
-        private CompositeDisposable disposables = new CompositeDisposable();
-        private Uri _path;
-        public DirectorySetupId DirectorySetupId { get; private set; }
-        public DirectoryObserver(Uri path, DirectorySetupId directorySetupId)
-        {
-            this._path = path;
-            this.DirectorySetupId = directorySetupId;
-            fileWatcher = new FileSystemWatcher(_path.LocalPath);
-            fileWatcher.EnableRaisingEvents = true;
-            fileWatcher.IncludeSubdirectories = true;
-            fileWatcher.Created += this._fileWatcher_Created;
-            fileWatcher.Deleted += this._fileWatcher_Deleted;
-            fileWatcher.Renamed += this._fileWatcher_Renamed;
-            fileWatcher.Changed += this._fileWatcher_Changed;
-            fileWatcher.DisposeWith(disposables);
-
-            Directory.GetFiles(_path.LocalPath, "*", SearchOption.AllDirectories)
-                .ToList()
-                .ForEach(path => cache.AddOrUpdate(new fileEntry(path)));
-
-            fileWatcher.BeginInit();
-        }
-
-        private void _fileWatcher_Changed(object sender, FileSystemEventArgs e) => throw new NotImplementedException();
-        private void _fileWatcher_Renamed(object sender, RenamedEventArgs e)
-        {
-            var element = cache.Items.FirstOrDefault(file => file.Path == e.FullPath);
-            cache.AddOrUpdate(new fileEntry(element.Id, e.FullPath));
-        }
-        private void _fileWatcher_Deleted(object sender, FileSystemEventArgs e) => throw new NotImplementedException();
-        private void _fileWatcher_Created(object sender, FileSystemEventArgs e) => throw new NotImplementedException();
-        public void Dispose() => throw new NotImplementedException();
-    }
-
-    public interface IFileInfoService
+    public interface IFileInfoService : IDataService<FileInfo, FileInfoId, FileInfoChangeset>
     {
         void Synchronize();
     }
-    public class FileInfoService : DisposableReactiveObject, IFileInfoService
+    public class FileInfoService : DataServiceBase<FileInfo, FileInfoId, FileInfoChangeset>, IFileInfoService
     {
         private bool synchronizing = false;
         private IDirectorySetupService _directorySetupService;
@@ -94,40 +37,70 @@ namespace TableTopCrucible.Domain.Services
             this._directorySetupService = directorySetupService;
         }
 
-        public void Synchronize()
+
+        public IObservableCache<ExtendedFileInfo, DirectorySetupId> FullFIleInfo =>
+
+            this._directorySetupService.Get().Connect().LeftJoin
+                (
+                this.cache.Connect(),
+                (FileInfo dirSetup) => dirSetup.DirectorySetupId,
+                (left, right) => new ExtendedFileInfo(left, right.Value)
+                )
+                .TakeUntil(destroy)
+                .AsObservableCache();
+
+        public async void Synchronize()
         {
             if (synchronizing)
                 return;
             synchronizing = true;
-            Console.WriteLine("### Synchronizing");
-            this._directorySetupService.Get()
-                .Connect()
-                .Transform(x => new DirectoryObserver(x.Path, x.Id), true)
-                .RemoveKey()
-                .DisposeMany()
-                .TakeUntil(destroy)
-                .SubscribeMany(dirObserver=>
+
+            IEnumerable<DirectorySetup> dirSetups = this._directorySetupService
+                .Get()
+                .KeyValues
+                .Select(x => x.Value);
+
+            IEnumerable<ExtendedFileInfo> fileInfos = this.FullFIleInfo.KeyValues.Select(x => x.Value);
+
+            var actualDirSetupFiles = dirSetups
+                .Select(dirSetup => new { files = Directory.GetFiles(dirSetup.Path.LocalPath, "*", SearchOption.AllDirectories), dirSetup }).ToArray();
+
+            var flatDirSetupFiles = actualDirSetupFiles
+                .SelectMany(files => files.files.Select(path => new { files.dirSetup, path }));
+
+            IEnumerable<string> actualFiles = actualDirSetupFiles
+                .SelectMany(dirSetupFiles => dirSetupFiles.files);
+
+            var allPaths = fileInfos
+                    .Select(x => x.AbsolutePath)
+                    .Union(actualFiles)
+                    .Distinct()
+                    .Select(path => new { path, info = new SysFileInfo(path) });
+
+
+            var mergedFiles =
+                from file in allPaths
+                join foundFile in flatDirSetupFiles
+                    on file.path equals foundFile.path into foundFiles
+                join definedFile in fileInfos
+                    on file.path equals definedFile.AbsolutePath into definedFiles
+
+                select new FileInfoChangeset(definedFiles.Any() ? definedFiles.First().FileInfo as FileInfo? : null)
                 {
-                    Console.WriteLine("### got new dir observer", dirObserver);
-                    return dirObserver
-                           .Cache
-                           .Connect()
-                           .RemoveKey()
-                           .Transform(x =>
-                               x.FileChanged.Select(_ => x.Path)
-                           )
-                           .sele
-                           .SubscribeMany(path =>
-                           {
-                               Console.WriteLine("### path updating", path);
-                           });
-                })
-                .Subscribe();
+                    Path = (
+                        definedFiles.Any()
+                            ? definedFiles.First().DirectorySetup
+                            : foundFiles.First().dirSetup
+                        ).Path.MakeRelativeUri(new Uri(file.path)),
+                    CreationTime = file.info.CreationTime,
+                    LastWriteTime = file.info.LastWriteTime,
+                    IsAccessible = !foundFiles.Any(),
+                    IsNew = !definedFiles.Any(),
+                    DirectorySetupId = foundFiles.Any() ? foundFiles.First().dirSetup.Id : definedFiles.First().DirectorySetup.Id
+                };
 
-
-
-
-
+            this.Patch(mergedFiles);
         }
+
     }
 }

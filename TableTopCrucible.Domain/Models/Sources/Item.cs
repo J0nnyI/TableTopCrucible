@@ -17,23 +17,20 @@ namespace TableTopCrucible.Domain.Models.Sources
         public DateTime LastChange { get; }
 
         public Item(ItemName name, IEnumerable<Tag> tags = null, Thumbnail? thumbnail = null)
-        {
-            this.Id = (ItemId)Guid.NewGuid();
-            this.Name = name;
-            this.Tags = tags;
-            this.Created = DateTime.Now;
-            this.LastChange = DateTime.Now;
-            this.Thumbnail = thumbnail;
-        }
+            : this((ItemId)Guid.NewGuid(), name, tags, thumbnail, DateTime.Now) { }
         public Item(Item origin, ItemName name, IEnumerable<Tag> tags, Thumbnail? thumbnail)
+            : this(origin.Id, name, tags, thumbnail, origin.Created) { }
+
+        private Item(ItemId id, ItemName name, IEnumerable<Tag> tags, Thumbnail? thumbnail, DateTime created)
         {
-            this.Id = origin.Id;
+            this.Id = id;
             this.Name = name;
-            this.Tags = tags;
-            this.Created = origin.Created;
-            this.LastChange = origin.LastChange;
             this.Thumbnail = thumbnail;
+            this.Tags = tags ?? throw new ArgumentNullException(nameof(tags));
+            this.Created = created;
+            this.LastChange = DateTime.Now;
         }
+
         public override string ToString() => $"Tile {Id} ({Name})";
     }
 }

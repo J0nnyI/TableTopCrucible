@@ -13,12 +13,12 @@ namespace TableTopCrucible.Domain.Models.Sources
         public FileInfo(
             FileInfo origin, Uri path, DateTime creationTime, FileHash fileHash, DateTime lastWriteTime, DirectorySetupId directorySetupId,
             bool isAccessible, bool isNew)
-            : this(path, creationTime, fileHash, lastWriteTime, directorySetupId, isAccessible, isNew, (FileInfoId)Guid.NewGuid(), origin.Created)
+            : this(path, creationTime, fileHash, lastWriteTime, directorySetupId, isAccessible, isNew, origin.Id, origin.Created)
         { }
         public FileInfo(
             Uri path, DateTime creationTime, FileHash fileHash, DateTime lastWriteTime, DirectorySetupId directorySetupId,
-            bool isAccessible, bool isNew, FileInfoId id)
-            : this(path, creationTime, fileHash, lastWriteTime, directorySetupId, isAccessible, isNew, id, DateTime.Now)
+            bool isAccessible, bool isNew)
+            : this(path, creationTime, fileHash, lastWriteTime, directorySetupId, isAccessible, isNew, (FileInfoId)Guid.NewGuid(), DateTime.Now)
         { }
         private FileInfo(
             Uri path, DateTime creationTime, FileHash fileHash, DateTime lastWriteTime, DirectorySetupId directorySetupId,

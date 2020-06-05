@@ -16,11 +16,11 @@ namespace TableTopCrucible.Domain.Models.Sources
     {
         [Reactive]
         public Uri Path { get; set; }
-        
+
         [Reactive]
         public DateTime CreationTime { get; set; }
 
-        [Reactive] 
+        [Reactive]
         public FileHash FileHash { get; set; }
 
         [Reactive]
@@ -39,16 +39,16 @@ namespace TableTopCrucible.Domain.Models.Sources
 
         public FileInfoChangeset(FileInfo? origin = null) : base(origin)
         {
-            if(origin.HasValue){
+            if (origin.HasValue)
+            {
 
             }
         }
 
         public override FileInfo Apply()
-        {
-            return new FileInfo(this.Origin.Value, Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, IsAccessible, IsNew);
-        }
+            => new FileInfo(this.Origin.Value, Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, IsAccessible, IsNew);
         public override IEnumerable<string> GetErrors() => throw new NotImplementedException();
-        public override FileInfo ToEntity() => throw new NotImplementedException();
+        public override FileInfo ToEntity()
+            => new FileInfo(Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, IsAccessible, IsNew);
     }
 }

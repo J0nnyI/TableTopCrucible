@@ -59,12 +59,12 @@ namespace TableTopCrucible.WPF
                 .OnNext(serviceProvider);
 
 
-            //var dss = serviceProvider.GetRequiredService<IDirectorySetupService>();
-            //dss.Patch(new DirectorySetupChangeset()
-            //{
-            //    Path= new Uri(@"F:\tmp\Folder A"),
-            //    Name=@"Folder A"
-            //});
+            var dss = serviceProvider.GetRequiredService<IDirectorySetupService>();
+            dss.Patch(new DirectorySetupChangeset()
+            {
+                Path = @"F:\tmp\Folder A",
+                Name = @"Folder A"
+            });
             //dss.Patch(new DirectorySetupChangeset()
             //{
             //    Path = new Uri(@"F:\tmp\Folder B"),

@@ -21,7 +21,7 @@ namespace TableTopCrucible.WPF.Commands
         {
             this._directorySetupService.Patch(new DirectorySetupChangeset()
             {
-                Path = null,
+                Path = @"C:\",
                 Name = "New Directory",
                 Description = "a new directory which has not been setup yet"
             });

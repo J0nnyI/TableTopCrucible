@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" 
              d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:ItemListViewModel}">
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:DirectorySetupCardViewModel}">
     <UserControl.Resources>
         <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignTextBox}">
             <Setter Property="Margin" 
@@ -25,6 +25,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBox Text="{Binding Name}" 
                      Grid.Row="0"
@@ -38,6 +39,32 @@
                      Grid.Row="1"
                      Grid.Column="0"
                      Grid.ColumnSpan="2"/>
+            <StackPanel Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}"
+                        Grid.Column="3"
+                        Grid.Row="0"
+                        Grid.RowSpan="2">
+                <Button Command="{Binding EnterEditmode}"
+                        Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="Edit"/>
+                </Button>
+            </StackPanel>
+            <StackPanel Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}}"
+                        Grid.Column="3"
+                        Grid.Row="0"
+                        Grid.RowSpan="2">
+                <Button Command="{Binding Save}"
+                        Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="ContentSave"/>
+                </Button>
+                <Button Command="{Binding Delete}"
+                        Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="Delete"/>
+                </Button>
+                <Button Command="{Binding Undo}"
+                        Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="Undo"/>
+                </Button>
+            </StackPanel>
         </Grid>
     </md:Card>
 </UserControl>

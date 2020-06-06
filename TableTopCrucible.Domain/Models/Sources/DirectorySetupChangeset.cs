@@ -10,7 +10,7 @@ namespace TableTopCrucible.Domain.Models.Sources
 {
     public class DirectorySetupChangeset : ReactiveEntityBase<DirectorySetupChangeset, DirectorySetup, DirectorySetupId>, IEntityChangeset<DirectorySetup, DirectorySetupId>
     {
-        public Uri Path { get; set; }
+        public string Path { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
@@ -21,9 +21,9 @@ namespace TableTopCrucible.Domain.Models.Sources
         public override IEnumerable<Validator<DirectorySetupChangeset>> Validators { get; }
 
         public override DirectorySetup Apply()
-            => new DirectorySetup(this.Origin.Value, Path, (DirectorySetupName)Name, (Description)Description);
+            => new DirectorySetup(this.Origin.Value, new Uri(Path), (DirectorySetupName)Name, (Description)Description);
         public override DirectorySetup ToEntity()
-            => new DirectorySetup(Path, (DirectorySetupName)Name, (Description)Description);
+            => new DirectorySetup(new Uri(Path), (DirectorySetupName)Name, (Description)Description);
 
 
     }

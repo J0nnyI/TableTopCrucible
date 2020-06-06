@@ -4,21 +4,18 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Extensions;
 
+using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
-using System.Windows.Controls;
-using TableTopCrucible.Domain.Services;
-using TableTopCrucible.Domain.Models.ValueTypes;
-using TableTopCrucible.WPF.Commands;
-using System.Collections;
-using TableTopCrucible.Domain.Models.Sources;
-using Microsoft.Xaml.Behaviors.Layout;
+
 using TableTopCrucible.Domain.Models;
+using TableTopCrucible.Domain.Models.ValueTypes;
+using TableTopCrucible.Domain.Services;
+using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
@@ -59,7 +56,7 @@ namespace TableTopCrucible.WPF.ViewModels
             this.AddTag = new RelayCommand((tag) => _addTag(tag as string), (tag) => _canAddTag(tag as string));
             this.SelectedTagsChanged = new RelayCommand(items =>
                 this.SelectedTagsChanges.OnNext((items as IEnumerable).Cast<Tag>()));
-            this.RemoveTags = new RelayCommand(tags => _removeTags(tags as IEnumerable<Tag>), _ => this.SelectedTags?.Any()==true);
+            this.RemoveTags = new RelayCommand(tags => _removeTags(tags as IEnumerable<Tag>), _ => this.SelectedTags?.Any() == true);
             #endregion
 
             #region observables to property
@@ -69,10 +66,10 @@ namespace TableTopCrucible.WPF.ViewModels
 
             this._availableTags = tagService
                 .Get()
-                .CombineLatest(TagsChanges, 
-                    (available, used) 
-                        => available != null && used != null 
-                        ? available?.Except(used) 
+                .CombineLatest(TagsChanges,
+                    (available, used)
+                        => available != null && used != null
+                        ? available?.Except(used)
                         : null)
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(AvailableTags));

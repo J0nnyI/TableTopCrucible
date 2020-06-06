@@ -1,7 +1,5 @@
-﻿using DynamicData;
-
+﻿
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Extensions;
 
 using System;
@@ -10,7 +8,6 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Windows.Automation;
 
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;

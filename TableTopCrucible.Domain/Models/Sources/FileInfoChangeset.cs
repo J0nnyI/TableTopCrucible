@@ -1,11 +1,7 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+﻿using ReactiveUI.Fody.Helpers;
 
 using System;
 using System.Collections.Generic;
-using System.Reactive.Subjects;
-using System.Security.Policy;
-using System.Text;
 
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;

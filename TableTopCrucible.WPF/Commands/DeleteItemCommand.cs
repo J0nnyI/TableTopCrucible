@@ -6,8 +6,8 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
 
-using TableTopCrucible.Domain.Services;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
+using TableTopCrucible.Domain.Services;
 
 namespace TableTopCrucible.WPF.Commands
 {

@@ -1,25 +1,17 @@
-﻿using System;
+﻿using DynamicData;
+
+using System;
 using System.Collections.Generic;
 using System.IO;
-using SysFileInfo = System.IO.FileInfo;
-using System.Text;
-using TableTopCrucible.Domain.Models.Sources;
-using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
-using TableTopCrucible.Domain.Models.ValueTypes.IDs;
-using System.Dynamic;
-using DynamicData;
-using System.Reactive.Linq;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
-using System.Reactive;
-using TableTopCrucible.Domain.Models;
-using ReactiveUI;
-using System.Windows.Navigation;
-using System.Security.Cryptography;
-using TableTopCrucible.Domain.Models.ValueTypes;
+using System.Reactive.Linq;
+
+using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.Domain.Models.Views;
+
+using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
+using SysFileInfo = System.IO.FileInfo;
 
 namespace TableTopCrucible.Domain.Services
 {
@@ -65,7 +57,7 @@ namespace TableTopCrucible.Domain.Services
             IEnumerable<ExtendedFileInfo> fileInfos = this.GetFullFIleInfo().KeyValues.Select(x => x.Value);
 
             var actualDirSetupFiles = dirSetups
-                .Where(dirSetup=>dirSetup.IsValid)
+                .Where(dirSetup => dirSetup.IsValid)
                 .Select(dirSetup => new { files = Directory.GetFiles(dirSetup.Path.LocalPath, "*", SearchOption.AllDirectories), dirSetup }).ToArray();
 
             var flatDirSetupFiles = actualDirSetupFiles
@@ -89,7 +81,7 @@ namespace TableTopCrucible.Domain.Services
 
                 select new FileInfoChangeset(definedFiles.Any() ? definedFiles.First().FileInfo as FileInfo? : null)
                 {
-                    Path = 
+                    Path =
                         new Uri(Uri.UnescapeDataString(
                             (
                             definedFiles.Any()
@@ -97,7 +89,7 @@ namespace TableTopCrucible.Domain.Services
                                 : foundFiles.First().dirSetup
                             ).Path.MakeRelativeUri(new Uri(file.path))
                             .ToString()
-                        ),UriKind.Relative),
+                        ), UriKind.Relative),
                     CreationTime = file.info.CreationTime,
                     LastWriteTime = file.info.LastWriteTime,
                     IsAccessible = !foundFiles.Any(),

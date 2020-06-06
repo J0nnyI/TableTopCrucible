@@ -15,20 +15,20 @@ namespace TableTopCrucible.WPF.MultiConverters
                 if (rawPar.StartsWith("eval"))
                 {
                     // 1st level: get all ors
-                    bool res = rawPar.Replace("eval","").Split("or").Select(
+                    bool res = rawPar.Replace("eval", "").Split("or").Select(
                     x =>
                     {
                         // then get the ands between the ors
                         return x.Split("and")
                         .Select(y =>
                            {
-                                // than get the values between the ands (index based)
-                                return (values[int.Parse(y.Trim())] as bool?) == true;
-                        })
+                               // than get the values between the ands (index based)
+                               return (values[int.Parse(y.Trim())] as bool?) == true;
+                           })
                         // and check them via an and operator
                         .Any(y => !y != true);
                         // finaly check if any and operator is true
-                        }).Any(y => y == true);
+                    }).Any(y => y == true);
                     return res;
                 }
                 else

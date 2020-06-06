@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
-using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Models.Views
 {
@@ -58,7 +55,7 @@ namespace TableTopCrucible.Domain.Models.Views
         }
         public static IEqualityComparer<ExtendedFileInfo> Comparer { get; } = new ComparerClass();
 
-        public override bool Equals(object obj) 
+        public override bool Equals(object obj)
             => obj is ExtendedFileInfo info && EqualityComparer<FileInfo>.Default.Equals(this.FileInfo, info.FileInfo) && EqualityComparer<DirectorySetup>.Default.Equals(this.DirectorySetup, info.DirectorySetup);
         public override int GetHashCode()
             => HashCode.Combine(this.FileInfo, this.DirectorySetup);

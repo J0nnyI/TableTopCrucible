@@ -1,17 +1,9 @@
-﻿using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-using ReactiveUI.Validation.Abstractions;
-using ReactiveUI.Validation.Extensions;
-using ReactiveUI.Validation.Helpers;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Reactive;
-using System.Reactive.Linq;
+﻿using System;
 using System.Windows.Input;
 
 using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.Services;
 using TableTopCrucible.Domain.Models.ValueTypes;
+using TableTopCrucible.Domain.Services;
 
 namespace TableTopCrucible.WPF.Commands
 {

@@ -25,7 +25,7 @@ namespace TableTopCrucible.Domain.Services
             = new SourceCache<Tentity, Tid>(entity => entity.Id);
         private IObservableCache<Tentity, Tid> _readOnlyCache;
         private readonly SubjectBase<Unit> _destroy = new Subject<Unit>();
-        protected IObservable<Unit> destroy =>_destroy;
+        protected IObservable<Unit> destroy => _destroy;
 
         // delete
         public void Delete(Tid key)

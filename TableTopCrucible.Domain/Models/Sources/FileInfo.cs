@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
@@ -51,7 +48,7 @@ namespace TableTopCrucible.Domain.Models.Sources
         public DateTime Created { get; }
         public DateTime LastChange { get; }
 
-        public static  bool operator ==(FileInfo fileA, FileInfo fileB)
+        public static bool operator ==(FileInfo fileA, FileInfo fileB)
             => fileA.Identity == fileB.Identity;
         public static bool operator !=(FileInfo fileA, FileInfo fileB)
             => fileA.Identity != fileB.Identity;

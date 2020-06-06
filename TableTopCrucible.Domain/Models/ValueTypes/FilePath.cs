@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes
@@ -13,8 +12,8 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
         public FilePath(Uri rootPath, Uri relativePath)
         {
             this.RootPath = rootPath;
-            this.Path = relativePath.IsAbsoluteUri 
-                ? rootPath.MakeRelativeUri(relativePath) 
+            this.Path = relativePath.IsAbsoluteUri
+                ? rootPath.MakeRelativeUri(relativePath)
                 : relativePath;
             this._asAbsolute = null;
         }

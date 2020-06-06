@@ -3,13 +3,10 @@
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
-using System.Text;
 
 using TableTopCrucible.Domain.Models;
-using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
 
@@ -28,7 +25,7 @@ namespace TableTopCrucible.WPF.ViewModels
         private IInjectionProviderService _injectionProviderService;
         public DirectorySetupViewModel(
             IDirectorySetupService directorySetupService,
-            IInjectionProviderService injectionProviderService, 
+            IInjectionProviderService injectionProviderService,
             SychronizeFilesCommand synchronizeFiles,
             CreateDirectorySetupCommand createDirectorySetup)
         {

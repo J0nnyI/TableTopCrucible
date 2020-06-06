@@ -6,7 +6,6 @@ using System.Reactive.Subjects;
 using System.Windows;
 
 using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.WPF.ViewModels;

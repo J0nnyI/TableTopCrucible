@@ -1,14 +1,13 @@
 ﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Extensions;
+
 using System;
-using System.Diagnostics;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Windows.Controls;
 using System.Windows.Input;
+
 using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
@@ -129,7 +128,7 @@ namespace TableTopCrucible.WPF.ViewModels
             this.SaveItemCommand = saveItemCommand;
             saveItemCommand.ItemSaved += this.SaveItemCommand_ItemSaved;
             // Relays
-            this.EnterEditmode = new RelayCommand(_ => this.EditMode=true, _ => this.Editable);
+            this.EnterEditmode = new RelayCommand(_ => this.EditMode = true, _ => this.Editable);
             this.UndoCommand = new RelayCommand(_ => this._undo());
             this.ToggleExpansionCommand = new RelayCommand(_ => this.IsExpanded = !this.IsExpanded);
             #endregion

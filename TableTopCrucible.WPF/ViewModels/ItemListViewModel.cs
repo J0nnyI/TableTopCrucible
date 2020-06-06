@@ -13,12 +13,12 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Data;
+
 using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.Services;
 using TableTopCrucible.Domain.Models.ValueTypes;
+using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
-using TableTopCrucible.WPF.Helper;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
@@ -86,8 +86,9 @@ namespace TableTopCrucible.WPF.ViewModels
                 .DisposeMany()
                 .Bind(out _items)
                 .TakeUntil(destroy)
-                .Subscribe(x=> { 
-                    if(this.ItemsDataView == null)
+                .Subscribe(x =>
+                {
+                    if (this.ItemsDataView == null)
                     {
                         this.ItemsDataView = new CollectionViewSource()
                         {

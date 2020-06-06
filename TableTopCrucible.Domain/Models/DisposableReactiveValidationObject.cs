@@ -18,7 +18,7 @@ namespace TableTopCrucible.Domain.Models
             this.disposables.Dispose();
         }
         #region IDisposable Support
-        public bool IsDisposed {get; private set; } = false; // To detect redundant calls
+        public bool IsDisposed { get; private set; } = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {

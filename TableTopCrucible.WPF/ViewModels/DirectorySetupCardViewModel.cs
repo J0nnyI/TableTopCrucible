@@ -2,10 +2,8 @@
 using ReactiveUI.Fody.Helpers;
 
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
 using System.Windows.Input;
 
 using TableTopCrucible.Domain.Models;

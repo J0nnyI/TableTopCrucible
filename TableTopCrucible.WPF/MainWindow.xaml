@@ -26,9 +26,12 @@
 
         <ContentPresenter Content="{Binding Path=ItemList}"
                           Grid.Column="1"/>
-
-        <ContentPresenter Content="{Binding Path=ItemEditor}"
-                          Grid.Column="0"/>
+        <StackPanel>
+            <ContentPresenter Content="{Binding Path=DirectorySetup}"
+                              Grid.Column="0"/>
+            <ContentPresenter Content="{Binding Path=FileDefinitions}"
+                              Grid.Column="0"/>
+        </StackPanel>
 
         <Label Content="{Binding Path=ItemList.SelectedItemVm}"
                Grid.Column="0"

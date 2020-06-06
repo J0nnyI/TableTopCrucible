@@ -59,19 +59,19 @@ namespace TableTopCrucible.WPF
                 .OnNext(serviceProvider);
 
 
-            var dss = serviceProvider.GetRequiredService<IDirectorySetupService>();
-            dss.Patch(new DirectorySetupChangeset()
-            {
-                Path= new Uri(@"F:\tmp\Folder A"),
-                Name=@"Folder A"
-            });
-            dss.Patch(new DirectorySetupChangeset()
-            {
-                Path = new Uri(@"F:\tmp\Folder B"),
-                Name = @"Folder B"
-            });
-            var fileInfoService = serviceProvider.GetRequiredService<IFileInfoService>();
-            fileInfoService.Synchronize();
+            //var dss = serviceProvider.GetRequiredService<IDirectorySetupService>();
+            //dss.Patch(new DirectorySetupChangeset()
+            //{
+            //    Path= new Uri(@"F:\tmp\Folder A"),
+            //    Name=@"Folder A"
+            //});
+            //dss.Patch(new DirectorySetupChangeset()
+            //{
+            //    Path = new Uri(@"F:\tmp\Folder B"),
+            //    Name = @"Folder B"
+            //});
+            //var fileInfoService = serviceProvider.GetRequiredService<IFileInfoService>();
+            //fileInfoService.Synchronize();
 
             this._disposables.Add(serviceProvider);
 
@@ -100,12 +100,15 @@ namespace TableTopCrucible.WPF
             services.AddTransient<TagEditorViewModel>();
             services.AddTransient<ItemEditorViewModel>();
             services.AddTransient<FileDefinitionViewModel>();
+            services.AddTransient<DirectorySetupViewModel>();
+            services.AddTransient<DirectorySetupCardViewModel>();
 
             // commands
             services.AddSingleton<CreateItemCommand>();
             services.AddSingleton<DeleteItemCommand>();
             services.AddSingleton<SaveItemCommand>();
             services.AddSingleton<SychronizeFilesCommand>();
+            services.AddSingleton<CreateDirectorySetupCommand>();
 
             return services.BuildServiceProvider();
         }

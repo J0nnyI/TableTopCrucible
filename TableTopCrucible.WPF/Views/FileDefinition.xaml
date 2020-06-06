@@ -3,12 +3,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:TableTopCrucible.WPF.ViewModels"
              xmlns:local="clr-namespace:TableTopCrucible.WPF.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" 
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:FileDefinitionViewModel}">
     <Grid>
-        <Label>
-            FileDefinition works
-        </Label>
+        <ListView ItemsSource="{Binding Files}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="ID"
+                                    DisplayMemberBinding="{Binding FileInfo.Id}"/>
+                    <GridViewColumn Header="Path"
+                                    DisplayMemberBinding="{Binding AbsolutePath}"/>
+                    <GridViewColumn Header="dir setup id"
+                                    DisplayMemberBinding="{Binding FileInfo.DirectorySetupId}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </UserControl>

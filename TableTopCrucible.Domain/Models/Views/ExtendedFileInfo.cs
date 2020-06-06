@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using TableTopCrucible.Domain.Models.Sources;
@@ -38,5 +40,28 @@ namespace TableTopCrucible.Domain.Models.Views
             this.DirectorySetup = directorySetup;
             this.AbsoluteUri = new Uri(directorySetup.Path, fileInfo.Path);
         }
+
+
+        public static bool operator ==(ExtendedFileInfo fileA, ExtendedFileInfo fileB)
+            => fileA.FileInfo == fileB.FileInfo && fileA.DirectorySetup == fileB.DirectorySetup;
+        public static bool operator !=(ExtendedFileInfo fileA, ExtendedFileInfo fileB)
+            => fileA.FileInfo.Identity != fileB.FileInfo.Identity || fileA.FileInfo.Identity != fileB.FileInfo.Identity;
+
+        private class ComparerClass : IEqualityComparer<ExtendedFileInfo>, IEqualityComparer
+        {
+            bool IEqualityComparer.Equals(object x, object y)
+                => x is ExtendedFileInfo ex && y is ExtendedFileInfo ey && this.Equals(ex, ey);
+            public bool Equals(ExtendedFileInfo x, ExtendedFileInfo y)
+                => x == y;
+            int IEqualityComparer.GetHashCode(object obj) => obj.GetHashCode();
+            public int GetHashCode(ExtendedFileInfo obj) => obj.GetHashCode();
+        }
+        public static IEqualityComparer<ExtendedFileInfo> Comparer { get; } = new ComparerClass();
+
+        public override bool Equals(object obj) 
+            => obj is ExtendedFileInfo info && EqualityComparer<FileInfo>.Default.Equals(this.FileInfo, info.FileInfo) && EqualityComparer<DirectorySetup>.Default.Equals(this.DirectorySetup, info.DirectorySetup);
+        public override int GetHashCode()
+            => HashCode.Combine(this.FileInfo, this.DirectorySetup);
     }
+
 }

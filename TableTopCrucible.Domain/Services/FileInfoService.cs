@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using SysFileInfo = System.IO.FileInfo;
 using System.Text;
-
 using TableTopCrucible.Domain.Models.Sources;
 using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
@@ -27,6 +26,7 @@ namespace TableTopCrucible.Domain.Services
     public interface IFileInfoService : IDataService<FileInfo, FileInfoId, FileInfoChangeset>
     {
         void Synchronize();
+        public IObservableCache<ExtendedFileInfo, FileInfoId> GetFullFIleInfo();
     }
     public class FileInfoService : DataServiceBase<FileInfo, FileInfoId, FileInfoChangeset>, IFileInfoService
     {
@@ -38,18 +38,20 @@ namespace TableTopCrucible.Domain.Services
         }
 
 
-        public IObservableCache<ExtendedFileInfo, DirectorySetupId> FullFIleInfo =>
+        public IObservableCache<ExtendedFileInfo, FileInfoId> GetFullFIleInfo() =>
+        this._directorySetupService
+            .Get()
+            .Connect()
+            .LeftJoinMany(
+            this.cache.Connect(),
+            (FileInfo dirSetup) => dirSetup.DirectorySetupId,
+                (left, right) => right.Items.Select(item => new ExtendedFileInfo(left, item))
+            )
+            .TransformMany(x => x, x => x.FileInfo.Id)
+            .TakeUntil(destroy)
+            .AsObservableCache();
 
-            this._directorySetupService.Get().Connect().LeftJoin
-                (
-                this.cache.Connect(),
-                (FileInfo dirSetup) => dirSetup.DirectorySetupId,
-                (left, right) => new ExtendedFileInfo(left, right.Value)
-                )
-                .TakeUntil(destroy)
-                .AsObservableCache();
-
-        public async void Synchronize()
+        public void Synchronize()
         {
             if (synchronizing)
                 return;
@@ -60,9 +62,10 @@ namespace TableTopCrucible.Domain.Services
                 .KeyValues
                 .Select(x => x.Value);
 
-            IEnumerable<ExtendedFileInfo> fileInfos = this.FullFIleInfo.KeyValues.Select(x => x.Value);
+            IEnumerable<ExtendedFileInfo> fileInfos = this.GetFullFIleInfo().KeyValues.Select(x => x.Value);
 
             var actualDirSetupFiles = dirSetups
+                .Where(dirSetup=>dirSetup.IsValid)
                 .Select(dirSetup => new { files = Directory.GetFiles(dirSetup.Path.LocalPath, "*", SearchOption.AllDirectories), dirSetup }).ToArray();
 
             var flatDirSetupFiles = actualDirSetupFiles
@@ -77,8 +80,7 @@ namespace TableTopCrucible.Domain.Services
                     .Distinct()
                     .Select(path => new { path, info = new SysFileInfo(path) });
 
-
-            var mergedFiles =
+            IEnumerable<FileInfoChangeset> mergedFiles =
                 from file in allPaths
                 join foundFile in flatDirSetupFiles
                     on file.path equals foundFile.path into foundFiles
@@ -87,11 +89,15 @@ namespace TableTopCrucible.Domain.Services
 
                 select new FileInfoChangeset(definedFiles.Any() ? definedFiles.First().FileInfo as FileInfo? : null)
                 {
-                    Path = (
-                        definedFiles.Any()
-                            ? definedFiles.First().DirectorySetup
-                            : foundFiles.First().dirSetup
-                        ).Path.MakeRelativeUri(new Uri(file.path)),
+                    Path = 
+                        new Uri(Uri.UnescapeDataString(
+                            (
+                            definedFiles.Any()
+                                ? definedFiles.First().DirectorySetup
+                                : foundFiles.First().dirSetup
+                            ).Path.MakeRelativeUri(new Uri(file.path))
+                            .ToString()
+                        ),UriKind.Relative),
                     CreationTime = file.info.CreationTime,
                     LastWriteTime = file.info.LastWriteTime,
                     IsAccessible = !foundFiles.Any(),

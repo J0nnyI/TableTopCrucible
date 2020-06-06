@@ -27,5 +27,7 @@ namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
             => id._guid;
         public static explicit operator FileInfoId(Guid id)
             => new FileInfoId(id);
+        public override string ToString()
+            => _guid.ToString();
     }
 }

@@ -21,24 +21,25 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
+            <RowDefinition/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <ContentPresenter Content="{Binding Path=ItemList}"
-                          Grid.Column="1"/>
-        <StackPanel>
-            <ContentPresenter Content="{Binding Path=DirectorySetup}"
-                              Grid.Column="0"/>
-            <ContentPresenter Content="{Binding Path=FileDefinitions}"
-                              Grid.Column="0"/>
-        </StackPanel>
+                          Grid.Column="1"
+                          Grid.RowSpan="2"/>
+        <ContentPresenter Content="{Binding Path=DirectorySetup}"
+                          Grid.Column="0"/>
+        <ContentPresenter Content="{Binding Path=FileDefinitions}"
+                          Grid.Column="0 "
+                          Grid.Row="1"/>
 
-        <Label Content="{Binding Path=ItemList.SelectedItemVm}"
+        <!--<Label Content="{Binding Path=ItemList.SelectedItemVm}"
                Grid.Column="0"
                Grid.Row="1"/>
         <Label Content="{Binding Path=ItemList.SelectedItem}"
                Grid.Column="1"
-               Grid.Row="1"/>
+               Grid.Row="1"/>-->
 
     </Grid>
 </Window>

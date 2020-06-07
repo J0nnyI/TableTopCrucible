@@ -27,21 +27,23 @@ namespace TableTopCrucible.Domain.Services
         public FileInfoService(IDirectorySetupService directorySetupService)
         {
             this._directorySetupService = directorySetupService;
+
+
+            _getFullFIleInfo = this._directorySetupService
+                .Get()
+                .Connect()
+                .LeftJoinMany(
+                this.cache.Connect(),
+                (FileInfo dirSetup) => dirSetup.DirectorySetupId,
+                    (left, right) => right.Items.Select(item => new ExtendedFileInfo(left, item))
+                )
+                .TransformMany(x => x, x => x.FileInfo.Id)
+                .TakeUntil(destroy)
+                .AsObservableCache();
         }
 
-
-        public IObservableCache<ExtendedFileInfo, FileInfoId> GetFullFIleInfo() =>
-        this._directorySetupService
-            .Get()
-            .Connect()
-            .LeftJoinMany(
-            this.cache.Connect(),
-            (FileInfo dirSetup) => dirSetup.DirectorySetupId,
-                (left, right) => right.Items.Select(item => new ExtendedFileInfo(left, item))
-            )
-            .TransformMany(x => x, x => x.FileInfo.Id)
-            .TakeUntil(destroy)
-            .AsObservableCache();
+        private readonly IObservableCache<ExtendedFileInfo, FileInfoId> _getFullFIleInfo;
+        public IObservableCache<ExtendedFileInfo, FileInfoId> GetFullFIleInfo() => _getFullFIleInfo;
 
         public void Synchronize()
         {
@@ -98,6 +100,7 @@ namespace TableTopCrucible.Domain.Services
                 };
 
             this.Patch(mergedFiles);
+            synchronizing = false;
         }
 
     }

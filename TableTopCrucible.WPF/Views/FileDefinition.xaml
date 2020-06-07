@@ -13,12 +13,16 @@
         <ListView ItemsSource="{Binding Files}">
             <ListView.View>
                 <GridView>
+                    <GridViewColumn Header="Directory Setup Name"
+                                    DisplayMemberBinding="{Binding DirectorySetup.Name}"/>
                     <GridViewColumn Header="ID"
                                     DisplayMemberBinding="{Binding FileInfo.Id}"/>
+                    <GridViewColumn Header="IsNew"
+                                    DisplayMemberBinding="{Binding IsFileNew}"/>
+                    <GridViewColumn Header="IsAccessible"
+                                    DisplayMemberBinding="{Binding isFileAccessible}"/>
                     <GridViewColumn Header="Path"
                                     DisplayMemberBinding="{Binding AbsolutePath}"/>
-                    <GridViewColumn Header="dir setup id"
-                                    DisplayMemberBinding="{Binding FileInfo.DirectorySetupId}"/>
                 </GridView>
             </ListView.View>
         </ListView>

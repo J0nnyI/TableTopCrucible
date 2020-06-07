@@ -56,7 +56,11 @@ namespace TableTopCrucible.Domain.Models.Views
         public static IEqualityComparer<ExtendedFileInfo> Comparer { get; } = new ComparerClass();
 
         public override bool Equals(object obj)
-            => obj is ExtendedFileInfo info && EqualityComparer<FileInfo>.Default.Equals(this.FileInfo, info.FileInfo) && EqualityComparer<DirectorySetup>.Default.Equals(this.DirectorySetup, info.DirectorySetup);
+        {
+            if (obj is ExtendedFileInfo fileInfo)
+                return fileInfo == this;
+                return false;
+        }
         public override int GetHashCode()
             => HashCode.Combine(this.FileInfo, this.DirectorySetup);
     }

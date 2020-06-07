@@ -108,6 +108,7 @@ namespace TableTopCrucible.WPF
             services.AddSingleton<SaveItemCommand>();
             services.AddSingleton<SychronizeFilesCommand>();
             services.AddSingleton<CreateDirectorySetupCommand>();
+            services.AddSingleton<SaveDirectorySetupCommand>();
 
             return services.BuildServiceProvider();
         }

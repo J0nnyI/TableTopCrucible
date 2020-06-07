@@ -28,12 +28,21 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBox Text="{Binding Name}" 
+                     IsReadOnly="{Binding EditMode, Converter={StaticResource cv_Invert}}"
+                     md:TextFieldAssist.DecorationVisibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}}"
+                     md:ValidationAssist.UsePopup="True"
                      Grid.Row="0"
                      Grid.Column="0"/>
             <TextBox Text="{Binding Path}"
+                     IsReadOnly="{Binding EditMode, Converter={StaticResource cv_Invert}}"
+                     md:TextFieldAssist.DecorationVisibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}}"
+                     md:ValidationAssist.UsePopup="True"
                      Grid.Row="0"
                      Grid.Column="1"/>
             <TextBox Text="{Binding Description}"
+                     IsReadOnly="{Binding EditMode, Converter={StaticResource cv_Invert}}"
+                     md:TextFieldAssist.DecorationVisibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}}"
+                     md:ValidationAssist.UsePopup="True"
                      Style="{StaticResource MaterialDesignOutlinedTextFieldTextBox}"
                      Margin="8px"
                      Grid.Row="1"
@@ -53,6 +62,7 @@
                         Grid.Row="0"
                         Grid.RowSpan="2">
                 <Button Command="{Binding Save}"
+                        CommandParameter="{Binding Changeset}"
                         Style="{StaticResource MaterialDesignIconButton}">
                     <md:PackIcon Kind="ContentSave"/>
                 </Button>

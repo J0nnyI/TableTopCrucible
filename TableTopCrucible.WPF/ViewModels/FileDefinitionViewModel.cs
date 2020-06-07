@@ -11,6 +11,7 @@ using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
+
     public class FileDefinitionViewModel : DisposableReactiveObject
     {
         private readonly ReadOnlyObservableCollection<ExtendedFileInfo> _files;
@@ -18,7 +19,6 @@ namespace TableTopCrucible.WPF.ViewModels
         private readonly IFileInfoService _fileInfoService;
 
         public SychronizeFilesCommand SynchronizeFiles { get; }
-
         public FileDefinitionViewModel(IFileInfoService fileInfoService, SychronizeFilesCommand synchronizeFiles)
         {
             this.SynchronizeFiles = synchronizeFiles;

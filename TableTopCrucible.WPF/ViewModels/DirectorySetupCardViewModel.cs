@@ -16,7 +16,6 @@ namespace TableTopCrucible.WPF.ViewModels
     {
         public BehaviorSubject<DirectorySetup> DirectorySetupChanges = new BehaviorSubject<DirectorySetup>(default);
 
-
         public ICommand EnterEditmode { get; }
         public ICommand Save { get; }
         public ICommand Undo { get; }
@@ -48,8 +47,9 @@ namespace TableTopCrucible.WPF.ViewModels
 
         [Reactive] public DirectorySetupChangeset Changeset { get; set; }
 
-        public DirectorySetupCardViewModel()
+        public DirectorySetupCardViewModel(SaveDirectorySetupCommand saveDirectorySetup)
         {
+            this.Save = saveDirectorySetup;
             this.EnterEditmode = new RelayCommand(
                 _ => this.EditMode = true,
                 _ => !this.EditMode);

@@ -7,6 +7,7 @@
              xmlns:viewModels="clr-namespace:TableTopCrucible.WPF.ViewModels"
              xmlns:local="clr-namespace:TableTopCrucible.WPF.Views"
              mc:Ignorable="d" 
+             Name="self"
              d:DesignHeight="450" 
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:DirectorySetupCardViewModel}">
@@ -25,6 +26,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBox Text="{Binding Name}" 
@@ -47,34 +49,67 @@
                      Margin="8px"
                      Grid.Row="1"
                      Grid.Column="0"
-                     Grid.ColumnSpan="2"/>
-            <StackPanel Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}"
-                        Grid.Column="3"
+                     Grid.ColumnSpan="3"/>
+            
+            <Label Content="{Binding FileCount}"
+                   VerticalAlignment="Center" 
+                   HorizontalAlignment="Center"
+                   MinWidth="20px"
+                   Grid.Column="2"
+                   Grid.Row="0"/>
+
+            <Grid Grid.Row="0"
+                  Grid.RowSpan="3"
+                  Grid.Column="3">
+                <Grid.Visibility>
+                    <MultiBinding Converter="{StaticResource mvc_visibillity}" ConverterParameter="or_hidden">
+                        <Binding ElementName="self" 
+                                 Path="IsMouseOver"/>
+                        <Binding Path="EditMode"/>
+                    </MultiBinding>
+                </Grid.Visibility>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <!-- viewmode buttons -->
+                <Button Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=invert_hidden}"
+                        Command="{Binding EnterEditmode}"
+                        Style="{StaticResource MaterialDesignIconForegroundButton}"
                         Grid.Row="0"
-                        Grid.RowSpan="2">
-                <Button Command="{Binding EnterEditmode}"
-                        Style="{StaticResource MaterialDesignIconButton}">
+                        Grid.Column="0">
                     <md:PackIcon Kind="Edit"/>
                 </Button>
-            </StackPanel>
-            <StackPanel Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}}"
-                        Grid.Column="3"
-                        Grid.Row="0"
-                        Grid.RowSpan="2">
+                <!-- editmode buttons -->
                 <Button Command="{Binding Save}"
                         CommandParameter="{Binding Changeset}"
-                        Style="{StaticResource MaterialDesignIconButton}">
+                        Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=hidden}"
+                        Style="{StaticResource MaterialDesignIconForegroundButton}"
+                        Grid.Row="0"
+                        Grid.Column="0">
                     <md:PackIcon Kind="ContentSave"/>
                 </Button>
                 <Button Command="{Binding Delete}"
-                        Style="{StaticResource MaterialDesignIconButton}">
+                        CommandParameter="{Binding Changeset.Origin.Id}"
+                        Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=hidden}"
+                        Style="{StaticResource MaterialDesignIconButton}"
+                        Grid.Row="1"
+                        Grid.Column="0">
                     <md:PackIcon Kind="Delete"/>
                 </Button>
                 <Button Command="{Binding Undo}"
-                        Style="{StaticResource MaterialDesignIconButton}">
+                        Visibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}, ConverterParameter=hidden}"
+                        Style="{StaticResource MaterialDesignIconButton}"
+                        Grid.Row="2"
+                        Grid.Column="0">
                     <md:PackIcon Kind="Undo"/>
                 </Button>
-            </StackPanel>
+            </Grid>
         </Grid>
     </md:Card>
 </UserControl>

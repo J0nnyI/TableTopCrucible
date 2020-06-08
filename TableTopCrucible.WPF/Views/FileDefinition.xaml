@@ -5,12 +5,27 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:TableTopCrucible.WPF.ViewModels"
              xmlns:local="clr-namespace:TableTopCrucible.WPF.Views"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" 
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:FileDefinitionViewModel}">
     <Grid>
-        <ListView ItemsSource="{Binding Files}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Grid.Row="0">
+            <Button Command="{Binding hashFiles}"
+                    Style="{StaticResource MaterialDesignIconButton}">
+                <md:PackIcon Kind="FolderHash"/>
+            </Button>
+        </StackPanel>
+        <ListView ItemsSource="{Binding Files}"
+                  Grid.Row="1">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Directory Setup Name"
@@ -23,6 +38,8 @@
                                     DisplayMemberBinding="{Binding isFileAccessible}"/>
                     <GridViewColumn Header="Path"
                                     DisplayMemberBinding="{Binding AbsolutePath}"/>
+                    <GridViewColumn Header="hash"
+                                    DisplayMemberBinding="{Binding FileHash}"/>
                 </GridView>
             </ListView.View>
         </ListView>

@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HelixToolkit.Core.Wpf" Version="2.11.0" />
     <PackageReference Include="MaterialDesignThemes" Version="3.1.2" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="ReactiveUI" Version="11.4.1" />
@@ -17,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Domain\TableTopCrucible.Domain.csproj" />
   </ItemGroup>
 

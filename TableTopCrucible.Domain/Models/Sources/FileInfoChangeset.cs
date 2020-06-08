@@ -17,7 +17,7 @@ namespace TableTopCrucible.Domain.Models.Sources
         public DateTime CreationTime { get; set; }
 
         [Reactive]
-        public FileHash FileHash { get; set; }
+        public FileHash? FileHash { get; set; }
 
         [Reactive]
         public DateTime LastWriteTime { get; set; }
@@ -28,23 +28,25 @@ namespace TableTopCrucible.Domain.Models.Sources
         [Reactive]
         public bool IsAccessible { get; set; }
 
-        [Reactive]
-        public bool IsNew { get; set; }
-
 
 
         public FileInfoChangeset(FileInfo? origin = null) : base(origin)
         {
             if (origin.HasValue)
             {
-
+                this.Path = origin.Value.Path;
+                this.CreationTime = origin.Value.CreationTime;
+                this.FileHash = origin.Value.FileHash;
+                this.LastWriteTime = origin.Value.LastWriteTime;
+                this.DirectorySetupId = origin.Value.DirectorySetupId;
+                this.IsAccessible = origin.Value.isAccessible;
             }
         }
 
         public override FileInfo Apply()
-            => new FileInfo(this.Origin.Value, Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, IsAccessible, IsNew);
+            => new FileInfo(this.Origin.Value, Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, IsAccessible);
         public override IEnumerable<string> GetErrors() => throw new NotImplementedException();
         public override FileInfo ToEntity()
-            => new FileInfo(Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, IsAccessible, IsNew);
+            => new FileInfo(Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, IsAccessible);
     }
 }

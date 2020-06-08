@@ -17,10 +17,9 @@ namespace TableTopCrucible.Domain.Models.Views
 
         public Uri AbsoluteUri { get; }
         public string AbsolutePath => AbsoluteUri.LocalPath;
-        public FileHash FileHash => FileInfo.FileHash;
+        public FileHash? FileHash => FileInfo.FileHash;
         public DateTime LastWriteTime => FileInfo.LastWriteTime;
-        public bool isFileAccessible => FileInfo.isAccessible;
-        public bool IsFileNew => FileInfo.IsNew;
+        public bool IsFileAccessible => FileInfo.isAccessible;
 
 
         public DirectorySetupName DirectorySetupName => DirectorySetup.Name;
@@ -59,7 +58,7 @@ namespace TableTopCrucible.Domain.Models.Views
         {
             if (obj is ExtendedFileInfo fileInfo)
                 return fileInfo == this;
-                return false;
+            return false;
         }
         public override int GetHashCode()
             => HashCode.Combine(this.FileInfo, this.DirectorySetup);

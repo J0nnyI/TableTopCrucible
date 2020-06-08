@@ -3,6 +3,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Views;
@@ -18,10 +19,13 @@ namespace TableTopCrucible.WPF.ViewModels
         public ReadOnlyObservableCollection<ExtendedFileInfo> Files => _files;
         private readonly IFileInfoService _fileInfoService;
 
-        public SychronizeFilesCommand SynchronizeFiles { get; }
-        public FileDefinitionViewModel(IFileInfoService fileInfoService, SychronizeFilesCommand synchronizeFiles)
+        public ICommand SynchronizeFiles { get; }
+        public ICommand hashFiles { get; }
+        public FileDefinitionViewModel(IFileInfoService fileInfoService, SychronizeFilesCommand synchronizeFiles, HashFilesCommand hashFiles)
         {
             this.SynchronizeFiles = synchronizeFiles;
+            this.hashFiles = hashFiles;
+
             this._fileInfoService = fileInfoService;
             this._fileInfoService
                 .GetFullFIleInfo()

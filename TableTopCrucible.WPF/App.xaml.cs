@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reactive.Subjects;
 using System.Windows;
+using System.Windows.Threading;
 
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
@@ -49,6 +50,11 @@ namespace TableTopCrucible.WPF
             #endregion
         }
 
+        public class UiDispatcherService : IUiDispatcherService
+        {
+            public Dispatcher UiDispatcher => App.Current.Dispatcher;
+        }
+
         protected override void OnStartup(StartupEventArgs e)
         {
             var serviceProvider = this._createServiceProvider();
@@ -88,6 +94,7 @@ namespace TableTopCrucible.WPF
             // services
             services.AddSingleton<IItemService, ItemService>();
             services.AddSingleton<IInjectionProviderService, InjectionProviderService>();
+            services.AddSingleton<IUiDispatcherService, UiDispatcherService>();
             services.AddSingleton<IItemTagService, ItemTagService>();
             services.AddSingleton<IFileInfoService, FileInfoService>();
             services.AddSingleton<IDirectorySetupService, DirectorySetupService>();
@@ -109,6 +116,8 @@ namespace TableTopCrucible.WPF
             services.AddSingleton<SychronizeFilesCommand>();
             services.AddSingleton<CreateDirectorySetupCommand>();
             services.AddSingleton<SaveDirectorySetupCommand>();
+            services.AddSingleton<DeleteDirectorySetupCommand>();
+            services.AddSingleton<HashFilesCommand>();
 
             return services.BuildServiceProvider();
         }

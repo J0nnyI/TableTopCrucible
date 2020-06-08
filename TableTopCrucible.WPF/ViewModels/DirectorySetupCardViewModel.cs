@@ -1,4 +1,6 @@
-﻿using ReactiveUI;
+﻿using DynamicData;
+
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using System;
@@ -8,6 +10,7 @@ using System.Windows.Input;
 
 using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
@@ -16,10 +19,16 @@ namespace TableTopCrucible.WPF.ViewModels
     {
         public BehaviorSubject<DirectorySetup> DirectorySetupChanges = new BehaviorSubject<DirectorySetup>(default);
 
+        private IFileInfoService _fileInfoService { get; }
+
         public ICommand EnterEditmode { get; }
         public ICommand Save { get; }
         public ICommand Undo { get; }
         public ICommand Delete { get; }
+
+        public IObservable<int> FileCountChanges;
+        private readonly ObservableAsPropertyHelper<int> _fileCount;
+        public int FileCount => _fileCount.Value;
 
         public BehaviorSubject<string> NameChanges = new BehaviorSubject<string>(null);
         private readonly ObservableAsPropertyHelper<string> _name;
@@ -36,6 +45,7 @@ namespace TableTopCrucible.WPF.ViewModels
             get => _description.Value;
             set => DescriptionChanges.OnNext(value);
         }
+
         public BehaviorSubject<string> PathChanges = new BehaviorSubject<string>(null);
         private readonly ObservableAsPropertyHelper<string> _path;
         public string Path
@@ -47,9 +57,28 @@ namespace TableTopCrucible.WPF.ViewModels
 
         [Reactive] public DirectorySetupChangeset Changeset { get; set; }
 
-        public DirectorySetupCardViewModel(SaveDirectorySetupCommand saveDirectorySetup)
+        public DirectorySetupCardViewModel(IFileInfoService fileInfoService, SaveDirectorySetupCommand save, DeleteDirectorySetupCommand delete)
         {
-            this.Save = saveDirectorySetup;
+            this._fileInfoService = fileInfoService;
+
+            this.FileCountChanges = this.DirectorySetupChanges
+                .Select(dirSetup => dirSetup.Id)
+                .Where(id => id != default)
+                .DistinctUntilChanged()
+                .Select(id =>
+                    this._fileInfoService
+                        .Get(id)
+                        .Connect())
+                .Switch()
+                .QueryWhenChanged(query=>query.Count)
+                .TakeUntil(destroy);
+
+            this._fileCount = this.FileCountChanges
+                .TakeUntil(this.destroy)
+                .ToProperty(this, nameof(FileCount));
+
+            this.Save = save;
+            this.Delete = delete;
             this.EnterEditmode = new RelayCommand(
                 _ => this.EditMode = true,
                 _ => !this.EditMode);

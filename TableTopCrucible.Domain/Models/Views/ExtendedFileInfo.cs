@@ -19,7 +19,7 @@ namespace TableTopCrucible.Domain.Models.Views
         public string AbsolutePath => AbsoluteUri.LocalPath;
         public FileHash? FileHash => FileInfo.FileHash;
         public DateTime LastWriteTime => FileInfo.LastWriteTime;
-        public bool IsFileAccessible => FileInfo.isAccessible;
+        public bool IsFileAccessible => FileInfo.IsAccessible;
 
 
         public DirectorySetupName DirectorySetupName => DirectorySetup.Name;

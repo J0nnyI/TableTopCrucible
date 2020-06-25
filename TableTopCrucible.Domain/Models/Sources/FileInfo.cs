@@ -8,17 +8,17 @@ namespace TableTopCrucible.Domain.Models.Sources
     public struct FileInfo : IEntity<FileInfoId>
     {
         public FileInfo(
-            FileInfo origin, Uri path, DateTime creationTime, FileHash? fileHash, DateTime lastWriteTime, DirectorySetupId directorySetupId, 
+            FileInfo origin, Uri path, DateTime creationTime, FileHash? fileHash, DateTime lastWriteTime, DirectorySetupId directorySetupId, long fileSize,
             bool isAccessible)
-            : this(path, creationTime, fileHash, lastWriteTime, directorySetupId,  isAccessible, origin.Id, origin.Created)
+            : this(path, creationTime, fileHash, lastWriteTime, directorySetupId, fileSize, isAccessible, origin.Id, origin.Created)
         { }
         public FileInfo(
-            Uri path, DateTime creationTime, FileHash? fileHash, DateTime lastWriteTime, DirectorySetupId directorySetupId,
+            Uri path, DateTime creationTime, FileHash? fileHash, DateTime lastWriteTime, DirectorySetupId directorySetupId, long fileSize,
             bool isAccessible)
-            : this(path, creationTime, fileHash, lastWriteTime, directorySetupId,  isAccessible, (FileInfoId)Guid.NewGuid(), DateTime.Now)
+            : this(path, creationTime, fileHash, lastWriteTime, directorySetupId, fileSize, isAccessible, (FileInfoId)Guid.NewGuid(), DateTime.Now)
         { }
         private FileInfo(
-            Uri path, DateTime creationTime, FileHash? fileHash, DateTime lastWriteTime, DirectorySetupId directorySetupId,
+            Uri path, DateTime creationTime, FileHash? fileHash, DateTime lastWriteTime, DirectorySetupId directorySetupId, long fileSize,
             bool isAccessible, FileInfoId id, DateTime created)
         {
             this.Path = path;
@@ -26,7 +26,8 @@ namespace TableTopCrucible.Domain.Models.Sources
             this.FileHash = fileHash;
             this.LastWriteTime = lastWriteTime;
             this.DirectorySetupId = directorySetupId;
-            this.isAccessible = isAccessible;
+            this.FileSize = fileSize;
+            this.IsAccessible = isAccessible;
             this.Id = id;
             this.Created = created;
             this.LastChange = DateTime.Now;
@@ -38,13 +39,14 @@ namespace TableTopCrucible.Domain.Models.Sources
         public FileHash? FileHash { get; }
         public DateTime LastWriteTime { get; }
         public DirectorySetupId DirectorySetupId { get; }
-        public bool isAccessible { get; }
+        public bool IsAccessible { get; }
         // identifies this item in this specific state
         public Guid Identity { get; }
 
         public FileInfoId Id { get; }
         public DateTime Created { get; }
         public DateTime LastChange { get; }
+        public long FileSize { get; }
 
         public static bool operator ==(FileInfo fileA, FileInfo fileB)
             => fileA.Identity == fileB.Identity;

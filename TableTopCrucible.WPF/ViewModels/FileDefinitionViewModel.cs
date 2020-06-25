@@ -28,7 +28,7 @@ namespace TableTopCrucible.WPF.ViewModels
 
             this._fileInfoService = fileInfoService;
             this._fileInfoService
-                .GetFullFIleInfo()
+                .GetExtended()
                 .Connect()
                 .Bind(out _files)
                 .TakeUntil(destroy)

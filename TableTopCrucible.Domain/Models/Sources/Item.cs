@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
+using System.Linq;
 
 namespace TableTopCrucible.Domain.Models.Sources
 {
@@ -16,18 +18,20 @@ namespace TableTopCrucible.Domain.Models.Sources
 
         public DateTime Created { get; }
         public DateTime LastChange { get; }
+        public FileInfoHashKey? File { get; }
 
-        public Item(ItemName name, IEnumerable<Tag> tags = null, Thumbnail? thumbnail = null)
-            : this((ItemId)Guid.NewGuid(), name, tags, thumbnail, DateTime.Now) { }
-        public Item(Item origin, ItemName name, IEnumerable<Tag> tags, Thumbnail? thumbnail)
-            : this(origin.Id, name, tags, thumbnail, origin.Created) { }
+        public Item(ItemName name, IEnumerable<Tag> tags = null, FileInfoHashKey? file = null, Thumbnail? thumbnail = null)
+            : this((ItemId)Guid.NewGuid(), name, tags, file, thumbnail, DateTime.Now) { }
+        public Item(Item origin, ItemName name, IEnumerable<Tag> tags, FileInfoHashKey? file, Thumbnail? thumbnail)
+            : this(origin.Id, name, tags, file, thumbnail, origin.Created) { }
 
-        private Item(ItemId id, ItemName name, IEnumerable<Tag> tags, Thumbnail? thumbnail, DateTime created)
+        private Item(ItemId id, ItemName name, IEnumerable<Tag> tags, FileInfoHashKey? file, Thumbnail? thumbnail, DateTime created)
         {
             this.Id = id;
             this.Name = name;
             this.Thumbnail = thumbnail;
             this.Tags = tags ?? throw new ArgumentNullException(nameof(tags));
+            this.File = file;
             this.Created = created;
             this.LastChange = DateTime.Now;
             this.Identity = Guid.NewGuid();

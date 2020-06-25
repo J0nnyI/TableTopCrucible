@@ -38,6 +38,13 @@ namespace TableTopCrucible.Domain.Models.Sources
             get => _thumbnail.Value;
             set => ThumbnailChanges.OnNext(value);
         }
+        public BehaviorSubject<FileInfoHashKey?> FileChanges { get; } = new BehaviorSubject<FileInfoHashKey?>(null);
+        private readonly ObservableAsPropertyHelper<FileInfoHashKey?> _file;
+        public FileInfoHashKey? File
+        {
+            get => _file.Value;
+            set => FileChanges.OnNext(value);
+        }
         public ItemChangeset(Item? origin = null) : base(origin)
         {
             _name = NameChanges
@@ -49,6 +56,9 @@ namespace TableTopCrucible.Domain.Models.Sources
             _tags = TagsChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(Tags));
+            _file = FileChanges
+                .TakeUntil(destroy)
+                .ToProperty(this, nameof(File));
 
             if (Origin.HasValue)
             {
@@ -72,7 +82,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             => Apply(true);
         public Item Apply(bool dispose)
         {
-            var res = new Item(this.Origin.Value, (ItemName)this.Name, this.Tags, (Thumbnail)this.Thumbnail);
+            var res = new Item(this.Origin.Value, (ItemName)this.Name, this.Tags, this.File, (Thumbnail)this.Thumbnail);
             if (dispose)
                 this.Dispose();
             return res;
@@ -81,7 +91,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             => ToEntity(true);
         public Item ToEntity(bool dispose)
         {
-            var res = new Item((ItemName)this.Name, this.Tags, (Thumbnail)this.Thumbnail);
+            var res = new Item((ItemName)this.Name, this.Tags, this.File, (Thumbnail)this.Thumbnail);
             if (dispose)
                 this.Dispose();
             return res;

@@ -10,6 +10,7 @@ using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using System.Windows;
 
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
@@ -26,11 +27,15 @@ namespace TableTopCrucible.Domain.Services
         void Synchronize();
         void UpdateHashes();
         void UpdateHashes(int threadcount);
-        public IObservableCache<ExtendedFileInfo, FileInfoId> GetFullFIleInfo();
+        public IObservableCache<ExtendedFileInfo, FileInfoId> GetExtended();
         public IObservableCache<FileInfo, FileInfoId> Get(DirectorySetupId directorySetupId);
+        public IObservableCache<ExtendedFileInfo, FileInfoHashKey> GetExtendedByHash();
     }
     public class FileInfoService : DataServiceBase<FileInfo, FileInfoId, FileInfoChangeset>, IFileInfoService
     {
+        private IObservableCache<FileInfo, FileInfoHashKey> _fileHashCache;
+        public IObservable<FileInfo> Get(FileInfoHashKey key)
+            => _fileHashCache.WatchValue(key);
 
 
         private bool synchronizing = false;
@@ -42,7 +47,7 @@ namespace TableTopCrucible.Domain.Services
             this._directorySetupService = directorySetupService;
             this._uiDispatcherService = uiDispatcherService;
 
-            _getFullFIleInfo = this._directorySetupService
+            _getFullFileInfo = this._directorySetupService
                 .Get()
                 .Connect()
                 .LeftJoinMany(
@@ -53,11 +58,24 @@ namespace TableTopCrucible.Domain.Services
                 .TransformMany(x => x, x => x.FileInfo.Id)
                 .TakeUntil(destroy)
                 .AsObservableCache();
+
+            _getFullFIleInfoByHash = this._getFullFileInfo
+                .Connect()
+                .Filter(file=>FileInfoHashKey.CanBuild(file.FileInfo))
+                .ChangeKey(file => new FileInfoHashKey(file.FileInfo))
+                .AsObservableCache();
+
+            _fileHashCache = this.cache
+                .Connect()
+                .Filter(file => file.FileHash.HasValue && file.IsAccessible)
+                .ChangeKey(file => new FileInfoHashKey(file))
+                .AsObservableCache();
         }
 
-        private readonly IObservableCache<ExtendedFileInfo, FileInfoId> _getFullFIleInfo;
-        public IObservableCache<ExtendedFileInfo, FileInfoId> GetFullFIleInfo() => _getFullFIleInfo;
-
+        private readonly IObservableCache<ExtendedFileInfo, FileInfoId> _getFullFileInfo;
+        public IObservableCache<ExtendedFileInfo, FileInfoId> GetExtended() => _getFullFileInfo;
+        private readonly IObservableCache<ExtendedFileInfo, FileInfoHashKey> _getFullFIleInfoByHash;
+        public IObservableCache<ExtendedFileInfo, FileInfoHashKey> GetExtendedByHash() => _getFullFIleInfoByHash;
         public IObservableCache<FileInfo, FileInfoId> Get(DirectorySetupId directorySetupId)
         {
             return this.cache.Connect()
@@ -67,64 +85,68 @@ namespace TableTopCrucible.Domain.Services
 
         public void Synchronize()
         {
-            if (synchronizing)
-                return;
-            synchronizing = true;
 
-            IEnumerable<DirectorySetup> dirSetups = this._directorySetupService
-                .Get()
-                .KeyValues
-                .Select(x => x.Value);
+            try
+            {
+                if (synchronizing)
+                    return;
+                synchronizing = true;
 
-            IEnumerable<ExtendedFileInfo> fileInfos = this.GetFullFIleInfo().KeyValues.Select(x => x.Value);
+                IEnumerable<DirectorySetup> dirSetups = this._directorySetupService
+                    .Get()
+                    .KeyValues
+                    .Select(x => x.Value);
 
-            var actualDirSetupFiles = dirSetups
-                .Where(dirSetup => dirSetup.IsValid)
-                .Select(dirSetup => new { files = Directory.GetFiles(dirSetup.Path.LocalPath, "*", SearchOption.AllDirectories), dirSetup }).ToArray();
+                IEnumerable<ExtendedFileInfo> fileInfos = this.GetExtended().KeyValues.Select(x => x.Value);
 
-            var flatDirSetupFiles = actualDirSetupFiles
-                .SelectMany(files => files.files.Select(path => new { files.dirSetup, path }));
+                var actualDirSetupFiles = dirSetups
+                    .Where(dirSetup => dirSetup.IsValid)
+                    .Select(dirSetup => new { files = Directory.GetFiles(dirSetup.Path.LocalPath, "*", SearchOption.AllDirectories), dirSetup }).ToArray();
 
-            IEnumerable<string> actualFiles = actualDirSetupFiles
-                .SelectMany(dirSetupFiles => dirSetupFiles.files);
+                var flatDirSetupFiles = actualDirSetupFiles
+                    .SelectMany(files => files.files.Select(path => new { files.dirSetup, path }));
 
-            var allPaths = fileInfos
-                    .Select(x => x.AbsolutePath)
-                    .Union(actualFiles)
-                    .Distinct()
-                    .Select(path => new { path, info = new SysFileInfo(path) });
+                IEnumerable<string> actualFiles = actualDirSetupFiles
+                    .SelectMany(dirSetupFiles => dirSetupFiles.files);
 
-            IEnumerable<FileInfoChangeset> mergedFiles =
-                from file in allPaths
-                join foundFile in flatDirSetupFiles
-                    on file.path equals foundFile.path into foundFiles
-                join definedFile in fileInfos
-                    on file.path equals definedFile.AbsolutePath into definedFiles
+                var allPaths = fileInfos
+                        .Select(x => x.AbsolutePath)
+                        .Union(actualFiles)
+                        .Distinct()
+                        .Select(path => new { path, info = new SysFileInfo(path) });
 
-                select new FileInfoChangeset(definedFiles.Any() ? definedFiles.First().FileInfo as FileInfo? : null)
-                {
-                    Path =
-                        new Uri(Uri.UnescapeDataString(
-                            (
-                            definedFiles.Any()
-                                ? definedFiles.First().DirectorySetup
-                                : foundFiles.First().dirSetup
-                            ).Path.MakeRelativeUri(new Uri(file.path))
-                            .ToString()
-                        ), UriKind.Relative),
-                    CreationTime = file.info.CreationTime,
-                    LastWriteTime = file.info.LastWriteTime,
-                    IsAccessible = !foundFiles.Any(),
-                    DirectorySetupId = foundFiles.Any() ? foundFiles.First().dirSetup.Id : definedFiles.First().DirectorySetup.Id
-                };
+                IEnumerable<FileInfoChangeset> mergedFiles =
+                    from file in allPaths
+                    join foundFile in flatDirSetupFiles
+                        on file.path equals foundFile.path into foundFiles
+                    join definedFile in fileInfos
+                        on file.path equals definedFile.AbsolutePath into definedFiles
 
-            this.Patch(mergedFiles);
-            synchronizing = false;
-        }
+                    select new FileInfoChangeset(definedFiles.Any() ? definedFiles.First().FileInfo as FileInfo? : null)
+                    {
+                        Path =
+                            new Uri(Uri.UnescapeDataString(
+                                (
+                                definedFiles.Any()
+                                    ? definedFiles.First().DirectorySetup
+                                    : foundFiles.First().dirSetup
+                                ).Path.MakeRelativeUri(new Uri(file.path))
+                                .ToString()
+                            ), UriKind.Relative),
+                        CreationTime = file.info.CreationTime,
+                        LastWriteTime = file.info.LastWriteTime,
+                        FileSize = file.info.Length,
+                        IsAccessible = !foundFiles.Any(),
+                        DirectorySetupId = foundFiles.Any() ? foundFiles.First().dirSetup.Id : definedFiles.First().DirectorySetup.Id
+                    };
 
-        public void Hash()
-        {
-
+                this.Patch(mergedFiles);
+                synchronizing = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
         public void UpdateHashes() => this.UpdateHashes(16);
@@ -132,7 +154,7 @@ namespace TableTopCrucible.Domain.Services
         {
             CompositeDisposable finalDisposer = new CompositeDisposable();
 
-            var changedFiles = this.GetFullFIleInfo()
+            var changedFiles = this.GetExtended()
                 .KeyValues
                 .Select(file => new { file = file.Value, sysFileInfo = new SysFileInfo(file.Value.AbsolutePath) })
                 .Where(file =>

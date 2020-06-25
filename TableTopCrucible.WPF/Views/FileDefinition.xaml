@@ -38,6 +38,8 @@
                                     DisplayMemberBinding="{Binding isFileAccessible}"/>
                     <GridViewColumn Header="Path"
                                     DisplayMemberBinding="{Binding AbsolutePath}"/>
+                    <GridViewColumn Header="last write"
+                                    DisplayMemberBinding="{Binding LastWriteTime}"/>
                     <GridViewColumn Header="hash"
                                     DisplayMemberBinding="{Binding FileHash}"/>
                 </GridView>

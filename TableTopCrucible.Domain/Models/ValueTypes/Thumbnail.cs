@@ -29,6 +29,7 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
         }
         public override int GetHashCode() => this._thumbnail.GetHashCode();
         public static explicit operator Thumbnail(string thumbnail) => new Thumbnail(thumbnail);
+        public static explicit operator Thumbnail?(string thumbnail) => string.IsNullOrWhiteSpace(thumbnail) ? null as Thumbnail? : new Thumbnail(thumbnail);
         public static explicit operator string(Thumbnail thumbnail) => thumbnail._thumbnail;
         public static bool operator ==(Thumbnail thumbnail1, Thumbnail thumbnail2)
         {

@@ -82,7 +82,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             => Apply(true);
         public Item Apply(bool dispose)
         {
-            var res = new Item(this.Origin.Value, (ItemName)this.Name, this.Tags, this.File, (Thumbnail)this.Thumbnail);
+            var res = new Item(this.Origin.Value, (ItemName)this.Name, this.Tags, this.File, (Thumbnail?)this.Thumbnail);
             if (dispose)
                 this.Dispose();
             return res;

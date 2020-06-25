@@ -118,6 +118,7 @@ namespace TableTopCrucible.WPF
             services.AddSingleton<SaveDirectorySetupCommand>();
             services.AddSingleton<DeleteDirectorySetupCommand>();
             services.AddSingleton<HashFilesCommand>();
+            services.AddSingleton<GenerateItemsFromFilesCommand>();
 
             return services.BuildServiceProvider();
         }

@@ -91,7 +91,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             => ToEntity(true);
         public Item ToEntity(bool dispose)
         {
-            var res = new Item((ItemName)this.Name, this.Tags, this.File, (Thumbnail)this.Thumbnail);
+            var res = new Item((ItemName)this.Name, this.Tags, this.File, string.IsNullOrWhiteSpace(this.Thumbnail) ? null as Thumbnail? : (Thumbnail)this.Thumbnail);
             if (dispose)
                 this.Dispose();
             return res;

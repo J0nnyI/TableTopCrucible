@@ -20,11 +20,13 @@ namespace TableTopCrucible.WPF.ViewModels
         private readonly IFileInfoService _fileInfoService;
 
         public ICommand SynchronizeFiles { get; }
-        public ICommand hashFiles { get; }
-        public FileDefinitionViewModel(IFileInfoService fileInfoService, SychronizeFilesCommand synchronizeFiles, HashFilesCommand hashFiles)
+        public ICommand HashFiles { get; }
+        public ICommand GenerateItems { get; }
+        public FileDefinitionViewModel(IFileInfoService fileInfoService, GenerateItemsFromFilesCommand generateItems, SychronizeFilesCommand synchronizeFiles, HashFilesCommand hashFiles)
         {
             this.SynchronizeFiles = synchronizeFiles;
-            this.hashFiles = hashFiles;
+            this.HashFiles = hashFiles;
+            this.GenerateItems = generateItems;
 
             this._fileInfoService = fileInfoService;
             this._fileInfoService

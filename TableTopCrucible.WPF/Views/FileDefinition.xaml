@@ -15,11 +15,15 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Grid.Row="0">
-            <Button Command="{Binding hashFiles}"
+            <Button Command="{Binding GenerateItems}"
+                    Style="{StaticResource MaterialDesignIconButton}">
+                <md:PackIcon Kind="FolderAdd"/>
+            </Button>
+            <Button Command="{Binding HashFiles}"
                     Style="{StaticResource MaterialDesignIconButton}">
                 <md:PackIcon Kind="FolderHash"/>
             </Button>

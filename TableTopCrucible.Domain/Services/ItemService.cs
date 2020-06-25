@@ -15,7 +15,9 @@ using TableTopCrucible.Domain.Models.Views;
 
 namespace TableTopCrucible.Domain.Services
 {
-    public interface IItemService : IDataService<Item, ItemId, ItemChangeset> { }
+    public interface IItemService : IDataService<Item, ItemId, ItemChangeset> {
+        public void AutoGenerateItems();
+    }
     public class ItemService : DataServiceBase<Item, ItemId, ItemChangeset>, IItemService
     {
 
@@ -62,9 +64,14 @@ namespace TableTopCrucible.Domain.Services
 
         public void AutoGenerateItems()
         {
+            var object3dExtensions = new string[] { ".obj", ".stl" };
+
             var files = this._fileService
                 .GetExtendedByHash()
                 .KeyValues
+                .Where(x => 
+                    object3dExtensions.Contains(
+                        Path.GetExtension(x.Value.AbsolutePath)))
                 .ToDictionary(x => x.Key, x => x.Value);
 
             var items = this

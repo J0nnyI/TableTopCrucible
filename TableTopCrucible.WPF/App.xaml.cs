@@ -11,6 +11,7 @@ using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.WPF.ViewModels;
+using TableTopCrucible.WPF.Views;
 
 namespace TableTopCrucible.WPF
 {
@@ -111,6 +112,7 @@ namespace TableTopCrucible.WPF
             services.AddTransient<FileDefinitionViewModel>();
             services.AddTransient<DirectorySetupViewModel>();
             services.AddTransient<DirectorySetupCardViewModel>();
+            services.AddTransient<NotificationCenterViewModel>();
 
             // commands
             services.AddSingleton<CreateItemCommand>();

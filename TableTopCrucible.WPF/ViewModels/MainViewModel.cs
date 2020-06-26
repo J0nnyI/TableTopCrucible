@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
@@ -21,6 +22,7 @@ namespace TableTopCrucible.WPF.ViewModels
         public ItemEditorViewModel ItemEditor { get; }
         public FileDefinitionViewModel FileDefinitions { get; }
         public DirectorySetupViewModel DirectorySetup { get; }
+        public NotificationCenterViewModel NotificationCenter { get; }
 
         private ObservableAsPropertyHelper<Item?> _selectedItem;
         public Item? SelectedItem
@@ -36,11 +38,12 @@ namespace TableTopCrucible.WPF.ViewModels
             IItemService itemService,
             // commands
             CreateItemCommand createItem,
-            // views
+            // viewsModels
             ItemListViewModel itemList,
             ItemEditorViewModel itemEditor,
             FileDefinitionViewModel fileDefinitions,
-            DirectorySetupViewModel directorySetup
+            DirectorySetupViewModel directorySetup,
+            NotificationCenterViewModel notificationCenter
             )
         {
             // services
@@ -52,6 +55,7 @@ namespace TableTopCrucible.WPF.ViewModels
             this.ItemEditor = itemEditor ?? throw new NullReferenceException("got no itemEditor");
             this.FileDefinitions = fileDefinitions ?? throw new NullReferenceException("got no file definitions editor");
             this.DirectorySetup = directorySetup ?? throw new NullReferenceException("got no dir setup editor");
+            this.NotificationCenter = notificationCenter ?? throw new NullReferenceException("got no notification center");
 
             this._selectedItem = ItemList.SelectedItemChanges
                 .TakeUntil(destroy)

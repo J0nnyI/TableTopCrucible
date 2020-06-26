@@ -23,4 +23,7 @@
     <DataTemplate DataType="{x:Type viewModels:DirectorySetupCardViewModel}">
         <views:DirectorySetupCard/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:NotificationCenterViewModel}">
+        <views:NotificationCenter/>
+    </DataTemplate>
 </ResourceDictionary>

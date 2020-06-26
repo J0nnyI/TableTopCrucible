@@ -1,6 +1,7 @@
 ﻿using DynamicData;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,6 +14,8 @@ using System.Windows;
 
 using TableTopCrucible.Core.Enums;
 using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Core.Services;
+using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Core.ValueTypes;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
@@ -42,11 +45,16 @@ namespace TableTopCrucible.Domain.Services
 
         private IDirectorySetupService _directorySetupService;
         private IUiDispatcherService _uiDispatcherService;
-        public FileInfoService(IDirectorySetupService directorySetupService,
-            IUiDispatcherService uiDispatcherService)
+        private INotificationCenterService _notificationCenterService;
+
+        public FileInfoService(
+            IDirectorySetupService directorySetupService,
+            IUiDispatcherService uiDispatcherService,
+            INotificationCenterService notificationCenterService)
         {
             this._directorySetupService = directorySetupService;
             this._uiDispatcherService = uiDispatcherService;
+            this._notificationCenterService = notificationCenterService;
 
             _getFullFileInfo = this._directorySetupService
                 .Get()
@@ -85,19 +93,22 @@ namespace TableTopCrucible.Domain.Services
         }
 
 
-        IAsyncJobState SyncJobState;
+        private bool synchronizing = false;
 
         public void Synchronize()
         {
 
+            AsyncProcessState setupProcessState;
+            AsyncJobState setupJobState = this._notificationCenterService.CreateSingleTaskJob(out setupProcessState, "Synchronizing Files");
+
+            setupJobState.ProcessChanges.OnNext(setupProcessState.AsArray());
+
             try
             {
-                if (SyncJobState != null && SyncJobState.State != AsyncState.Done)
+                if (synchronizing)
                     return;
-                var jobState = new AsyncJobState();
-                this.SyncJobState = jobState;
-                var setupProcessState = new AsyncProcessState();
-                setupProcessState.TextChanges.OnNext("initial Setup");
+                synchronizing = true;
+                setupProcessState.TitleChanges.OnNext("initial Setup");
 
                 int taskCount = 8;
                 int curTask = 0;
@@ -176,11 +187,17 @@ namespace TableTopCrucible.Domain.Services
 
                 setupProcessState.ProgressChanges.OnNext(new Progress(taskCount, curTask++));
                 this.Patch(mergedFiles);
-                jobState.StateChanges.OnNext(AsyncState.Done);
+                setupProcessState.StateChanges.OnNext(AsyncState.Done);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                setupProcessState.StateChanges.OnNext(AsyncState.Failed);
+                setupProcessState.ErrorChanges.OnNext(ex.ToString());
+            }
+            finally
+            {
+                setupProcessState.Complete();
+                setupProcessState = null;
             }
         }
 

@@ -5,6 +5,7 @@
         ToDo,
         InProgress,
         Done,
-        Skipped
+        Skipped,
+        Failed
     }
 }

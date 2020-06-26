@@ -11,6 +11,7 @@ using System.Windows.Input;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
 
@@ -30,6 +31,10 @@ namespace TableTopCrucible.WPF.ViewModels
         public IObservable<int> FileCountChanges;
         private readonly ObservableAsPropertyHelper<int> _fileCount;
         public int FileCount => _fileCount.Value;
+
+        public IObservable<int> DistinctFileCountChanges;
+        private readonly ObservableAsPropertyHelper<int> _distinctFileCount;
+        public int DistinctFileCount => _distinctFileCount.Value;
 
         public BehaviorSubject<string> NameChanges = new BehaviorSubject<string>(null);
         private readonly ObservableAsPropertyHelper<string> _name;
@@ -73,6 +78,20 @@ namespace TableTopCrucible.WPF.ViewModels
                 .Switch()
                 .QueryWhenChanged(query => query.Count)
                 .TakeUntil(destroy);
+            this.DistinctFileCountChanges = this.DirectorySetupChanges
+                .Select(dirSetup => dirSetup.Id)
+                .Where(id => id != default)
+                .DistinctUntilChanged()
+                .Select(id =>
+                    this._fileInfoService
+                        .Get(id)
+                        .Connect())
+                .Switch()
+                .Filter(fileInfo=>FileInfoHashKey.CanBuild(fileInfo))
+                .Transform(fileInfo => new FileInfoHashKey(fileInfo))
+                .Distinct()
+                .QueryWhenChanged(query => query.Count)
+                .TakeUntil(destroy);
 
             this.Save = save;
             this.Delete = delete;
@@ -90,11 +109,12 @@ namespace TableTopCrucible.WPF.ViewModels
 
 
             this._fileCount = this.FileCountChanges.ToProperty(this, nameof(FileCount));
+            this._distinctFileCount = this.DistinctFileCountChanges.ToProperty(this, nameof(DistinctFileCount));
             this._name = NameChanges.ToProperty(this, nameof(Name));
             this._description = DescriptionChanges.ToProperty(this, nameof(Description));
             this._path = this.PathChanges.ToProperty(this, nameof(Path));
 
-            this.disposables.Add(_fileCount, NameChanges, DescriptionChanges, PathChanges, DirectorySetupChanges);
+            this.disposables.Add(_fileCount,_distinctFileCount, NameChanges, DescriptionChanges, PathChanges, DirectorySetupChanges);
 
             this.NameChanges
                 .Subscribe(name => { if (Changeset != null) Changeset.Name = name; });

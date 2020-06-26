@@ -50,14 +50,17 @@
                      Grid.Row="1"
                      Grid.Column="0"
                      Grid.ColumnSpan="3"/>
-            
-            <Label Content="{Binding FileCount}"
-                   VerticalAlignment="Center" 
-                   HorizontalAlignment="Center"
-                   MinWidth="20px"
-                   Grid.Column="2"
-                   Grid.Row="0"/>
 
+            <TextBlock VerticalAlignment="Center" 
+                       HorizontalAlignment="Center"
+                       MinWidth="20px"
+                       Grid.Column="2"
+                       Grid.Row="0">
+                <Run Text="{Binding DistinctFileCount, Mode=OneWay}"/>
+                <Run>(</Run>
+                <Run Text="{Binding FileCount, Mode=OneWay}"/>
+                <Run>)</Run>
+            </TextBlock>
             <Grid Grid.Row="0"
                   Grid.RowSpan="3"
                   Grid.Column="3">

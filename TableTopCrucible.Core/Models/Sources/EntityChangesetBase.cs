@@ -5,10 +5,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-using TableTopCrucible.Base.Models.ValueTypes;
-using TableTopCrucible.Base.Models.ValueTypes.IDs;
+using TableTopCrucible.Core.Models.ValueTypes;
+using TableTopCrucible.Core.Models.ValueTypes.IDs;
 
-namespace TableTopCrucible.Base.Models.Sources
+namespace TableTopCrucible.Core.Models.Sources
 {
     public abstract class ReactiveEntityBase<Tself, Tentity, Tid> : DisposableReactiveValidationObject<Tself>, IEntityChangeset<Tentity, Tid>
         where Tentity : struct, IEntity<Tid>

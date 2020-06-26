@@ -1,4 +1,4 @@
-﻿namespace TableTopCrucible.Base.Services
+﻿namespace TableTopCrucible.Core.Services
 {
     public interface INotificationCenterService
     {

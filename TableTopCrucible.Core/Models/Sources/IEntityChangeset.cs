@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-using TableTopCrucible.Base.Models.ValueTypes.IDs;
+using TableTopCrucible.Core.Models.ValueTypes.IDs;
 
-namespace TableTopCrucible.Base.Models.Sources
+namespace TableTopCrucible.Core.Models.Sources
 {
     public interface IEntityChangeset<Tentity, Tid>
         where Tentity : struct, IEntity<Tid>

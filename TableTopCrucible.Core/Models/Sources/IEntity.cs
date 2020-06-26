@@ -1,8 +1,8 @@
 ﻿using System;
 
-using TableTopCrucible.Base.Models.ValueTypes.IDs;
+using TableTopCrucible.Core.Models.ValueTypes.IDs;
 
-namespace TableTopCrucible.Base.Models.Sources
+namespace TableTopCrucible.Core.Models.Sources
 {
     public interface IEntity<Tid> : IEntity
         where Tid : ITypedId

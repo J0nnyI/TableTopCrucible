@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-
+using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Services;
@@ -12,7 +12,7 @@ using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
-    public class MainViewModel : DisposableReactiveObject
+    public class MainViewModel : DisposableReactiveObjectBase
     {
 
         private readonly IItemService _itemService;

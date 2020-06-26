@@ -1,6 +1,6 @@
 ﻿using System;
 
-using TableTopCrucible.Base.Models.ValueTypes.IDs;
+using TableTopCrucible.Core.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
 {

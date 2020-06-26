@@ -4,7 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Windows.Input;
-
+using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Domain.Models.Views;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
@@ -12,7 +12,7 @@ using TableTopCrucible.WPF.Commands;
 namespace TableTopCrucible.WPF.ViewModels
 {
 
-    public class FileDefinitionViewModel : DisposableReactiveObject
+    public class FileDefinitionViewModel : DisposableReactiveObjectBase
     {
         private readonly ReadOnlyObservableCollection<ExtendedFileInfo> _files;
         public ReadOnlyObservableCollection<ExtendedFileInfo> Files => _files;

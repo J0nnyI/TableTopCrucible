@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Reactive.Subjects;
 
-using TableTopCrucible.Base.Enums;
-using TableTopCrucible.Base.ValueTypes;
+using TableTopCrucible.Core.Enums;
+using TableTopCrucible.Core.ValueTypes;
 
-namespace TableTopCrucible.Base.Models.Sources
+namespace TableTopCrucible.Core.Models.Sources
 {
     public class AsyncProcessState : IAsyncProcessState
     {

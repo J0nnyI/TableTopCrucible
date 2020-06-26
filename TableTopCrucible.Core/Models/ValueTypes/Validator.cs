@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TableTopCrucible.Base.Models.ValueTypes
+namespace TableTopCrucible.Core.Models.ValueTypes
 {
     public struct Validator<T>
     {

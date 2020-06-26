@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using TableTopCrucible.Base.Enums;
+using TableTopCrucible.Core.Enums;
 
-namespace TableTopCrucible.Base.Models.Sources
+namespace TableTopCrucible.Core.Models.Sources
 {
     public interface IAsyncJobState
     {

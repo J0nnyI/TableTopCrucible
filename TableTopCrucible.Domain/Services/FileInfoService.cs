@@ -11,9 +11,9 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows;
 
-using TableTopCrucible.Base.Enums;
-using TableTopCrucible.Base.Models.Sources;
-using TableTopCrucible.Base.ValueTypes;
+using TableTopCrucible.Core.Enums;
+using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Core.ValueTypes;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;

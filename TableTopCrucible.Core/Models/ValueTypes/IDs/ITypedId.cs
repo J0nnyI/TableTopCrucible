@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TableTopCrucible.Base.Models.ValueTypes.IDs
+namespace TableTopCrucible.Core.Models.ValueTypes.IDs
 {
     public interface ITypedId
     {

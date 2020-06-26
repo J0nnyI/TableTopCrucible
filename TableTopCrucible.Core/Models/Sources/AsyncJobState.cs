@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Reactive.Subjects;
 
-using TableTopCrucible.Base.Enums;
+using TableTopCrucible.Core.Enums;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
-namespace TableTopCrucible.Base.Models.Sources
+namespace TableTopCrucible.Core.Models.Sources
 {
     public class AsyncJobState : IAsyncJobState
     {

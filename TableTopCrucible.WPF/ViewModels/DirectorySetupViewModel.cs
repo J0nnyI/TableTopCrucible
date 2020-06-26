@@ -5,13 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
-
+using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
-    public class DirectorySetupViewModel : DisposableReactiveObject
+    public class DirectorySetupViewModel : DisposableReactiveObjectBase
     {
         public SychronizeFilesCommand SynchronizeFiles { get; }
         public CreateDirectorySetupCommand CreateDirectorySetup { get; }

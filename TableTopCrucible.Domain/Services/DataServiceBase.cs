@@ -7,8 +7,8 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 
-using TableTopCrucible.Base.Models.Sources;
-using TableTopCrucible.Base.Models.ValueTypes.IDs;
+using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Core.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Services
 {

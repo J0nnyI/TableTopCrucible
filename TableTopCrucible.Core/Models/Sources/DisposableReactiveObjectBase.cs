@@ -4,7 +4,7 @@ using System;
 using System.Reactive;
 using System.Reactive.Subjects;
 
-namespace TableTopCrucible.Base.Models.Sources
+namespace TableTopCrucible.Core.Models.Sources
 {
     public abstract class DisposableReactiveObjectBase : ReactiveObject, IDisposable
     {

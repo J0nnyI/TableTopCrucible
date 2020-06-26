@@ -6,7 +6,7 @@ using System.Reactive.Subjects;
 using System.Windows;
 using System.Windows.Threading;
 
-using TableTopCrucible.Base.Services;
+using TableTopCrucible.Core.Services;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;

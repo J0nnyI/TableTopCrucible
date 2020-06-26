@@ -1,4 +1,4 @@
-﻿namespace TableTopCrucible.Base.ValueTypes
+﻿namespace TableTopCrucible.Core.ValueTypes
 {
     public struct Progress
     {

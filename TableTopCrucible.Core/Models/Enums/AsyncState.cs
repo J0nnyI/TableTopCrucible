@@ -1,4 +1,4 @@
-﻿namespace TableTopCrucible.Base.Enums
+﻿namespace TableTopCrucible.Core.Enums
 {
     public enum AsyncState
     {

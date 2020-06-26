@@ -8,8 +8,8 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
 
-using TableTopCrucible.Base.Models.Sources;
-using TableTopCrucible.Base.Models.ValueTypes;
+using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.WPF.Commands;
 

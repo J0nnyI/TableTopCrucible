@@ -13,7 +13,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Data;
-
+using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Services;
@@ -21,7 +21,7 @@ using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
-    public class ItemListViewModel : DisposableReactiveObject
+    public class ItemListViewModel : DisposableReactiveObjectBase
     {
         private readonly IItemService _itemService;
         private readonly IInjectionProviderService _injectionProviderService;

@@ -7,14 +7,14 @@ using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
-
+using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
-    public class DirectorySetupCardViewModel : DisposableReactiveObject
+    public class DirectorySetupCardViewModel : DisposableReactiveObjectBase
     {
         public BehaviorSubject<DirectorySetup> DirectorySetupChanges = new BehaviorSubject<DirectorySetup>(default);
 

@@ -11,6 +11,7 @@ using System.Reactive.Subjects;
 
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
+using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
@@ -50,17 +51,15 @@ namespace TableTopCrucible.Domain.Models.Sources
         public ItemChangeset(Item? origin = null) : base(origin)
         {
             _name = NameChanges
-                .TakeUntil(destroy)
                 .ToProperty(this, nameof(Name));
             _thumbnail = ThumbnailChanges
-                .TakeUntil(destroy)
                 .ToProperty(this, nameof(Thumbnail));
             _tags = TagsChanges
-                .TakeUntil(destroy)
                 .ToProperty(this, nameof(Tags));
             _file = FileChanges
-                .TakeUntil(destroy)
                 .ToProperty(this, nameof(File));
+
+            this.disposables.Add(NameChanges, ThumbnailChanges, TagsChanges, FileChanges);
 
             if (Origin.HasValue)
             {

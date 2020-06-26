@@ -14,6 +14,7 @@ using System.Windows.Input;
 
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
+using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
@@ -78,6 +79,8 @@ namespace TableTopCrucible.WPF.ViewModels
             this._selectedTags = this.SelectedTagsChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(SelectedTags));
+
+            this.disposables.Add(TagsChanges, SelectedTagsChanges);
             #endregion
 
             #region validations

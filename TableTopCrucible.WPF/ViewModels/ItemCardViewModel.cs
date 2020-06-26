@@ -10,6 +10,7 @@ using System.Windows.Input;
 
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
+using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.WPF.Commands;
 
@@ -79,22 +80,15 @@ namespace TableTopCrucible.WPF.ViewModels
 
             // properties
             this._item =
-                this.ItemChanges
-                .TakeUntil(destroy)
-                .ToProperty(this, nameof(Item));
+                this.ItemChanges.ToProperty(this, nameof(Item));
             this._editable =
-                this._editableChanges
-                .TakeUntil(destroy)
-                .ToProperty(this, nameof(Editable));
+                this._editableChanges.ToProperty(this, nameof(Editable));
             this._editMode =
-                this.EditModeChanges
-                .TakeUntil(destroy)
-                .ToProperty(this, nameof(EditMode));
+                this.EditModeChanges.ToProperty(this, nameof(EditMode));
             this._itemName =
-                this.ItemNameChanges
-                .TakeUntil(destroy)
-                .ToProperty(this, nameof(ItemName));
+                this.ItemNameChanges.ToProperty(this, nameof(ItemName));
 
+            this.disposables.Add(ItemChanges, _editableChanges, EditModeChanges, ItemNameChanges);
 
             this.ItemChanges
                 .TakeUntil(destroy)

@@ -14,6 +14,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Data;
 using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Services;
@@ -112,6 +113,8 @@ namespace TableTopCrucible.WPF.ViewModels
                 SelectedItemVmChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(SelectedItemVm));
+
+            this.disposables.Add(_selectedItemVmChanges,_selectedItemVm);
         }
         private void Sort(string sortBy, ListSortDirection direction = ListSortDirection.Ascending)
         {

@@ -7,7 +7,9 @@ using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
+
 using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
@@ -72,10 +74,6 @@ namespace TableTopCrucible.WPF.ViewModels
                 .QueryWhenChanged(query => query.Count)
                 .TakeUntil(destroy);
 
-            this._fileCount = this.FileCountChanges
-                .TakeUntil(this.destroy)
-                .ToProperty(this, nameof(FileCount));
-
             this.Save = save;
             this.Delete = delete;
             this.EnterEditmode = new RelayCommand(
@@ -91,28 +89,21 @@ namespace TableTopCrucible.WPF.ViewModels
 
 
 
-            this._name = NameChanges
-                .TakeUntil(destroy)
-                .ToProperty(this, nameof(Name));
-            this._description = DescriptionChanges
-                .TakeUntil(destroy)
-                .ToProperty(this, nameof(Description));
-            this._path = this.PathChanges
-                .TakeUntil(destroy)
-                .ToProperty(this, nameof(Path));
+            this._fileCount = this.FileCountChanges.ToProperty(this, nameof(FileCount));
+            this._name = NameChanges.ToProperty(this, nameof(Name));
+            this._description = DescriptionChanges.ToProperty(this, nameof(Description));
+            this._path = this.PathChanges.ToProperty(this, nameof(Path));
+
+            this.disposables.Add(_fileCount, NameChanges, DescriptionChanges, PathChanges, DirectorySetupChanges);
 
             this.NameChanges
-                .TakeUntil(destroy)
                 .Subscribe(name => { if (Changeset != null) Changeset.Name = name; });
             this.DescriptionChanges
-                .TakeUntil(destroy)
                 .Subscribe(description => { if (Changeset != null) Changeset.Description = description; });
             this.PathChanges
-                .TakeUntil(destroy)
                 .Subscribe(path => { if (Changeset != null) Changeset.Path = path; });
 
             this.DirectorySetupChanges
-                .TakeUntil(destroy)
                 .Subscribe(_setValues);
         }
         private void _setValues(DirectorySetup dirSetup)

@@ -47,7 +47,7 @@ namespace TableTopCrucible.Domain.Services
                 .ChangeKey(item => item.File.Value)
                 .LeftJoin(
                     this._fileService.GetExtendedByHash().Connect(),
-                    (ExtendedFileInfo file) => new FileInfoHashKey(file.FileInfo),
+                    (ExtendedFileInfo file) => file.FileInfo.HashKey.Value,
                     (Item item, Optional<ExtendedFileInfo> file) => new ExtendedItem(item, file.Value))
                 .AsObservableCache();
         }

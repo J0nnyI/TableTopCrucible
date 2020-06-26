@@ -44,6 +44,7 @@ namespace TableTopCrucible.Domain.Models.Sources
                 this.LastWriteTime = origin.Value.LastWriteTime;
                 this.DirectorySetupId = origin.Value.DirectorySetupId;
                 this.IsAccessible = origin.Value.IsAccessible;
+                this.FileSize = origin.Value.FileSize;
             }
         }
 

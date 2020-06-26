@@ -67,22 +67,22 @@ namespace TableTopCrucible.WPF
 
 
             var dss = serviceProvider.GetRequiredService<IDirectorySetupService>();
-            dss.Patch(new DirectorySetupChangeset()
-            {
-                Path = @"F:\tmp\Folder A",
-                Name = @"Folder A"
-            });
-
-            dss.Patch(new DirectorySetupChangeset()
-            {
-                Path = @"D:\__MANAGED_FILES__\DnD\Shelf\wallhalla-fantasy-stonework",
-                Name = @"Folder B"
-            });
             //dss.Patch(new DirectorySetupChangeset()
             //{
-            //    Path = new Uri(@"F:\tmp\Folder B"),
-            //    Name = @"Folder B"
+            //    Path = @"F:\tmp\Folder A",
+            //    Name = @"Folder A"
             //});
+
+            //dss.Patch(new DirectorySetupChangeset()
+            //{
+            //    Path = @"D:\__MANAGED_FILES__\DnD\Shelf\wallhalla-fantasy-stonework",
+            //    Name = @"Test Folder"
+            //});
+            dss.Patch(new DirectorySetupChangeset()
+            {
+                Path = @"F:\tmp\Folder B",
+                Name = @"Folder B"
+            });
             //var fileInfoService = serviceProvider.GetRequiredService<IFileInfoService>();
             //fileInfoService.Synchronize();
 

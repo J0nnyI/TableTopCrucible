@@ -20,6 +20,7 @@ namespace TableTopCrucible.Domain.Models.Views
         public FileHash? FileHash => FileInfo.FileHash;
         public DateTime LastWriteTime => FileInfo.LastWriteTime;
         public bool IsFileAccessible => FileInfo.IsAccessible;
+        public int Hash => FileInfo.HashKey.GetHashCode();
 
 
         public DirectorySetupName DirectorySetupName => DirectorySetup.Name;

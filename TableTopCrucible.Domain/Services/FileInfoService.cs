@@ -71,13 +71,13 @@ namespace TableTopCrucible.Domain.Services
             _getFullFIleInfoByHash = this._getFullFileInfo
                 .Connect()
                 .Filter(file => FileInfoHashKey.CanBuild(file.FileInfo))
-                .ChangeKey(file => new FileInfoHashKey(file.FileInfo))
+                .ChangeKey(file => file.FileInfo.HashKey.Value)
                 .AsObservableCache();
 
             _fileHashCache = this.cache
                 .Connect()
                 .Filter(file => file.FileHash.HasValue && file.IsAccessible)
-                .ChangeKey(file => new FileInfoHashKey(file))
+                .ChangeKey(file => file.HashKey.Value)
                 .AsObservableCache();
         }
 
@@ -257,8 +257,6 @@ namespace TableTopCrucible.Domain.Services
 
                 prepProcess.OnNextStep("creating tasks");
 
-                HashAlgorithm hashAlgorithm = SHA512.Create();
-                hashAlgorithm.DisposeWith(finalDisposer);
 
 
                 var tasks = groups
@@ -272,40 +270,43 @@ namespace TableTopCrucible.Domain.Services
                             result,
                             task = new Task(() =>
                             {
-                                var proc = hashing[group.Key];
-                                try
-                                {
-                                    proc.AddProgress(files.Count(), "hashing...");
-
-                                    var res = files.Select(file =>
+                                using (HashAlgorithm hashAlgorithm = SHA512.Create())
+                                { 
+                                    var proc = hashing[group.Key];
+                                    try
                                     {
-                                        {
-                                            proc.OnNextStep();
-                                            proc.Details = $"[{DateTime.Now}] hashing file '{file.file.AbsolutePath}'";
-                                            try
-                                            {
-                                                return new FileInfoChangeset(file.file.FileInfo)
-                                                {
-                                                    FileHash = _hashFile(hashAlgorithm, file.file.AbsolutePath),
-                                                    IsAccessible = File.Exists(file.file.AbsolutePath)
-                                                };
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                proc.State = AsyncState.Failed;
-                                                proc.Errors += ex.ToString();
-                                            }
-                                            return default;
-                                        }
-                                    }).ToArray();
+                                        proc.AddProgress(files.Count(), "hashing...");
 
-                                    result.OnNext(res);
-                                    result.OnCompleted();
-                                }
-                                catch (Exception ex)
-                                {
-                                    proc.State = AsyncState.Failed;
-                                    proc.Errors += ex.ToString();
+                                        var res = files.Select(file =>
+                                        {
+                                            {
+                                                proc.OnNextStep();
+                                                proc.Details = $"[{DateTime.Now}] hashing file '{file.file.AbsolutePath}'";
+                                                try
+                                                {
+                                                    return new FileInfoChangeset(file.file.FileInfo)
+                                                    {
+                                                        FileHash = _hashFile(hashAlgorithm, file.file.AbsolutePath),
+                                                        IsAccessible = File.Exists(file.file.AbsolutePath)
+                                                    };
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    proc.State = AsyncState.Failed;
+                                                    proc.Errors += ex.ToString();
+                                                }
+                                                return default;
+                                            }
+                                        }).ToArray();
+
+                                        result.OnNext(res);
+                                        result.OnCompleted();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        proc.State = AsyncState.Failed;
+                                        proc.Errors += ex.ToString();
+                                    }
                                 }
                             })
                         };

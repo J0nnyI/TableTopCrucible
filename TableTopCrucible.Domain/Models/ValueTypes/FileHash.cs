@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes
 {
@@ -12,10 +13,12 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
 
         public byte[] Data { get; }
 
-        public override bool Equals(object obj) =>
-            obj is FileHash hash && EqualityComparer<byte[]>.Default.Equals(this.Data, hash.Data);
-        public override int GetHashCode() => HashCode.Combine(this.Data);
-        public override string ToString() => BitConverter.ToString(this.Data);
+        public override bool Equals(object obj)
+            => obj is FileHash hash && Enumerable.SequenceEqual(this.Data, hash.Data);
+        public override int GetHashCode() 
+            => this.ToString().GetHashCode();
+        public override string ToString() 
+            => BitConverter.ToString(this.Data);
 
         public static bool operator !=(FileHash hashA, FileHash hashB)
             => !hashA.Equals(hashB);

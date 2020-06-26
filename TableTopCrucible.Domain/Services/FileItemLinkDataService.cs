@@ -30,7 +30,7 @@ namespace TableTopCrucible.Domain.Services
             this._linkedFile = this._fileViewCache.Connect()
                 .LeftJoinMany(
                     fileService.GetExtended().Connect(),
-                    (ExtendedFileInfo file) => new FileInfoHashKey(file.FileInfo),
+                    (ExtendedFileInfo file) => file.FileInfo.HashKey.Value,
                     (FileItemLink link, IGrouping<ExtendedFileInfo, FileInfoId, FileInfoHashKey> files)
                         => files.Items.Select(file => new LinkedFile(file, link))
                     )

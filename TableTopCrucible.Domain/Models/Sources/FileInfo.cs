@@ -33,8 +33,12 @@ namespace TableTopCrucible.Domain.Models.Sources
             this.Created = created;
             this.LastChange = DateTime.Now;
             this.Identity = Guid.NewGuid();
+            this.HashKey = null;
+            if(FileInfoHashKey.CanBuild(this))
+                this.HashKey = new FileInfoHashKey(this);
         }
 
+        public FileInfoHashKey? HashKey { get; }
         public Uri Path { get; }
         public DateTime CreationTime { get; }
         public FileHash? FileHash { get; }

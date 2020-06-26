@@ -4,6 +4,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using System;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
@@ -14,6 +15,7 @@ using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
+using TableTopCrucible.WPF.Helper;
 
 namespace TableTopCrucible.WPF.ViewModels
 {
@@ -67,7 +69,7 @@ namespace TableTopCrucible.WPF.ViewModels
         {
             this._fileInfoService = fileInfoService;
 
-            this.FileCountChanges = this.DirectorySetupChanges
+            var fileCount = this.DirectorySetupChanges
                 .Select(dirSetup => dirSetup.Id)
                 .Where(id => id != default)
                 .DistinctUntilChanged()
@@ -75,22 +77,17 @@ namespace TableTopCrucible.WPF.ViewModels
                     this._fileInfoService
                         .Get(id)
                         .Connect())
-                .Switch()
+                .Switch();
+            this.FileCountChanges = 
+                fileCount
                 .QueryWhenChanged(query => query.Count)
                 .TakeUntil(destroy);
-            this.DistinctFileCountChanges = this.DirectorySetupChanges
-                .Select(dirSetup => dirSetup.Id)
-                .Where(id => id != default)
-                .DistinctUntilChanged()
-                .Select(id =>
-                    this._fileInfoService
-                        .Get(id)
-                        .Connect())
-                .Switch()
-                .Filter(fileInfo=>FileInfoHashKey.CanBuild(fileInfo))
-                .Transform(fileInfo => new FileInfoHashKey(fileInfo))
-                .Distinct()
-                .QueryWhenChanged(query => query.Count)
+            this.DistinctFileCountChanges = 
+                fileCount
+                .Filter(fileInfo=>fileInfo.HashKey.HasValue)
+                .Transform(fileInfo =>fileInfo.HashKey)
+                .RemoveKey()
+                .QueryWhenChanged( query => query.Distinct().Count())
                 .TakeUntil(destroy);
 
             this.Save = save;

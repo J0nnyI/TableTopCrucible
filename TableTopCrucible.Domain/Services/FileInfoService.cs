@@ -99,106 +99,117 @@ namespace TableTopCrucible.Domain.Services
         {
 
             AsyncProcessState setupProcessState;
-            AsyncJobState setupJobState = this._notificationCenterService.CreateSingleTaskJob(out setupProcessState, "Synchronizing Files");
+            AsyncJobState setupJobState = this._notificationCenterService.CreateSingleTaskJob(out setupProcessState, "Synchronizing Files", "initial Setup", _uiDispatcherService.UiDispatcher);
 
             setupJobState.ProcessChanges.OnNext(setupProcessState.AsArray());
 
-            try
+            Task task = new Task(() =>
             {
-                if (synchronizing)
-                    return;
-                synchronizing = true;
-                setupProcessState.TitleChanges.OnNext("initial Setup");
 
-                int taskCount = 8;
-                int curTask = 0;
-                setupProcessState.ProgressChanges.OnNext(new Progress(taskCount, curTask++));
+                try
+                {
+                    if (synchronizing)
+                        return;
+                    synchronizing = true;
 
-                IEnumerable<DirectorySetup> dirSetups =
-                    this._directorySetupService
-                    .Get()
-                    .KeyValues
-                    .Select(x => x.Value).ToArray();
+                    setupProcessState.AddProgress(8,"reading directory Setups");
 
-                setupProcessState.ProgressChanges.OnNext(new Progress(taskCount, curTask++));
+                    IEnumerable<DirectorySetup> dirSetups =
+                        this._directorySetupService
+                        .Get()
+                        .KeyValues
+                        .Select(x => x.Value).ToArray()
+                        .ToArray();
 
-                IEnumerable<ExtendedFileInfo> fileInfos =
-                    this.GetExtended()
-                    .KeyValues
-                    .Select(x => x.Value).ToArray();
+                    setupProcessState.OnNextStep("reading fileinfos");
 
-                setupProcessState.ProgressChanges.OnNext(new Progress(taskCount, curTask++));
+                    IEnumerable<ExtendedFileInfo> fileInfos =
+                        this.GetExtended()
+                        .KeyValues
+                        .Select(x => x.Value).ToArray()
+                        .ToArray();
 
-                var actualDirSetupFiles =
-                    dirSetups
-                    .Where(dirSetup => dirSetup.IsValid)
-                    .Select(dirSetup =>
-                    new
+                    setupProcessState.OnNextStep("getting the local file information");
+
+                    var actualDirSetupFiles =
+                        dirSetups
+                        .Where(dirSetup => dirSetup.IsValid)
+                        .Select(dirSetup =>
+                        new
+                        {
+                            files = Directory.GetFiles(dirSetup.Path.LocalPath, "*", SearchOption.AllDirectories),
+                            dirSetup
+                        })
+                        .ToArray();
+
+                    setupProcessState.OnNextStep("getting the known files");
+
+                    var flatDirSetupFiles = actualDirSetupFiles
+                        .SelectMany(files => files.files.Select(path => new { files.dirSetup, path }))
+                        .ToArray();
+
+                    setupProcessState.OnNextStep("creating a list of all the local files");
+
+                    IEnumerable<string> actualFiles = actualDirSetupFiles
+                        .SelectMany(dirSetupFiles => dirSetupFiles.files)
+                        .ToArray();
+
+                    setupProcessState.OnNextStep("merging local and known files");
+
+                    var allPaths = fileInfos
+                            .Select(x => x.AbsolutePath)
+                            .Union(actualFiles)
+                            .Distinct()
+                            .Select(path => new { path, info = new SysFileInfo(path) })
+                            .ToArray();
+
+                    setupProcessState.OnNextStep("creating the missing files");
+
+                    IEnumerable<FileInfoChangeset> mergedFiles =
+                        from file in allPaths
+                        join foundFile in flatDirSetupFiles
+                            on file.path equals foundFile.path into foundFiles
+                        join definedFile in fileInfos
+                            on file.path equals definedFile.AbsolutePath into definedFiles
+
+                        select new FileInfoChangeset(definedFiles.Any() ? definedFiles.First().FileInfo as FileInfo? : null)
+                        {
+                            Path =
+                                new Uri(Uri.UnescapeDataString(
+                                    (
+                                    definedFiles.Any()
+                                        ? definedFiles.First().DirectorySetup
+                                        : foundFiles.First().dirSetup
+                                    ).Path.MakeRelativeUri(new Uri(file.path))
+                                    .ToString()
+                                ), UriKind.Relative),
+                            CreationTime = file.info.CreationTime,
+                            LastWriteTime = file.info.LastWriteTime,
+                            FileSize = file.info.Length,
+                            IsAccessible = foundFiles.Any(),
+                            DirectorySetupId = foundFiles.Any() ? foundFiles.First().dirSetup.Id : definedFiles.First().DirectorySetup.Id
+                        };
+
+                    setupProcessState.OnNextStep("updating the service");
+                    this._uiDispatcherService.UiDispatcher.Invoke(() =>
                     {
-                        files = Directory.GetFiles(dirSetup.Path.LocalPath, "*", SearchOption.AllDirectories),
-                        dirSetup
-                    })
-                    .ToArray();
-
-                setupProcessState.ProgressChanges.OnNext(new Progress(taskCount, curTask++));
-
-                var flatDirSetupFiles = actualDirSetupFiles
-                    .SelectMany(files => files.files.Select(path => new { files.dirSetup, path }));
-
-                setupProcessState.ProgressChanges.OnNext(new Progress(taskCount, curTask++));
-
-                IEnumerable<string> actualFiles = actualDirSetupFiles
-                    .SelectMany(dirSetupFiles => dirSetupFiles.files);
-
-                setupProcessState.ProgressChanges.OnNext(new Progress(taskCount, curTask++));
-
-                var allPaths = fileInfos
-                        .Select(x => x.AbsolutePath)
-                        .Union(actualFiles)
-                        .Distinct()
-                        .Select(path => new { path, info = new SysFileInfo(path) });
-
-                setupProcessState.ProgressChanges.OnNext(new Progress(taskCount, curTask++));
-
-                IEnumerable<FileInfoChangeset> mergedFiles =
-                    from file in allPaths
-                    join foundFile in flatDirSetupFiles
-                        on file.path equals foundFile.path into foundFiles
-                    join definedFile in fileInfos
-                        on file.path equals definedFile.AbsolutePath into definedFiles
-
-                    select new FileInfoChangeset(definedFiles.Any() ? definedFiles.First().FileInfo as FileInfo? : null)
-                    {
-                        Path =
-                            new Uri(Uri.UnescapeDataString(
-                                (
-                                definedFiles.Any()
-                                    ? definedFiles.First().DirectorySetup
-                                    : foundFiles.First().dirSetup
-                                ).Path.MakeRelativeUri(new Uri(file.path))
-                                .ToString()
-                            ), UriKind.Relative),
-                        CreationTime = file.info.CreationTime,
-                        LastWriteTime = file.info.LastWriteTime,
-                        FileSize = file.info.Length,
-                        IsAccessible = foundFiles.Any(),
-                        DirectorySetupId = foundFiles.Any() ? foundFiles.First().dirSetup.Id : definedFiles.First().DirectorySetup.Id
-                    };
-
-                setupProcessState.ProgressChanges.OnNext(new Progress(taskCount, curTask++));
-                this.Patch(mergedFiles);
-                setupProcessState.StateChanges.OnNext(AsyncState.Done);
-            }
-            catch (Exception ex)
-            {
-                setupProcessState.StateChanges.OnNext(AsyncState.Failed);
-                setupProcessState.ErrorChanges.OnNext(ex.ToString());
-            }
-            finally
-            {
-                setupProcessState.Complete();
-                synchronizing = false;
-            }
+                        this.Patch(mergedFiles);
+                    });
+                    setupProcessState.OnNextStep("done");
+                    setupProcessState.State = AsyncState.Done;
+                }
+                catch (Exception ex)
+                {
+                    setupProcessState.StateChanges.OnNext(AsyncState.Failed);
+                    setupProcessState.ErrorChanges.OnNext(ex.ToString());
+                }
+                finally
+                {
+                    setupProcessState.Complete();
+                    synchronizing = false;
+                }
+            });
+            task.Start();
         }
 
         public void UpdateHashes() => this.UpdateHashes(16);

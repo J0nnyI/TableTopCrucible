@@ -1,6 +1,6 @@
 ﻿using System.Windows.Threading;
 
-namespace TableTopCrucible.Domain.Services
+namespace TableTopCrucible.Core.Services
 {
     public interface IUiDispatcherService
     {

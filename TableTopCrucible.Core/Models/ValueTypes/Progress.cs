@@ -18,5 +18,8 @@
         public int Min { get; }
         public int Value { get; }
         public int Max { get; }
+
+        public Progress OnNextStep()
+            => new Progress(Min, Value + 1, Max);
     }
 }

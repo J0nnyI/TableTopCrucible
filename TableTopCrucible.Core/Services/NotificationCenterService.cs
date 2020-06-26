@@ -16,6 +16,9 @@ namespace TableTopCrucible.Core.Services
     {
         private readonly SourceCache<IAsyncJobState, AsyncJobId> _jobs = new SourceCache<IAsyncJobState, AsyncJobId>(x => x.Id);
 
+
+        private IUiDispatcherService _uiDispatcher;
+
         public IObservableCache<IAsyncJobState, AsyncJobId> GetJobs()
             => _jobs;
 
@@ -30,6 +33,11 @@ namespace TableTopCrucible.Core.Services
 
             this.Register(job);
             return job;
+        }
+
+        public void IncreaseProgress()
+        {
+
         }
     }
 }

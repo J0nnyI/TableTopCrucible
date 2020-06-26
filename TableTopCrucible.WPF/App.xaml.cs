@@ -72,6 +72,12 @@ namespace TableTopCrucible.WPF
                 Path = @"F:\tmp\Folder A",
                 Name = @"Folder A"
             });
+
+            dss.Patch(new DirectorySetupChangeset()
+            {
+                Path = @"D:\__MANAGED_FILES__\DnD\Shelf\wallhalla-fantasy-stonework",
+                Name = @"Folder B"
+            });
             //dss.Patch(new DirectorySetupChangeset()
             //{
             //    Path = new Uri(@"F:\tmp\Folder B"),

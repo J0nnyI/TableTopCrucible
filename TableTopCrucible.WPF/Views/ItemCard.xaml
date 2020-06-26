@@ -55,9 +55,11 @@
                    Grid.Row="0"
                    Grid.RowSpan="2">
             </Image>
-            <md:PackIcon Visibility="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}" Kind="Image"
-                         VerticalAlignment="Stretch"
-                         HorizontalAlignment="Stretch"
+            <md:PackIcon Visibility="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}" 
+                         Kind="Image"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Center"
+                         Foreground="LightGray"
                          Width="120px"
                          Height="120px"
                          Grid.Column="0"

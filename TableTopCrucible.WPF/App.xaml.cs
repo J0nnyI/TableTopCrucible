@@ -6,6 +6,7 @@ using System.Reactive.Subjects;
 using System.Windows;
 using System.Windows.Threading;
 
+using TableTopCrucible.Base.Services;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
@@ -91,6 +92,8 @@ namespace TableTopCrucible.WPF
         {
             IServiceCollection services = new ServiceCollection();
 
+            // base services
+            services.AddSingleton<INotificationCenterService, NotificationCenterService>();
             // services
             services.AddSingleton<IItemService, ItemService>();
             services.AddSingleton<IInjectionProviderService, InjectionProviderService>();

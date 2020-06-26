@@ -5,7 +5,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 
-namespace TableTopCrucible.Domain.Models
+namespace TableTopCrucible.Base.Models.Sources
 {
     public class DisposableReactiveValidationObject<T> : ReactiveValidationObject<T>, IDisposable
     {

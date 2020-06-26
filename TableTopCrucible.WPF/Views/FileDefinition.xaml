@@ -32,20 +32,18 @@
                   Grid.Row="1">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Directory Setup Name"
-                                    DisplayMemberBinding="{Binding DirectorySetup.Name}"/>
-                    <GridViewColumn Header="ID"
-                                    DisplayMemberBinding="{Binding FileInfo.Id}"/>
-                    <GridViewColumn Header="IsNew"
-                                    DisplayMemberBinding="{Binding IsFileNew}"/>
-                    <GridViewColumn Header="IsAccessible"
-                                    DisplayMemberBinding="{Binding isFileAccessible}"/>
                     <GridViewColumn Header="Path"
                                     DisplayMemberBinding="{Binding AbsolutePath}"/>
-                    <GridViewColumn Header="last write"
-                                    DisplayMemberBinding="{Binding LastWriteTime}"/>
+                    <GridViewColumn Header="Directory Setup Name"
+                                    DisplayMemberBinding="{Binding DirectorySetup.Name}"/>
+                    <GridViewColumn Header="isAccessible"
+                                    DisplayMemberBinding="{Binding IsFileAccessible}"/>
                     <GridViewColumn Header="hash"
                                     DisplayMemberBinding="{Binding FileHash}"/>
+                    <GridViewColumn Header="ID"
+                                    DisplayMemberBinding="{Binding FileInfo.Id}"/>
+                    <GridViewColumn Header="last write"
+                                    DisplayMemberBinding="{Binding LastWriteTime}"/>
                 </GridView>
             </ListView.View>
         </ListView>

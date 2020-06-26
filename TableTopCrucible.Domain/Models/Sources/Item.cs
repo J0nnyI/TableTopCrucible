@@ -5,6 +5,7 @@ using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using System.Linq;
+using TableTopCrucible.Base.Models.Sources;
 
 namespace TableTopCrucible.Domain.Models.Sources
 {

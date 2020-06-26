@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using TableTopCrucible.Base.Models.ValueTypes.IDs;
+
 namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
 {
     public struct FileItemLinkId : ITypedId

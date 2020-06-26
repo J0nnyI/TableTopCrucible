@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using TableTopCrucible.Base.Models.ValueTypes;
+
 namespace TableTopCrucible.Domain.Models.ValueTypes
 {
     public struct FilePath

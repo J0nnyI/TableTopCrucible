@@ -4,9 +4,9 @@ using System;
 using System.Reactive;
 using System.Reactive.Subjects;
 
-namespace TableTopCrucible.Domain.Models
+namespace TableTopCrucible.Base.Models.Sources
 {
-    public class DisposableReactiveObject : ReactiveObject, IDisposable
+    public abstract class DisposableReactiveObjectBase : ReactiveObject, IDisposable
     {
         private readonly Subject<Unit> _destroy = new Subject<Unit>();
         protected IObservable<Unit> destroy => _destroy;

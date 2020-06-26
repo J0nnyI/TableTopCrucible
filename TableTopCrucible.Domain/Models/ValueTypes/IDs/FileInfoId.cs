@@ -1,5 +1,7 @@
 ﻿using System;
 
+using TableTopCrucible.Base.Models.ValueTypes.IDs;
+
 namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
 {
     public struct FileInfoId : ITypedId

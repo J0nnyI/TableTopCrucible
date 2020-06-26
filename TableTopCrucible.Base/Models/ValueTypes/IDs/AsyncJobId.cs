@@ -4,14 +4,14 @@ using TableTopCrucible.Base.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
 {
-    public struct DirectorySetupId : ITypedId
+    public struct AsyncJobId : ITypedId
     {
         private Guid _guid;
-        public DirectorySetupId(Guid guid)
+        public AsyncJobId(Guid guid)
             => this._guid = guid;
         public override bool Equals(object obj)
         {
-            if (obj is DirectorySetupId id)
+            if (obj is AsyncJobId id)
                 return this._guid == id._guid;
             return false;
         }
@@ -20,14 +20,17 @@ namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
         public Guid ToGuid() => this._guid;
 
         public override string ToString() => _guid.ToString();
-        public static bool operator ==(DirectorySetupId id1, DirectorySetupId id2)
+        public static bool operator ==(AsyncJobId id1, AsyncJobId id2)
             => id1._guid == id2._guid;
-        public static bool operator !=(DirectorySetupId id1, DirectorySetupId id2)
+        public static bool operator !=(AsyncJobId id1, AsyncJobId id2)
             => id1._guid != id2._guid;
 
-        public static explicit operator Guid(DirectorySetupId id)
+        public static explicit operator Guid(AsyncJobId id)
             => id._guid;
-        public static explicit operator DirectorySetupId(Guid id)
-            => new DirectorySetupId(id);
+        public static explicit operator AsyncJobId(Guid id)
+            => new AsyncJobId(id);
+
+        public static AsyncJobId New()
+            => new AsyncJobId(Guid.NewGuid());
     }
 }

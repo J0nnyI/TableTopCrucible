@@ -6,10 +6,10 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
-
+using TableTopCrucible.Base.Models.Sources;
+using TableTopCrucible.Base.Models.ValueTypes.IDs;
 using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Services
 {

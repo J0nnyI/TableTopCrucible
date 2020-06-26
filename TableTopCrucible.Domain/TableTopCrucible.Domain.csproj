@@ -15,4 +15,8 @@
     <PackageReference Include="ReactiveUI.WPF" Version="11.4.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TableTopCrucible.Base\TableTopCrucible.Base.csproj" />
+  </ItemGroup>
+
 </Project>

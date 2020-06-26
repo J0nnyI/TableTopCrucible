@@ -117,13 +117,13 @@ namespace TableTopCrucible.WPF.ViewModels
         {
             return !Tag.Validate(tag).Any() && !isTagSelected(tag);
         }
-        protected override void OnDispose()
+        protected override void onDispose()
         {
             this.TagsChanges.OnCompleted();
             this.TagsChanges.Dispose();
             this.SelectedTagsChanges.OnCompleted();
             this.SelectedTagsChanges.Dispose();
-            base.OnDispose();
+            base.onDispose();
         }
     }
 }

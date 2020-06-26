@@ -12,27 +12,27 @@ namespace TableTopCrucible.Core.Models.Sources
         private readonly Subject<Unit> _destroy = new Subject<Unit>();
         protected readonly CompositeDisposable disposables = new CompositeDisposable();
         protected IObservable<Unit> destroy => _destroy;
-        protected virtual void OnDispose()
-        {
-            this._destroy.OnNext(Unit.Default);
-            this.disposables.Dispose();
-        }
+        protected virtual void onDispose() { }
+
         #region IDisposable Support
         public bool IsDisposed { get; private set; } = false; // To detect redundant calls
 
-        protected virtual void Dispose(bool disposing)
+        private void _dispose(bool disposing)
         {
             if (!IsDisposed)
             {
                 if (disposing)
                 {
-                    OnDispose();
+                    onDispose();
+                    this._destroy.OnNext(Unit.Default);
+                    this._destroy.Dispose();
+                    this.disposables.Dispose();
                 }
                 IsDisposed = true;
             }
         }
         public void Dispose()
-        => Dispose(true);
+            => _dispose(true);
         #endregion
     }
 }

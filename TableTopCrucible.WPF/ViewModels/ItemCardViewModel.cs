@@ -157,7 +157,7 @@ namespace TableTopCrucible.WPF.ViewModels
             this.Changeset = null;
         }
 
-        protected override void OnDispose()
+        protected override void onDispose()
         {
             this.ItemChanges.OnCompleted();
             this.ItemChanges.Dispose();
@@ -165,7 +165,7 @@ namespace TableTopCrucible.WPF.ViewModels
             this._editableChanges.OnCompleted();
             this._editableChanges.Dispose();
 
-            base.OnDispose();
+            base.onDispose();
         }
     }
 }

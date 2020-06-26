@@ -1,7 +1,9 @@
 ﻿using ReactiveUI;
 
 using System;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 
 namespace TableTopCrucible.Core.Models.Sources
@@ -9,27 +11,29 @@ namespace TableTopCrucible.Core.Models.Sources
     public abstract class DisposableReactiveObjectBase : ReactiveObject, IDisposable
     {
         private readonly Subject<Unit> _destroy = new Subject<Unit>();
+        protected readonly CompositeDisposable disposables = new CompositeDisposable();
         protected IObservable<Unit> destroy => _destroy;
-        protected virtual void OnDispose()
-        {
-            this._destroy.OnNext(Unit.Default);
-        }
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        protected virtual void onDispose() { }
 
-        protected virtual void Dispose(bool disposing)
+        #region IDisposable Support
+        public bool IsDisposed { get; private set; } = false; // To detect redundant calls
+
+        private void _dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!IsDisposed)
             {
                 if (disposing)
                 {
-                    OnDispose();
+                    onDispose();
+                    this._destroy.OnNext(Unit.Default);
+                    this._destroy.Dispose();
+                    this.disposables.Dispose();
                 }
-                disposedValue = true;
+                IsDisposed = true;
             }
         }
         public void Dispose()
-        => Dispose(true);
+            => _dispose(true);
         #endregion
     }
 }

@@ -1,15 +1,12 @@
 ﻿using DynamicData;
+using DynamicData.Alias;
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.Domain.Models.Views;
-using DynamicData.Alias;
 
 namespace TableTopCrucible.Domain.Services
 {
@@ -37,7 +34,7 @@ namespace TableTopCrucible.Domain.Services
                     (FileItemLink link, IGrouping<ExtendedFileInfo, FileInfoId, FileInfoHashKey> files)
                         => files.Items.Select(file => new LinkedFile(file, link))
                     )
-                .TransformMany(files=>files,(LinkedFile file)=>file.Link.Id)
+                .TransformMany(files => files, (LinkedFile file) => file.Link.Id)
                 .AsObservableCache();
         }
     }

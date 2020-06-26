@@ -1,12 +1,9 @@
 ﻿using DynamicData;
 using DynamicData.Kernel;
 
-using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Windows.Media;
 
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
@@ -15,7 +12,8 @@ using TableTopCrucible.Domain.Models.Views;
 
 namespace TableTopCrucible.Domain.Services
 {
-    public interface IItemService : IDataService<Item, ItemId, ItemChangeset> {
+    public interface IItemService : IDataService<Item, ItemId, ItemChangeset>
+    {
         public void AutoGenerateItems();
     }
     public class ItemService : DataServiceBase<Item, ItemId, ItemChangeset>, IItemService
@@ -69,7 +67,7 @@ namespace TableTopCrucible.Domain.Services
             var files = this._fileService
                 .GetExtendedByHash()
                 .KeyValues
-                .Where(x => 
+                .Where(x =>
                     object3dExtensions.Contains(
                         Path.GetExtension(x.Value.AbsolutePath)))
                 .ToDictionary(x => x.Key, x => x.Value);

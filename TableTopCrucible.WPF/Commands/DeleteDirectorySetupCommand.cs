@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Text;
-using System.Text;
 using System.Windows.Input;
 
-using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.Domain.Services;
 
@@ -24,7 +20,7 @@ namespace TableTopCrucible.WPF.Commands
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        public bool CanExecute(object parameter) 
+        public bool CanExecute(object parameter)
             => parameter is DirectorySetupId id && this._directorySetupService.CanDelete(id);
         public void Execute(object parameter)
         {

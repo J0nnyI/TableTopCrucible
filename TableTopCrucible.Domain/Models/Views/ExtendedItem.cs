@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TableTopCrucible.Domain.Models.Sources;
-
-using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
+﻿using TableTopCrucible.Domain.Models.Sources;
 
 namespace TableTopCrucible.Domain.Models.Views
 {

@@ -2,9 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using TableTopCrucible.Base.Models.Sources;
 using TableTopCrucible.Base.Models.ValueTypes.IDs;
-using TableTopCrucible.Domain.Models;
 
 namespace TableTopCrucible.Domain.Services
 {

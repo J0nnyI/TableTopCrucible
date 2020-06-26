@@ -6,7 +6,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 
-using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
 

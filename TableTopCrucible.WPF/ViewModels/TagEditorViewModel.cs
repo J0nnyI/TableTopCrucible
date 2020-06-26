@@ -14,7 +14,6 @@ using System.Windows.Input;
 
 using TableTopCrucible.Base.Models.Sources;
 using TableTopCrucible.Base.Models.ValueTypes;
-using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;

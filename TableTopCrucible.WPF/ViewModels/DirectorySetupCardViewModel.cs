@@ -8,7 +8,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
 
-using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
@@ -70,7 +69,7 @@ namespace TableTopCrucible.WPF.ViewModels
                         .Get(id)
                         .Connect())
                 .Switch()
-                .QueryWhenChanged(query=>query.Count)
+                .QueryWhenChanged(query => query.Count)
                 .TakeUntil(destroy);
 
             this._fileCount = this.FileCountChanges

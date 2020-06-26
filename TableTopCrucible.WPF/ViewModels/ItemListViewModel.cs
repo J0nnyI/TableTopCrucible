@@ -14,7 +14,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Data;
 
-using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Services;

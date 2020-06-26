@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Windows.Input;
 
-using TableTopCrucible.Domain.Models;
 using TableTopCrucible.Domain.Models.Views;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;

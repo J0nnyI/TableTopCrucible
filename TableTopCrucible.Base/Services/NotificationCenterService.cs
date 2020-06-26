@@ -1,9 +1,4 @@
-﻿using DynamicData;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TableTopCrucible.Base.Services
+﻿namespace TableTopCrucible.Base.Services
 {
     public interface INotificationCenterService
     {
@@ -11,6 +6,6 @@ namespace TableTopCrucible.Base.Services
     }
     public class NotificationCenterService : INotificationCenterService
     {
-        
+
     }
 }

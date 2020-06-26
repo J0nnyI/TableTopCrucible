@@ -1,15 +1,15 @@
 ﻿using System;
-using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 using System.Collections.Generic;
-using System.Text;
 
+using TableTopCrucible.Base.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
-using TableTopCrucible.Base.Models.Sources;
+
+using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 
 namespace TableTopCrucible.Domain.Models.Sources
 {
-    public struct FileItemLinkChangeset : IEntityChangeset<FileItemLink,FileItemLinkId>
+    public struct FileItemLinkChangeset : IEntityChangeset<FileItemLink, FileItemLinkId>
     {
         public ItemId ItemId { get; set; }
 

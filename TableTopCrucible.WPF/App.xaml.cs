@@ -2,14 +2,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Reactive.Subjects;
 using System.Windows;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Services;
 using TableTopCrucible.WPF.Commands;
+using TableTopCrucible.WPF.Pages;
 using TableTopCrucible.WPF.ViewModels;
 using TableTopCrucible.WPF.Views;
 
@@ -101,13 +104,16 @@ namespace TableTopCrucible.WPF
 
             // base services
             services.AddSingleton<INotificationCenterService, NotificationCenterService>();
-            // services
+            // domain services
             services.AddSingleton<IItemService, ItemService>();
             services.AddSingleton<IInjectionProviderService, InjectionProviderService>();
             services.AddSingleton<IUiDispatcherService, UiDispatcherService>();
             services.AddSingleton<IItemTagService, ItemTagService>();
             services.AddSingleton<IFileInfoService, FileInfoService>();
             services.AddSingleton<IDirectorySetupService, DirectorySetupService>();
+            services.AddSingleton<ISaveService, SaveService>();
+
+            // WPF Services
 
             // viewModels
             services.AddTransient<MainViewModel>();
@@ -120,6 +126,11 @@ namespace TableTopCrucible.WPF
             services.AddTransient<DirectorySetupCardViewModel>();
             services.AddTransient<NotificationCenterViewModel>();
 
+            //   pages
+            services.AddTransient<FileSetupPage>();
+            services.AddTransient<DevTestPage>();
+            services.AddTransient<ItemEditorPage>();
+
             // commands
             services.AddSingleton<CreateItemCommand>();
             services.AddSingleton<DeleteItemCommand>();
@@ -130,6 +141,7 @@ namespace TableTopCrucible.WPF
             services.AddSingleton<DeleteDirectorySetupCommand>();
             services.AddSingleton<HashFilesCommand>();
             services.AddSingleton<GenerateItemsFromFilesCommand>();
+
 
             return services.BuildServiceProvider();
         }

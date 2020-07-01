@@ -2,6 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:views="clr-namespace:TableTopCrucible.WPF.Views"
                     xmlns:viewModels="clr-namespace:TableTopCrucible.WPF.ViewModels">
+    
+    <!--views-->
     <DataTemplate DataType="{x:Type viewModels:ItemListViewModel}">
         <views:ItemList/>
     </DataTemplate>

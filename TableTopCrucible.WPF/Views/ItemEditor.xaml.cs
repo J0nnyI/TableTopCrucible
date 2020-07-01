@@ -1,4 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
+
+using TableTopCrucible.WPF.ViewModels;
 
 namespace TableTopCrucible.WPF.Views
 {
@@ -7,6 +10,7 @@ namespace TableTopCrucible.WPF.Views
     /// </summary>
     public partial class ItemEditor : UserControl
     {
+
         public ItemEditor()
         {
             InitializeComponent();

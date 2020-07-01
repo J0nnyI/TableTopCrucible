@@ -3,4 +3,5 @@
                     xmlns:local="clr-namespace:TableTopCrucible.WPF.MultiConverters">
     <local:VisibillityBooleanConverter x:Key="mvc_visibillity"/>
     <local:BooleanMultiValueConverter x:Key="mvc_boolean"/>
+    <local:ArrayMultiValueConverter x:Key="mvc_array"/>
 </ResourceDictionary>

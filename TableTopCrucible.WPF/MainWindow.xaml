@@ -13,36 +13,38 @@
         Title="MainWindow" 
         Height="850"
         Width="1600"
-        d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:MainViewModel}">
+        d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:MainViewModel}"
+        Name="self"
+        >
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <ContentPresenter Content="{Binding Path=ItemList}"
-                          Grid.Column="1"
-                          Grid.RowSpan="1"/>
-        <ContentPresenter Content="{Binding Path=NotificationCenter}"
-                          Grid.Column="1"
-                          Grid.Row="1"
-                          Grid.RowSpan="1"/>
-        <ContentPresenter Content="{Binding Path=DirectorySetup}"
-                          Grid.Column="0"/>
-        <ContentPresenter Content="{Binding Path=FileDefinitions}"
-                          Grid.Column="0 "
-                          Grid.Row="1"/>
+        <ListBox ItemsSource="{Binding Pages}"
+                 Grid.Row="0">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <RadioButton GroupName="tabs" 
+                                 Content="{Binding Page.Title}"
+                                 Command="{Binding ElementName=self, Path=DataContext.TabChangeCommand}"
+                                 CommandParameter="{Binding}"
+                                 Name="tabRadio"
+                                 IsChecked="{Binding IsSelected}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
-        <!--<Label Content="{Binding Path=ItemList.SelectedItemVm}"
-               Grid.Column="0"
+        <Frame Content="{Binding CurrentPage}"
+               NavigationUIVisibility="Hidden"
                Grid.Row="1"/>
-        <Label Content="{Binding Path=ItemList.SelectedItem}"
-               Grid.Column="1"
-               Grid.Row="1"/>-->
 
     </Grid>
 </Window>

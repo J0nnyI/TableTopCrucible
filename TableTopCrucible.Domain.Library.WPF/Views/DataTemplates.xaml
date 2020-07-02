@@ -16,11 +16,11 @@
     <DataTemplate DataType="{x:Type viewModels:ItemEditorViewModel}">
         <views:ItemEditor/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type viewModels:FileDefinitionViewModel}">
-        <views:FileDefinition/>
+    <DataTemplate DataType="{x:Type viewModels:FileListViewModel}">
+        <views:FileList/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type viewModels:DirectorySetupViewModel}">
-        <views:DirectorySetupList/>
+    <DataTemplate DataType="{x:Type viewModels:DirectoryListViewModel}">
+        <views:DirectoryList/>
     </DataTemplate>
     <DataTemplate DataType="{x:Type viewModels:DirectorySetupCardViewModel}">
         <views:DirectorySetupCard/>

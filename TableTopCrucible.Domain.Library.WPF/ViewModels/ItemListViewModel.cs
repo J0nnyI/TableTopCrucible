@@ -75,7 +75,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 (provider) =>
             {
                 if (provider == null)
-                    return;
+                    throw new InvalidOperationException("provider is null");
+
+
                 this._itemService
                 .Get()
                 .Connect()

@@ -20,13 +20,9 @@ namespace TableTopCrucible.Domain.Library.WPF.Pages
     /// </summary>
     public partial class ItemEditorPage : Page
     {
-        public ItemListViewModel ItemList { get; }
-        public ItemEditorViewModel ItemEditorVm { get; }
 
-        public ItemEditorPage(ItemListViewModel itemList, ItemEditorViewModel itemEditorVm)
+        public ItemEditorPage()
         {
-            this.ItemList = itemList ?? throw new ArgumentNullException(nameof(itemList));
-            this.ItemEditorVm = itemEditorVm ?? throw new ArgumentNullException(nameof(itemEditorVm));
             InitializeComponent();
         }
     }

@@ -33,7 +33,7 @@
     <Compile Update="Views\DirectorySetupCard.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\FileDefinition.xaml.cs">
+    <Compile Update="Views\FileList.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\ItemCard.xaml.cs">
@@ -43,9 +43,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\ItemList.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\TabStrip.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\TagEditor.xaml.cs">
@@ -72,10 +69,10 @@
     <Page Update="Views\DirectorySetupCard.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\DirectorySetupList.xaml">
+    <Page Update="Views\DirectoryList.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\FileDefinition.xaml">
+    <Page Update="Views\FileList.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\ItemCard.xaml">
@@ -88,9 +85,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\NotificationCenter.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\TabStrip.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\TagEditor.xaml">

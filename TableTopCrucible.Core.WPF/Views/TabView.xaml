@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="TableTopCrucible.Core.WPF.Views.TabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:TableTopCrucible.Core.WPF.ViewModels"
+             xmlns:coreControls="clr-namespace:TableTopCrucible.Core.WPF.Controls"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type viewModels:TabViewModel}}">
+    <coreControls:TabControlEx ItemsSource="{Binding Tabs}" 
+                               SelectedIndex="{Binding ActiveTabIndex, Mode=TwoWay}"
+                               TabStripPlacement="Left">
+        <coreControls:TabControlEx.ItemTemplate>
+            <DataTemplate>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <md:PackIcon Kind="{Binding Icon}"
+                                 Foreground="{StaticResource MaterialDesignLightForeground}"
+                                 Height="50px"
+                                 Width="50px"
+                                 Grid.Row="0"/>
+                    <TextBlock Text="{Binding Title}"
+                               Grid.Row="1"/>
+                </Grid>
+            </DataTemplate>
+        </coreControls:TabControlEx.ItemTemplate>
+        <coreControls:TabControlEx.ContentTemplate>
+            <DataTemplate>
+                <Frame Content="{Binding}" />
+            </DataTemplate>
+        </coreControls:TabControlEx.ContentTemplate>
+    </coreControls:TabControlEx>
+
+</UserControl>

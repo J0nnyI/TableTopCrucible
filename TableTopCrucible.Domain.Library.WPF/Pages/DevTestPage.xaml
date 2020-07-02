@@ -3,11 +3,38 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.PageViewModels"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="DevTestPage">
+      d:DataContext="{d:DesignInstance Type=viewModels:DevTestPageViewModel}"
+      Title="{Binding Title}">
 
+    <Page.Resources>
+        <ResourceDictionary Source="../Common.xaml"/>
+    </Page.Resources>
     <Grid>
-        <Label>DevTest</Label>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MaxWidth="600"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ContentPresenter Content="{Binding NotificationCenter}"
+                          Grid.Column="0"
+                          Grid.Row="0"
+                          Grid.RowSpan="2"/>
+        <ContentPresenter Content="{Binding DirList}"
+                          Grid.Column="1"
+                          Grid.Row="0"/>
+        <ContentPresenter Content="{Binding FileList}"
+                          Grid.Column="1"
+                          Grid.Row="1"/>
+        <ContentPresenter Content="{Binding ItemList}"
+                          Grid.Column="2"
+                          Grid.Row="0"
+                          Grid.RowSpan="2"/>
     </Grid>
 </Page>

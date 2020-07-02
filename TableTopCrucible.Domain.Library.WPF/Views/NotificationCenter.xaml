@@ -25,20 +25,21 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
-                            <RowDefinition/>
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <Label Content="{Binding Title}"
-                               Grid.Row="0"/>
+                        <TextBlock Text="{Binding Title}"
+                                   Grid.Row="0"/>
                         <ListBox ItemsSource="{Binding Processes}"
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                  ScrollViewer.VerticalScrollBarVisibility="Visible"
                                  SelectiveScrollingGrid.SelectiveScrollingOrientation="Horizontal"
-                                  Grid.Row="1" MaxHeight="300px"
-                                 MaxWidth="300px">
+                                 
+                                 Grid.Row="1" MaxHeight="300px"
+                                 MaxWidth="600">
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                                     <Setter Property="HorizontalContentAlignment" 
@@ -73,7 +74,8 @@
                                                      Maximum="{Binding Progress.Max, Mode=OneWay}"
                                                      Grid.Column="0"
                                                      Grid.Row="1"/>
-                                        <TextBlock Grid.Column="1"
+                                        <TextBlock MaxWidth="200px"
+                                                   Grid.Column="1"
                                                    Grid.Row="1">
                                             <Run Text="{Binding Progress.Value, Mode=OneWay}"/>
                                             <Run>/</Run>

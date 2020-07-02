@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="TableTopCrucible.Domain.Library.WPF.Views.DirectorySetupList"
+﻿<UserControl x:Class="TableTopCrucible.Domain.Library.WPF.Views.DirectoryList"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" 
              d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:DirectorySetupViewModel}">
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:DirectoryListViewModel}">
     <UserControl.Resources>
         <ResourceDictionary Source="../Common.xaml"/>
     </UserControl.Resources>
@@ -44,7 +44,7 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <ContentPresenter Content="{Binding}"/>
+                    <ContentPresenter Content="{Binding}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

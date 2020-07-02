@@ -10,8 +10,11 @@ using System.Threading.Tasks;
 using System.Windows;
 
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Core.WPF.Services;
+using TableTopCrucible.Core.WPF.ViewModels;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Pages;
+using TableTopCrucible.Domain.Library.WPF.PageViewModels;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.WPF.Commands;
 
@@ -27,9 +30,11 @@ namespace TableTopCrucible.App.WPF
             var serviceProvider = this._createServiceProvider();
             this._disposables.Add(serviceProvider);
 
-            var s = serviceProvider.CreateScope();
-            s.ServiceProvider.gets
+            var providerService = serviceProvider.GetRequiredService<IInjectionProviderService>() as InjectionProviderService;
+            providerService.SetProvider(serviceProvider);
 
+            var saveService = serviceProvider.GetRequiredService<ISaveService>();
+            saveService.Load("");
 
             new MainWindow()
             {
@@ -42,7 +47,7 @@ namespace TableTopCrucible.App.WPF
 
             // base services
             services.AddSingleton<INotificationCenterService, NotificationCenterService>();
-            // domain services
+            // library domain services
             services.AddSingleton<IItemService, ItemService>();
             services.AddSingleton<IUiDispatcherService, UiDispatcherService>();
             services.AddSingleton<IItemTagService, ItemTagService>();
@@ -52,6 +57,7 @@ namespace TableTopCrucible.App.WPF
             services.AddScoped<IInjectionProviderService, InjectionProviderService>();
 
             // WPF Services
+            services.AddScoped<TabService>();
 
             // viewModels
             services.AddTransient<MainViewModel>();
@@ -59,15 +65,16 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<ItemCardViewModel>();
             services.AddTransient<TagEditorViewModel>();
             services.AddTransient<ItemEditorViewModel>();
-            services.AddTransient<FileDefinitionViewModel>();
-            services.AddTransient<DirectorySetupViewModel>();
+            services.AddTransient<FileListViewModel>();
+            services.AddTransient<DirectoryListViewModel>();
             services.AddTransient<DirectorySetupCardViewModel>();
             services.AddTransient<NotificationCenterViewModel>();
+            services.AddTransient<TabViewModel>();
 
             //   pages
-            services.AddScoped<FileSetupPage>();
-            services.AddScoped<DevTestPage>();
-            services.AddScoped<ItemEditorPage>();
+            services.AddScoped<DevTestPageViewModel>();
+            services.AddScoped<ItemEditorPageViewModel>();
+            services.AddScoped<FileSetupPageViewModel>();
 
             // commands
             services.AddSingleton<CreateItemCommand>();

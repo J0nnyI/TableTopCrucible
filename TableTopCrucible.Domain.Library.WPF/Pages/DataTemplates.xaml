@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:pages="clr-namespace:TableTopCrucible.Domain.Library.WPF.Pages"
+                    xmlns:pageViewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.PageViewModels">
+    <DataTemplate DataType="{x:Type pageViewModels:DevTestPageViewModel}">
+        <pages:DevTestPage/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type pageViewModels:ItemEditorPageViewModel}">
+        <pages:ItemEditorPage/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type pageViewModels:FileSetupPageViewModel}">
+        <pages:FileSetupPage/>
+    </DataTemplate>
+</ResourceDictionary>

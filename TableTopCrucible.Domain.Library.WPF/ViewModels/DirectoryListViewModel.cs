@@ -13,7 +13,7 @@ using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
-    public class DirectorySetupViewModel : DisposableReactiveObjectBase
+    public class DirectoryListViewModel : DisposableReactiveObjectBase
     {
         public SychronizeFilesCommand SynchronizeFiles { get; }
         public CreateDirectorySetupCommand CreateDirectorySetup { get; }
@@ -24,7 +24,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
         private IDirectoryDataService _directorySetupService;
         private IInjectionProviderService _injectionProviderService;
-        public DirectorySetupViewModel(
+        public DirectoryListViewModel(
             IDirectoryDataService directorySetupService,
             IInjectionProviderService injectionProviderService,
             SychronizeFilesCommand synchronizeFiles,

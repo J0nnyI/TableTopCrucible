@@ -5,17 +5,18 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ItemEditorPage"
-      Name="self">
+      xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.PageViewModels"
+      Title="{Binding Title}"
+      d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type viewModels:ItemEditorPageViewModel}}">
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <ContentPresenter Content="{Binding ElementName=self, Path=ItemList}"
+        <ContentPresenter Content="{Binding Path=ItemList}"
                           Grid.Column="0"/>
-        <ContentPresenter Content="{Binding ElementName=self, Path=ItemEditorVm}"
+        <ContentPresenter Content="{Binding Path=ItemEditor}"
                           Grid.Column="1"/>
     </Grid>
 </Page>

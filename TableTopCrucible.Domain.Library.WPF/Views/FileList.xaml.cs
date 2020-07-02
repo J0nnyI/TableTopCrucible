@@ -3,11 +3,11 @@
 namespace TableTopCrucible.Domain.Library.WPF.Views
 {
     /// <summary>
-    /// Interaction logic for DirectorySetup.xaml
+    /// Interaction logic for FileDefinition.xaml
     /// </summary>
-    public partial class DirectorySetupList : UserControl
+    public partial class FileList : UserControl
     {
-        public DirectorySetupList()
+        public FileList()
         {
             InitializeComponent();
         }

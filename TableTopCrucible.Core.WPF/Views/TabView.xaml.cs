@@ -11,14 +11,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TableTopCrucible.Domain.Library.WPF.Views
+namespace TableTopCrucible.Core.WPF.Views
 {
     /// <summary>
-    /// Interaction logic for TabStrip.xaml
+    /// Interaction logic for TabView.xaml
     /// </summary>
-    public partial class TabStrip : UserControl
+    public partial class TabView : UserControl
     {
-        public TabStrip()
+        public TabView()
         {
             InitializeComponent();
         }

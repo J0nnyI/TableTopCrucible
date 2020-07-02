@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.WPF", "TableTopCrucible.WPF\TableTopCrucible.WPF.csproj", "{191F76F5-C2FD-4D98-B3EB-26EE4AF98617}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Data", "TableTopCrucible.Data\TableTopCrucible.Data.csproj", "{394D0002-F168-4A6E-B1BC-95CBB2F84F02}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Core", "TableTopCrucible.Core\TableTopCrucible.Core.csproj", "{CBB5B8A8-1D57-4A4F-87F8-A3ED4B4F08B3}"
@@ -12,6 +10,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Core.WPF", "TableTopCrucible.Core.WPF\TableTopCrucible.Core.WPF.csproj", "{2B1DD3AE-71C2-460D-94E7-4F6C9CBE2EF2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.App.WPF", "TableTopCrucible.App.WPF\TableTopCrucible.App.WPF.csproj", "{EB1F7179-BF1D-42AC-A42F-7888FBF47104}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A0954B71-81C3-4239-897F-C6E445425933} = {A0954B71-81C3-4239-897F-C6E445425933}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{6560DA97-EB3D-4212-A829-439A852A45DF}"
 EndProject
@@ -21,9 +22,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{1F2AE50D-8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{E7F1703B-F7F4-43C9-AA6B-9A6D0726D987}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopCrucible.Domain.Library.WPF", "TableTopCrucible.Domain.Library.WPF\TableTopCrucible.Domain.Library.WPF.csproj", "{DB7F6CBE-AEF1-4940-B190-A47F4DEEBE36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Domain.Library.WPF", "TableTopCrucible.Domain.Library.WPF\TableTopCrucible.Domain.Library.WPF.csproj", "{DB7F6CBE-AEF1-4940-B190-A47F4DEEBE36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopCrucible.Domain.Library", "TableTopCrucible.Domain.Library\TableTopCrucible.Domain.Library.csproj", "{A0954B71-81C3-4239-897F-C6E445425933}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Domain.Library", "TableTopCrucible.Domain.Library\TableTopCrucible.Domain.Library.csproj", "{A0954B71-81C3-4239-897F-C6E445425933}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{87789266-A7D9-4F54-973B-02A5F486650D}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +37,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{191F76F5-C2FD-4D98-B3EB-26EE4AF98617}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{191F76F5-C2FD-4D98-B3EB-26EE4AF98617}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{191F76F5-C2FD-4D98-B3EB-26EE4AF98617}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{191F76F5-C2FD-4D98-B3EB-26EE4AF98617}.Release|Any CPU.Build.0 = Release|Any CPU
 		{394D0002-F168-4A6E-B1BC-95CBB2F84F02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{394D0002-F168-4A6E-B1BC-95CBB2F84F02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{394D0002-F168-4A6E-B1BC-95CBB2F84F02}.Release|Any CPU.ActiveCfg = Release|Any CPU

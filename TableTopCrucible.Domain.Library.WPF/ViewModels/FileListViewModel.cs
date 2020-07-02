@@ -13,7 +13,7 @@ using TableTopCrucible.WPF.Commands;
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
 
-    public class FileDefinitionViewModel : DisposableReactiveObjectBase
+    public class FileListViewModel : DisposableReactiveObjectBase
     {
         private readonly ReadOnlyObservableCollection<ExtendedFileInfo> _files;
         public ReadOnlyObservableCollection<ExtendedFileInfo> Files => _files;
@@ -22,7 +22,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public ICommand SynchronizeFiles { get; }
         public ICommand HashFiles { get; }
         public ICommand GenerateItems { get; }
-        public FileDefinitionViewModel(IFileDataService fileInfoService, GenerateItemsFromFilesCommand generateItems, SychronizeFilesCommand synchronizeFiles, HashFilesCommand hashFiles)
+        public FileListViewModel(IFileDataService fileInfoService, GenerateItemsFromFilesCommand generateItems, SychronizeFilesCommand synchronizeFiles, HashFilesCommand hashFiles)
         {
             this.SynchronizeFiles = synchronizeFiles;
             this.HashFiles = hashFiles;

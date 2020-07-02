@@ -5,13 +5,25 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.WPF", "TableTopCrucible.WPF\TableTopCrucible.WPF.csproj", "{191F76F5-C2FD-4D98-B3EB-26EE4AF98617}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Domain", "TableTopCrucible.Domain\TableTopCrucible.Domain.csproj", "{525C93E5-EE0D-4069-B8C9-F59749EC351B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Data", "TableTopCrucible.Data\TableTopCrucible.Data.csproj", "{394D0002-F168-4A6E-B1BC-95CBB2F84F02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopCrucible.WPF.Core", "TableTopCrucible.WPF.Core\TableTopCrucible.WPF.Core.csproj", "{BBAED727-6A17-4B3D-B9C8-9B689F53C03E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Core", "TableTopCrucible.Core\TableTopCrucible.Core.csproj", "{CBB5B8A8-1D57-4A4F-87F8-A3ED4B4F08B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Core.WPF", "TableTopCrucible.Core.WPF\TableTopCrucible.Core.WPF.csproj", "{2B1DD3AE-71C2-460D-94E7-4F6C9CBE2EF2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.App.WPF", "TableTopCrucible.App.WPF\TableTopCrucible.App.WPF.csproj", "{EB1F7179-BF1D-42AC-A42F-7888FBF47104}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{6560DA97-EB3D-4212-A829-439A852A45DF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{3AEDC9FA-EF87-44C7-84C0-B44ECCA32E22}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{1F2AE50D-863D-42A0-8906-888F77E2CFF6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{E7F1703B-F7F4-43C9-AA6B-9A6D0726D987}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopCrucible.Domain.Library.WPF", "TableTopCrucible.Domain.Library.WPF\TableTopCrucible.Domain.Library.WPF.csproj", "{DB7F6CBE-AEF1-4940-B190-A47F4DEEBE36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopCrucible.Domain.Library", "TableTopCrucible.Domain.Library\TableTopCrucible.Domain.Library.csproj", "{A0954B71-81C3-4239-897F-C6E445425933}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,25 +35,41 @@ Global
 		{191F76F5-C2FD-4D98-B3EB-26EE4AF98617}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{191F76F5-C2FD-4D98-B3EB-26EE4AF98617}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{191F76F5-C2FD-4D98-B3EB-26EE4AF98617}.Release|Any CPU.Build.0 = Release|Any CPU
-		{525C93E5-EE0D-4069-B8C9-F59749EC351B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{525C93E5-EE0D-4069-B8C9-F59749EC351B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{525C93E5-EE0D-4069-B8C9-F59749EC351B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{525C93E5-EE0D-4069-B8C9-F59749EC351B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{394D0002-F168-4A6E-B1BC-95CBB2F84F02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{394D0002-F168-4A6E-B1BC-95CBB2F84F02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{394D0002-F168-4A6E-B1BC-95CBB2F84F02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{394D0002-F168-4A6E-B1BC-95CBB2F84F02}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BBAED727-6A17-4B3D-B9C8-9B689F53C03E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BBAED727-6A17-4B3D-B9C8-9B689F53C03E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BBAED727-6A17-4B3D-B9C8-9B689F53C03E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BBAED727-6A17-4B3D-B9C8-9B689F53C03E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CBB5B8A8-1D57-4A4F-87F8-A3ED4B4F08B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CBB5B8A8-1D57-4A4F-87F8-A3ED4B4F08B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBB5B8A8-1D57-4A4F-87F8-A3ED4B4F08B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBB5B8A8-1D57-4A4F-87F8-A3ED4B4F08B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B1DD3AE-71C2-460D-94E7-4F6C9CBE2EF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B1DD3AE-71C2-460D-94E7-4F6C9CBE2EF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B1DD3AE-71C2-460D-94E7-4F6C9CBE2EF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B1DD3AE-71C2-460D-94E7-4F6C9CBE2EF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB1F7179-BF1D-42AC-A42F-7888FBF47104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB1F7179-BF1D-42AC-A42F-7888FBF47104}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB1F7179-BF1D-42AC-A42F-7888FBF47104}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB1F7179-BF1D-42AC-A42F-7888FBF47104}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB7F6CBE-AEF1-4940-B190-A47F4DEEBE36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB7F6CBE-AEF1-4940-B190-A47F4DEEBE36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB7F6CBE-AEF1-4940-B190-A47F4DEEBE36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB7F6CBE-AEF1-4940-B190-A47F4DEEBE36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0954B71-81C3-4239-897F-C6E445425933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0954B71-81C3-4239-897F-C6E445425933}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0954B71-81C3-4239-897F-C6E445425933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0954B71-81C3-4239-897F-C6E445425933}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{394D0002-F168-4A6E-B1BC-95CBB2F84F02} = {1F2AE50D-863D-42A0-8906-888F77E2CFF6}
+		{CBB5B8A8-1D57-4A4F-87F8-A3ED4B4F08B3} = {6560DA97-EB3D-4212-A829-439A852A45DF}
+		{2B1DD3AE-71C2-460D-94E7-4F6C9CBE2EF2} = {6560DA97-EB3D-4212-A829-439A852A45DF}
+		{E7F1703B-F7F4-43C9-AA6B-9A6D0726D987} = {3AEDC9FA-EF87-44C7-84C0-B44ECCA32E22}
+		{DB7F6CBE-AEF1-4940-B190-A47F4DEEBE36} = {E7F1703B-F7F4-43C9-AA6B-9A6D0726D987}
+		{A0954B71-81C3-4239-897F-C6E445425933} = {E7F1703B-F7F4-43C9-AA6B-9A6D0726D987}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5FA1A29D-7A36-494A-9156-8A7C94F97FA2}

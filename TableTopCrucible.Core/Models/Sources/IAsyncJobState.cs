@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using TableTopCrucible.Core.Enums;
+using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Core.Models.Sources

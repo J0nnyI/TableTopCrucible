@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicData" Version="6.14.18" />
+    <PackageReference Include="MaterialDesignThemes" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
+    <PackageReference Include="ReactiveUI" Version="11.4.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="11.4.1" />
+    <PackageReference Include="ReactiveUI.Validation" Version="1.4.15" />
+    <PackageReference Include="ReactiveUI.WPF" Version="11.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TableTopCrucible.Core\TableTopCrucible.Core.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Page Update="Converters\Converters.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="MultiConverters\MultiConverters.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Styles\ButtonStyles.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Styles\Colors.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Styles\Common.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+</Project>

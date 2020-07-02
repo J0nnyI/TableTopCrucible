@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:TableTopCrucible.Core.WPF.Converters">
+    <local:DebugConverter x:Key="cv_dbg"/>
+    <local:VisibillityConverter x:Key="cv_visibillity"/>
+    <local:InvertConverter x:Key="cv_Invert"/>
+    <local:ValueSwitchConverter x:Key="cv_valueSwitch"/>
+    <local:MinMaxModConverter x:Key="cv_minMaxMod"/>
+</ResourceDictionary>

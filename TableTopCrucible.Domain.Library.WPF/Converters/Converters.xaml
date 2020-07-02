@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:TableTopCrucible.Domain.Library.WPF.Converters">
+    <local:ItemChangesetConverter x:Key="cv_itemChangeset"/>
+    <local:ItemNameConverter x:Key="cv_itemName"/>
+    <local:TagConverter x:Key="cv_tag"/>
+    <local:ThumbnailConverter x:Key="cv_Thumbnail"/>
+    <local:ItemViewModelConverter x:Key="cv_itemVm"/>
+</ResourceDictionary>

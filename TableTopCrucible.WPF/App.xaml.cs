@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -7,14 +6,7 @@ using System.Reactive.Subjects;
 using System.Windows;
 using System.Windows.Navigation;
 using System.Windows.Threading;
-
 using TableTopCrucible.Core.Services;
-using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.Services;
-using TableTopCrucible.WPF.Commands;
-using TableTopCrucible.WPF.Pages;
-using TableTopCrucible.WPF.ViewModels;
-using TableTopCrucible.WPF.Views;
 
 namespace TableTopCrucible.WPF
 {
@@ -55,10 +47,6 @@ namespace TableTopCrucible.WPF
             #endregion
         }
 
-        public class UiDispatcherService : IUiDispatcherService
-        {
-            public Dispatcher UiDispatcher => App.Current.Dispatcher;
-        }
 
         protected override void OnStartup(StartupEventArgs e)
         {

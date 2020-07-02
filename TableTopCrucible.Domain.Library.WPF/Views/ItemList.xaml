@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="TableTopCrucible.Domain.Library.WPF.Views.ItemList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             Name="self"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:ItemListViewModel}"
+             >
+    <UserControl.Resources>
+        <ResourceDictionary Source="../Common.xaml"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <ListView ItemsSource="{Binding ItemsDataView.View}"
+                  SelectedItem="{Binding SelectedItemVm}"
+                  md:RippleAssist.IsDisabled="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  SelectionMode="Single"
+                  Grid.Row="0" 
+                  Grid.Column="1">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                    <Setter Property="HorizontalContentAlignment" 
+                            Value="Stretch" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected"
+                                 Value="True">
+                            <Setter Property="Background"
+                                    Value="{StaticResource MaterialDesignSelection}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl Content="{Binding}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.Resources>
+            </ListView.Resources>
+        </ListView>
+        <Button Command="{Binding CreateItemCommand}" 
+                Grid.Row="1">
+            <md:PackIcon Kind="Add"/>
+        </Button>
+    </Grid>
+</UserControl>

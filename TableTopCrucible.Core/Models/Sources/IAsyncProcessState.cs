@@ -1,6 +1,6 @@
 ﻿using System;
 
-using TableTopCrucible.Core.Enums;
+using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Core.ValueTypes;
 
 namespace TableTopCrucible.Core.Models.Sources

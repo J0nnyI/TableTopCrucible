@@ -1,0 +1,101 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicData" Version="6.14.18" />
+    <PackageReference Include="MaterialDesignThemes" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
+    <PackageReference Include="ReactiveUI" Version="11.4.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="11.4.1" />
+    <PackageReference Include="ReactiveUI.Validation" Version="1.4.15" />
+    <PackageReference Include="ReactiveUI.WPF" Version="11.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TableTopCrucible.Core.WPF\TableTopCrucible.Core.WPF.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Pages\DevTestPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Pages\FileSetupPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Pages\ItemEditorPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\DirectorySetupCard.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\FileDefinition.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ItemCard.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ItemEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ItemList.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\TabStrip.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\TagEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Converters\Converters.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\DevTestPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\FileSetupPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Pages\ItemEditorPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\DataTemplates.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\DirectorySetupCard.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\DirectorySetupList.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\FileDefinition.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\ItemCard.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\ItemEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\ItemList.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\NotificationCenter.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\TabStrip.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\TagEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+</Project>

@@ -1,11 +1,12 @@
 ﻿using ReactiveUI;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 
-using TableTopCrucible.Core.Enums;
+using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 

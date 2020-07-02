@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="TableTopCrucible.Domain.Library.WPF.Views.FileDefinition"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" 
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:FileDefinitionViewModel}">
+    <UserControl.Resources>
+        <ResourceDictionary Source="..\Common.xaml"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Grid.Row="0">
+            <Button Command="{Binding GenerateItems}"
+                    Style="{StaticResource MaterialDesignIconButton}">
+                <md:PackIcon Kind="FolderAdd"/>
+            </Button>
+            <Button Command="{Binding HashFiles}"
+                    Style="{StaticResource MaterialDesignIconButton}">
+                <md:PackIcon Kind="FolderHash"/>
+            </Button>
+        </StackPanel>
+        <ListView ItemsSource="{Binding Files}"
+                  Grid.Row="1">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Path"
+                                    DisplayMemberBinding="{Binding AbsolutePath}"/>
+                    <GridViewColumn Header="Directory Setup Name"
+                                    DisplayMemberBinding="{Binding DirectorySetup.Name}"/>
+                    <GridViewColumn Header="isAccessible"
+                                    DisplayMemberBinding="{Binding IsFileAccessible}"/>
+                    <GridViewColumn Header="hash"
+                                    DisplayMemberBinding="{Binding FileHash}"/>
+                    <GridViewColumn Header="ID"
+                                    DisplayMemberBinding="{Binding FileInfo.Id}"/>
+                    <GridViewColumn Header="last write"
+                                    DisplayMemberBinding="{Binding LastWriteTime}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>

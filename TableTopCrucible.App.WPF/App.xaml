@@ -1,0 +1,24 @@
+﻿<Application x:Class="TableTopCrucible.App.WPF.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:TableTopCrucible.App.WPF"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <!--<Style TargetType="Label">
+                <Setter Property="Background" Value="green"/>
+                <Setter Property="Content" Value="works 2"/>
+            </Style>-->
+            <ResourceDictionary.MergedDictionaries>
+
+
+                <ResourceDictionary Source="pack://application:,,,/TableTopCrucible.Core.WPF;component/Common.xaml"/>
+                
+                
+                
+                
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+        
+    </Application.Resources>
+</Application>

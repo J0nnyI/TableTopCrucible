@@ -1,0 +1,23 @@
+﻿<Window x:Class="TableTopCrucible.App.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TableTopCrucible.App.WPF"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <StackPanel>
+        <Label></Label>
+        <Label></Label>
+        <Label></Label>
+        <Label>label 3</Label>
+        <Label>label 4</Label>
+        <Label>label 5</Label>
+    </StackPanel>
+</Window>
+<!--<Grid>
+    --><!--<Label Content="{Binding Converter={StaticResource cv_}}"/>--><!--
+
+
+</Grid>-->
+

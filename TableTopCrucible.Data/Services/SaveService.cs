@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using TableTopCrucible.Core.Services;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 
@@ -17,11 +18,13 @@ namespace TableTopCrucible.Data.Services
     {
         private readonly IItemService _itemService;
         private readonly IDirectoryDataService _directoryDataService;
+        private readonly ISettingsService _settingsService;
 
-        public SaveService(IItemService itemService, IDirectoryDataService directoryDataService)
+        public SaveService(IItemService itemService, IDirectoryDataService directoryDataService, ISettingsService settingsService)
         {
             this._itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
             this._directoryDataService = directoryDataService ?? throw new ArgumentNullException(nameof(directoryDataService));
+            this._settingsService = settingsService;
         }
 
         public void Load(string file)

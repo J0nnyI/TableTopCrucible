@@ -6,4 +6,6 @@
     <local:InvertConverter x:Key="cv_Invert"/>
     <local:ValueSwitchConverter x:Key="cv_valueSwitch"/>
     <local:MinMaxModConverter x:Key="cv_minMaxMod"/>
+    <local:BlurConverter x:Key="cv_blur"/>
+    <local:NumericConverter x:Key="cv_num"/>
 </ResourceDictionary>

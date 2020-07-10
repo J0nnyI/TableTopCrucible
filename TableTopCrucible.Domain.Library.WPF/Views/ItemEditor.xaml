@@ -3,13 +3,122 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type viewModels:ItemEditorViewModel}}">
     <UserControl.Resources>
-        <ResourceDictionary Source="../Common.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Common.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="Label"
+                   x:Key="Placeholder">
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="BorderBrush" Value="Green"/>
+                <Setter Property="BorderThickness" Value="3"/>
+                <Setter Property="Margin" Value="2"/>
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid >
+        <Grid Grid.Effect="{Binding SelectedItem, Converter={StaticResource cv_blur}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" MinHeight="50"/>
+                <RowDefinition Height="auto" MinHeight="50"/>
+                <RowDefinition Height="auto" MinHeight="50"/>
+                <RowDefinition Height="auto" MinHeight="50"/>
+                <RowDefinition Height="auto" MinHeight="50"/>
+                <RowDefinition Height="auto" MinHeight="50"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBox Text="{Binding Name}"
+                     FontSize="20"
+                     Margin="4"
+                     VerticalContentAlignment="Center"
+                     HorizontalAlignment="Stretch"
+                     md:HintAssist.Hint="Name" 
+                     Grid.Column="1"
+                     Grid.ColumnSpan="3"/>
+            <ContentPresenter Content="{Binding TagEdiotr}"
+                              Grid.Column="1"
+                              Grid.ColumnSpan="3"
+                              Grid.Row="1"
+                              Grid.RowSpan="2"
+                              Validation.ErrorTemplate="{x:Null}"/>
+            <StackPanel Grid.Column="0"
+                        Grid.Row="0"
+                        Grid.RowSpan="2">
+                <Image  Source="{Binding Path=Thumbnail, Converter={StaticResource cv_Thumbnail}}"
+                        VerticalAlignment="Bottom"/>
+                <md:PackIcon Visibility="{Binding Path=Thumbnail, Converter={StaticResource cv_visibillity}, ConverterParameter=invert_collapsed_file}" 
+                             Kind="Image"
+                             Foreground="LightGray"
+                             Width="120px"
+                             Height="120px"/>
+                <TextBox Text="{Binding Thumbnail, UpdateSourceTrigger=PropertyChanged}"
+                         md:HintAssist.Hint="Thumbnail"/>
+            </StackPanel>
+            <ListView ItemsSource="{Binding Files}"
+                      Grid.Column="0"
+                      Grid.ColumnSpan="4"
+                      Grid.Row="3"
+                      DisplayMemberPath="{Binding Name}"
+                      BorderBrush="Red"
+                      BorderThickness="3"/>
 
+
+            <Label Content="3d viewport here"
+                   Style="{StaticResource Placeholder}"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="4"
+                   Grid.Row="30"/>
+
+            <!--<TextBlock Background="#AAAAAAAA"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   Grid.Row="0"
+                   Grid.RowSpan="2">
+                <TextBlock.Effect>
+                        <BlurEffect Radius="5"/>
+                </TextBlock.Effect>
+            </TextBlock>-->
+
+        </Grid>
+        <Label Background="#AAAAAAAA"
+               Visibility="{Binding SelectedItem, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}"
+                   VerticalContentAlignment="Center"
+                   HorizontalContentAlignment="Center"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   Grid.Row="0"
+                   Grid.RowSpan="2">
+            <Grid>
+                <Rectangle 
+                    Width="{Binding ElementName=tb_text, Path=ActualWidth, Mode=OneWay}"
+                    Height="{Binding ElementName=tb_text, Path=ActualHeight, Mode=OneWay}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Fill="#FFFFFF">
+                    <Rectangle.Effect>
+                        <BlurEffect Radius="10"/>
+                    </Rectangle.Effect>
+                </Rectangle>
+                <TextBlock Text="No Item Selected"
+                           Padding="40"
+                           FontSize="30"
+                           Name="tb_text"/>
+            </Grid>
+        </Label>
     </Grid>
 </UserControl>

@@ -1,6 +1,7 @@
 ﻿using System;
 
 using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes
 {
@@ -27,4 +28,5 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
         public static bool operator !=(FileInfoHashKey key1, FileInfoHashKey key2)
             => !key1.Equals(key2);
     }
+
 }

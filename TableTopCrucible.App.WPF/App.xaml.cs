@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Core.WPF.Services;
 using TableTopCrucible.Core.WPF.ViewModels;
 using TableTopCrucible.Data.Services;
@@ -20,6 +21,7 @@ using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.App.WPF
 {
+
 
     public partial class App : Application
     {
@@ -45,8 +47,9 @@ namespace TableTopCrucible.App.WPF
         {
             IServiceCollection services = new ServiceCollection();
 
-            // base services
+            // core services
             services.AddSingleton<INotificationCenterService, NotificationCenterService>();
+            services.AddSingleton<ISettingsService, Settings>();
             // library domain services
             services.AddSingleton<IItemService, ItemService>();
             services.AddSingleton<IUiDispatcherService, UiDispatcherService>();
@@ -70,11 +73,13 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<DirectorySetupCardViewModel>();
             services.AddTransient<NotificationCenterViewModel>();
             services.AddTransient<TabViewModel>();
+            services.AddTransient<AppSettingsViewModel>();
 
             //   pages
             services.AddScoped<DevTestPageViewModel>();
             services.AddScoped<ItemEditorPageViewModel>();
             services.AddScoped<FileSetupPageViewModel>();
+            services.AddScoped<AppSettingsPageViewModel>();
 
             // commands
             services.AddSingleton<CreateItemCommand>();

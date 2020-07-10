@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Windows;
 using System.Windows.Data;
 
@@ -30,11 +31,13 @@ namespace TableTopCrucible.Core.WPF.Converters
             }
 
             return value switch
-            {
+            {// truthy => visibole
                 Visibility visibillity when targetType == typeof(bool)
                     => invert ^ visibillity != Visibility.Visible,
                 bool show when targetType == typeof(Visibility)
                     => invert ^ show ? Visibility.Visible : hiddenVisibillity,
+                string filePath when parameter.Contains("file")
+                    => invert ^ File.Exists(filePath) ? Visibility.Visible : hiddenVisibillity,
                 object reference when targetType == typeof(Visibility)
                     => invert ^ reference != null ? Visibility.Visible : hiddenVisibillity,
                 null when targetType == typeof(Visibility)

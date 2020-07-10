@@ -21,6 +21,7 @@ namespace TableTopCrucible.Domain.Models.Views
         public DateTime LastWriteTime => FileInfo.LastWriteTime;
         public bool IsFileAccessible => FileInfo.IsAccessible;
         public int Hash => FileInfo.HashKey.GetHashCode();
+        public FileInfoHashKey? HashKey => FileInfo.HashKey;
 
 
         public DirectorySetupName DirectorySetupName => DirectorySetup.Name;

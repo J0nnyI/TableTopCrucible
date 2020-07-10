@@ -28,4 +28,7 @@
     <DataTemplate DataType="{x:Type viewModels:NotificationCenterViewModel}">
         <views:NotificationCenter/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:AppSettingsViewModel}">
+        <views:AppSettingsView/>
+    </DataTemplate>
 </ResourceDictionary>

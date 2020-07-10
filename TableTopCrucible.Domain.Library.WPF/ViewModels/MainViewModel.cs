@@ -27,11 +27,13 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             TabService tabService,
             DevTestPageViewModel devTest,
             ItemEditorPageViewModel itemEditor,
-            FileSetupPageViewModel fileSetup)
+            FileSetupPageViewModel fileSetup,
+            AppSettingsPageViewModel settings)
         {
             this.Tabs = tabs;
             tabService.Append(itemEditor, true);
             tabService.Append(fileSetup, false);
+            tabService.Append(settings, false);
 #if DEBUG
             tabService.Append(devTest, false);
 #endif

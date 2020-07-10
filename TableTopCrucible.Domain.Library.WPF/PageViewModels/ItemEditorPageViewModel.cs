@@ -13,12 +13,14 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
     public class ItemEditorPageViewModel : PageViewModelBase
     {
         public ItemListViewModel ItemList { get; }
-        public ItemEditorViewModel ItemEdior { get; }
+        public ItemEditorViewModel ItemEditor { get; }
 
-        public ItemEditorPageViewModel(ItemListViewModel itemList, ItemEditorViewModel itemEdior) : base("item Editor", PackIconKind.Edit)
+        public ItemEditorPageViewModel(ItemListViewModel itemList, ItemEditorViewModel itemEditor) : base("item Editor", PackIconKind.Edit)
         {
             this.ItemList = itemList;
-            this.ItemEdior = itemEdior;
+            this.ItemEditor = itemEditor;
+
+            this.ItemList.SelectedItemChanges.Subscribe(x => itemEditor.SelectItem(x?.Id));
         }
 
     }

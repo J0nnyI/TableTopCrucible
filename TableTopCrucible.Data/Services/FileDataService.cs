@@ -21,6 +21,7 @@ using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.Domain.Models.Views;
+using TableTopCrucible.WPF.Helper;
 
 using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
 using SysFileInfo = System.IO.FileInfo;
@@ -43,19 +44,21 @@ namespace TableTopCrucible.Data.Services
             => _fileHashCache.WatchValue(key);
 
 
-        private IDirectoryDataService _directorySetupService;
-        private IUiDispatcherService _uiDispatcherService;
-        private INotificationCenterService _notificationCenterService;
+        private readonly IDirectoryDataService _directorySetupService;
+        private readonly IUiDispatcherService _uiDispatcherService;
+        private readonly INotificationCenterService _notificationCenterService;
+        private readonly ISettingsService _settingsService;
 
         public FileDataService(
             IDirectoryDataService directorySetupService,
             IUiDispatcherService uiDispatcherService,
-            INotificationCenterService notificationCenterService)
+            INotificationCenterService notificationCenterService,
+            ISettingsService settingsService)
         {
             this._directorySetupService = directorySetupService;
             this._uiDispatcherService = uiDispatcherService;
             this._notificationCenterService = notificationCenterService;
-
+            this._settingsService = settingsService;
             _getFullFileInfo = this._directorySetupService
                 .Get()
                 .Connect()
@@ -85,6 +88,7 @@ namespace TableTopCrucible.Data.Services
         public IObservableCache<ExtendedFileInfo, FileInfoId> GetExtended() => _getFullFileInfo;
         private readonly IObservableCache<ExtendedFileInfo, FileInfoHashKey> _getFullFIleInfoByHash;
         public IObservableCache<ExtendedFileInfo, FileInfoHashKey> GetExtendedByHash() => _getFullFIleInfoByHash;
+
         public IObservableCache<FileInfo, FileInfoId> Get(DirectorySetupId directorySetupId)
         {
             return this.cache.Connect()
@@ -212,9 +216,14 @@ namespace TableTopCrucible.Data.Services
             task.Start();
         }
 
-        public void UpdateHashes() => this.UpdateHashes(16);
+
+        
+
+
+        public void UpdateHashes() => this.UpdateHashes(_settingsService.ThreadCount);
         public void UpdateHashes(int threadcount)
         {
+
 
             var job = new AsyncJobState("hashing the files");
             var prepProcess = new AsyncProcessState("preparing");
@@ -250,9 +259,8 @@ namespace TableTopCrucible.Data.Services
 
                 prepProcess.OnNextStep("grouping files");
 
-                uint i = 0;
                 var groups = changedFiles
-                    .GroupBy(_ => Convert.ToInt32(decimal.Remainder(i++, threadcount)))
+                    .SplitEvenly(threadcount)
                     .ToArray();
 
                 prepProcess.OnNextStep("creating tasks");
@@ -378,5 +386,6 @@ namespace TableTopCrucible.Data.Services
 
             return result;
         }
+
     }
 }

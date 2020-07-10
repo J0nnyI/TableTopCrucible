@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -25,9 +26,10 @@ namespace TableTopCrucible.Domain.Library.WPF.Converters
                 case string path when targetType == typeof(Thumbnail):
                     return (Thumbnail)path;
                 case string path when targetType == typeof(ImageSource):
-                    if (!Uri.IsWellFormedUriString(path, UriKind.RelativeOrAbsolute))
+                    Uri res;
+                    if (!Uri.TryCreate(path, UriKind.RelativeOrAbsolute, out res) || !File.Exists(path))
                         return null;
-                    return new BitmapImage(new Uri(path));
+                    return new BitmapImage(res);
                 case null:
                     return null;
                 default:

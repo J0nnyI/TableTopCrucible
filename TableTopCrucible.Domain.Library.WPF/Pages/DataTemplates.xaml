@@ -11,4 +11,7 @@
     <DataTemplate DataType="{x:Type pageViewModels:FileSetupPageViewModel}">
         <pages:FileSetupPage/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type pageViewModels:AppSettingsPageViewModel}">
+        <pages:AppSettingsPage/>
+    </DataTemplate>
 </ResourceDictionary>

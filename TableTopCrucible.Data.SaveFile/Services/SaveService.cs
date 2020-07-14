@@ -4,15 +4,12 @@ using System.Linq;
 using System.Text;
 
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 
-namespace TableTopCrucible.Data.Services
+namespace TableTopCrucible.Data.SaveFile.Services
 {
-    public interface ISaveService
-    {
-        void Load(string file);
-    }
 
     public class SaveService : ISaveService
     {

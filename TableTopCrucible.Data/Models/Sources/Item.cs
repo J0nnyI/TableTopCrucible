@@ -14,17 +14,17 @@ namespace TableTopCrucible.Domain.Models.Sources
         public Thumbnail? Thumbnail { get; }
         public IEnumerable<Tag> Tags { get; }
         public Guid Identity { get; }
+        public FileInfoHashKey? File { get; }
 
         public DateTime Created { get; }
         public DateTime LastChange { get; }
-        public FileInfoHashKey? File { get; }
 
         public Item(ItemName name, IEnumerable<Tag> tags = null, FileInfoHashKey? file = null, Thumbnail? thumbnail = null)
             : this((ItemId)Guid.NewGuid(), name, tags, file, thumbnail, DateTime.Now) { }
         public Item(Item origin, ItemName name, IEnumerable<Tag> tags, FileInfoHashKey? file, Thumbnail? thumbnail)
             : this(origin.Id, name, tags, file, thumbnail, origin.Created) { }
 
-        private Item(ItemId id, ItemName name, IEnumerable<Tag> tags, FileInfoHashKey? file, Thumbnail? thumbnail, DateTime created)
+        public Item(ItemId id, ItemName name, IEnumerable<Tag> tags, FileInfoHashKey? file, Thumbnail? thumbnail, DateTime created, DateTime? lastChange = null)
         {
             this.Id = id;
             this.Name = name;
@@ -32,7 +32,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             this.Tags = tags ?? throw new ArgumentNullException(nameof(tags));
             this.File = file;
             this.Created = created;
-            this.LastChange = DateTime.Now;
+            this.LastChange = lastChange ?? DateTime.Now;
             this.Identity = Guid.NewGuid();
         }
 

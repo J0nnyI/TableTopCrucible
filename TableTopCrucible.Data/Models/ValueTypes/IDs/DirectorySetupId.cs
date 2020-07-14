@@ -19,6 +19,9 @@ namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
         public override int GetHashCode() => this._guid.GetHashCode();
         public Guid ToGuid() => this._guid;
 
+        public static DirectorySetupId New()
+            => (DirectorySetupId)Guid.NewGuid();
+
         public override string ToString() => _guid.ToString();
         public static bool operator ==(DirectorySetupId id1, DirectorySetupId id2)
             => id1._guid == id2._guid;

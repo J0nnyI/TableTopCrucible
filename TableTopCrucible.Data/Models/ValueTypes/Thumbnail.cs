@@ -11,9 +11,6 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
         private readonly string _thumbnail;
         public Thumbnail(string thumbnail)
         {
-            var errors = Validate(thumbnail);
-            if (errors.Any())
-                throw new Exception($"could not create thumbnail {Environment.NewLine}{string.Join(Environment.NewLine, errors)}");
             this._thumbnail = thumbnail;
         }
         public override string ToString() => this._thumbnail;

@@ -30,7 +30,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             : this(path, name, description, origin.Id, origin.Created)
         { }
 
-        public DirectorySetup(Uri path, DirectorySetupName name, Description description, DirectorySetupId id, DateTime created)
+        public DirectorySetup(Uri path, DirectorySetupName name, Description description, DirectorySetupId id, DateTime created, DateTime? lastChange = null)
         {
             this.Path = path;
             this.Name = name;
@@ -38,7 +38,7 @@ namespace TableTopCrucible.Domain.Models.Sources
 
             this.Id = id;
             this.Identity = Guid.NewGuid();
-            this.LastChange = DateTime.Now;
+            this.LastChange = lastChange ?? DateTime.Now;
             this.Created = created;
         }
 

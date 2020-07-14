@@ -14,6 +14,16 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
             this.FileHash = fileInfo.FileHash.Value;
             this.FileSize = fileInfo.FileSize;
         }
+        /// <summary>
+        /// shoould be only used when there is not fileInfo
+        /// </summary>
+        /// <param name="fileHash"></param>
+        /// <param name="fileSize"></param>
+        public FileInfoHashKey(FileHash fileHash, long fileSize)
+        {
+            this.FileHash = fileHash;
+            this.FileSize = fileSize;
+        }
 
         public static bool CanBuild(FileInfo fileInfo)
             => fileInfo.FileHash.HasValue;

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TableTopCrucible.Core\TableTopCrucible.Core.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.Domain.Library\TableTopCrucible.Domain.Library.csproj" />
+  </ItemGroup>
+
+</Project>

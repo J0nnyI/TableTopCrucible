@@ -18,9 +18,9 @@ namespace TableTopCrucible.Domain.Models.Sources
             bool isAccessible)
             : this(path, creationTime, fileHash, lastWriteTime, directorySetupId, fileSize, isAccessible, (FileInfoId)Guid.NewGuid(), DateTime.Now)
         { }
-        private FileInfo(
+        public FileInfo(
             Uri path, DateTime creationTime, FileHash? fileHash, DateTime lastWriteTime, DirectorySetupId directorySetupId, long fileSize,
-            bool isAccessible, FileInfoId id, DateTime created)
+            bool isAccessible, FileInfoId id, DateTime created, DateTime? lastChange = null)
         {
             this.Path = path;
             this.CreationTime = creationTime;
@@ -31,15 +31,16 @@ namespace TableTopCrucible.Domain.Models.Sources
             this.IsAccessible = isAccessible;
             this.Id = id;
             this.Created = created;
-            this.LastChange = DateTime.Now;
+            this.LastChange = lastChange ?? DateTime.Now;
             this.Identity = Guid.NewGuid();
             this.HashKey = null;
-            if(FileInfoHashKey.CanBuild(this))
+            if (FileInfoHashKey.CanBuild(this))
                 this.HashKey = new FileInfoHashKey(this);
         }
 
         public FileInfoHashKey? HashKey { get; }
         public Uri Path { get; }
+        // the time when the file (not the model) was created
         public DateTime CreationTime { get; }
         public FileHash? FileHash { get; }
         public DateTime LastWriteTime { get; }

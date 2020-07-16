@@ -39,7 +39,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             if (origin.HasValue)
             {
                 this.Path = origin.Value.Path;
-                this.CreationTime = origin.Value.CreationTime;
+                this.CreationTime = origin.Value.FileCreationTime;
                 this.FileHash = origin.Value.FileHash;
                 this.LastWriteTime = origin.Value.LastWriteTime;
                 this.DirectorySetupId = origin.Value.DirectorySetupId;

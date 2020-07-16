@@ -35,6 +35,7 @@ namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
             Assert.AreEqual(entityA.Path, entityB.Path, "faulty path");
             Assert.AreEqual(entityA.Name, entityB.Name, "faulty name");
             Assert.AreEqual(entityA.Description, entityB.Description, "faulty description");
+            Assert.AreNotEqual(entityA.Identity, entityB.Identity, "it's the same instance");
         }
 
         [TestMethod]

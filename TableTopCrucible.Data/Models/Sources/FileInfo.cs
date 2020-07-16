@@ -23,7 +23,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             bool isAccessible, FileInfoId id, DateTime created, DateTime? lastChange = null)
         {
             this.Path = path;
-            this.CreationTime = creationTime;
+            this.FileCreationTime = creationTime;
             this.FileHash = fileHash;
             this.LastWriteTime = lastWriteTime;
             this.DirectorySetupId = directorySetupId;
@@ -41,18 +41,18 @@ namespace TableTopCrucible.Domain.Models.Sources
         public FileInfoHashKey? HashKey { get; }
         public Uri Path { get; }
         // the time when the file (not the model) was created
-        public DateTime CreationTime { get; }
+        public DateTime FileCreationTime { get; }
         public FileHash? FileHash { get; }
         public DateTime LastWriteTime { get; }
         public DirectorySetupId DirectorySetupId { get; }
         public bool IsAccessible { get; }
         // identifies this item in this specific state
+        public long FileSize { get; }
         public Guid Identity { get; }
 
         public FileInfoId Id { get; }
         public DateTime Created { get; }
         public DateTime LastChange { get; }
-        public long FileSize { get; }
 
         public static bool operator ==(FileInfo fileA, FileInfo fileB)
             => fileA.Identity == fileB.Identity;

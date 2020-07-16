@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Data.SaveFile.DataTransferObjects;
+using TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
@@ -14,22 +18,42 @@ namespace TableTopCrucible.Data.SaveFile.Services
     public class SaveService : ISaveService
     {
         private readonly IItemService _itemService;
+        private readonly IFileDataService _fileDataService;
         private readonly IDirectoryDataService _directoryDataService;
         private readonly ISettingsService _settingsService;
 
-        public SaveService(IItemService itemService, IDirectoryDataService directoryDataService, ISettingsService settingsService)
+        public SaveService(IItemService itemService, IFileDataService _fileDataService, IDirectoryDataService directoryDataService, ISettingsService settingsService)
         {
             this._itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
+            this._fileDataService = _fileDataService;
             this._directoryDataService = directoryDataService ?? throw new ArgumentNullException(nameof(directoryDataService));
             this._settingsService = settingsService;
         }
 
-        public void Load(string file)
+        public async void Load(string file)
         {
-            _devTestSetup();
+            using FileStream fs = File.OpenRead(file);
+
+            MasterDTO masterDTO = await JsonSerializer.DeserializeAsync<MasterDTO>(fs);
+
+            _fileDataService.Set(masterDTO.Files.Select(dto => dto.ToEntity()));
+            _itemService.Set(masterDTO.Items.Select(dto => dto.ToEntity()));
+            _directoryDataService.Set(masterDTO.Directories.Select(dto => dto.ToEntity()));
         }
 
+        public async void Save(string file)
+        {
+            MasterDTO masterDTO = new MasterDTO()
+            {
+                Items = _itemService.Get().KeyValues.Select(item => new ItemDTO(item.Value)).ToArray(),
+                Files = _fileDataService.Get().KeyValues.Select(file => new FileInfoDTO(file.Value)).ToArray(),
+                Directories = _directoryDataService.Get().KeyValues.Select(dir => new DirectorySetupDTO(dir.Value))
+            };
+            using FileStream fs = File.Create(file);
+            await JsonSerializer.SerializeAsync(fs, masterDTO);
+        }
 
+        #region test-setup
         private void _devTestSetup()
         {
             _addItem("test 1");
@@ -81,5 +105,6 @@ namespace TableTopCrucible.Data.SaveFile.Services
                 //Thumbnail = (Thumbnail)@"D:\__MANAGED_FILES__\DnD\__Thumbnails__\20200126_191331.jpg"
             };
         }
+        #endregion
     }
 }

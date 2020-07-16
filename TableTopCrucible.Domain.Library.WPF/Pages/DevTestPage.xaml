@@ -22,19 +22,7 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <ContentPresenter Content="{Binding NotificationCenter}"
-                          Grid.Column="0"
-                          Grid.Row="0"
-                          Grid.RowSpan="2"/>
-        <ContentPresenter Content="{Binding DirList}"
-                          Grid.Column="1"
-                          Grid.Row="0"/>
-        <ContentPresenter Content="{Binding FileList}"
-                          Grid.Column="1"
-                          Grid.Row="1"/>
-        <ContentPresenter Content="{Binding ItemList}"
-                          Grid.Column="2"
-                          Grid.Row="0"
-                          Grid.RowSpan="2"/>
+        <Button Content="save" Command="{Binding SaveFile}"/>
+        <Button Content="load" Command="{Binding OpenFile}" Grid.Column="1"/>
     </Grid>
 </Page>

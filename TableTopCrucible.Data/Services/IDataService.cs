@@ -16,10 +16,12 @@ namespace TableTopCrucible.Data.Services
         IObservable<Tentity> Get(Tid id);
         IObservable<IChangeSet<Tentity, Tid>> Get(IEnumerable<Tid> ids);
         Tentity Patch(TChangeset data);
+        void Set(IEnumerable<Tentity> data);
         IEnumerable<Tentity> Patch(IEnumerable<TChangeset> data);
         bool CanPatch(TChangeset changeset);
         void Delete(Tid key);
         void Delete(IEnumerable<Tid> key);
+        void Clear();
         bool CanDelete(Tid key);
     }
 }

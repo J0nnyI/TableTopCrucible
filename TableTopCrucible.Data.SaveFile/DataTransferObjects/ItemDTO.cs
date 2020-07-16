@@ -44,7 +44,7 @@ namespace TableTopCrucible.Data.SaveFile.DataTransferObjects
                 (ItemName)this.Name,
                 this.Tags?.Select(x => (Tag)x)?.ToArray(),
                 this.File?.ToEntity(),
-                (Thumbnail)this.Thumbnail,
+                this.Thumbnail==null?null: (Thumbnail?)this.Thumbnail,
                 this.Created,
                 this.LastChange);
     }

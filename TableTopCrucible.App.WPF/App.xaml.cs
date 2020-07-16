@@ -15,6 +15,7 @@ using TableTopCrucible.Core.WPF.Services;
 using TableTopCrucible.Core.WPF.ViewModels;
 using TableTopCrucible.Data.SaveFile.Services;
 using TableTopCrucible.Data.Services;
+using TableTopCrucible.Domain.Library.WPF.Commands;
 using TableTopCrucible.Domain.Library.WPF.Pages;
 using TableTopCrucible.Domain.Library.WPF.PageViewModels;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
@@ -37,7 +38,6 @@ namespace TableTopCrucible.App.WPF
             providerService.SetProvider(serviceProvider);
 
             var saveService = serviceProvider.GetRequiredService<ISaveService>();
-            saveService.Load("");
 
             new MainWindow()
             {
@@ -92,6 +92,8 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<DeleteDirectorySetupCommand>();
             services.AddSingleton<HashFilesCommand>();
             services.AddSingleton<GenerateItemsFromFilesCommand>();
+            services.AddSingleton<SaveFileDialogCommand>();
+            services.AddSingleton<OpenFileDialogCommand>();
 
 
             return services.BuildServiceProvider();

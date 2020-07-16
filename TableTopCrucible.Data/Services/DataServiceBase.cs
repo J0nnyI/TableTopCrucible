@@ -72,9 +72,15 @@ namespace TableTopCrucible.Data.Services
             _readOnlyCache = cache.AsObservableCache();
             this.cache.DisposeWith(disposables);
         }
+        void IDataService<Tentity, Tid, Tchangeset>.Clear() => this.cache.Clear();
 
         #region IDisposable Support
         private bool _disposedValue = false; // To detect redundant calls
+        void IDataService<Tentity, Tid, Tchangeset>.Set(IEnumerable<Tentity> data)
+        {
+            this.cache.Clear();
+            this.cache.AddOrUpdate(data);
+        }
 
         protected virtual void Dispose(bool disposing)
         {
@@ -93,6 +99,7 @@ namespace TableTopCrucible.Data.Services
         {
             Dispose(true);
         }
+
 
         #endregion
     }

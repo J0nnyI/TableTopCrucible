@@ -1,5 +1,7 @@
 ﻿using DynamicData;
 
+using ReactiveUI;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,6 +27,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .GetJobs()
                 .Connect()
                 .TakeUntil(destroy)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(out _jobs)
                 .Subscribe();
         }

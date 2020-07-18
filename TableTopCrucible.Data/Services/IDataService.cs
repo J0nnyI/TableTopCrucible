@@ -15,6 +15,9 @@ namespace TableTopCrucible.Data.Services
         IObservableCache<Tentity, Tid> Get();
         IObservable<Tentity> Get(Tid id);
         IObservable<IChangeSet<Tentity, Tid>> Get(IEnumerable<Tid> ids);
+
+        public void Post(Tentity entity);
+        public void Post(IEnumerable<Tentity> entity);
         Tentity Patch(TChangeset data);
         void Set(IEnumerable<Tentity> data);
         IEnumerable<Tentity> Patch(IEnumerable<TChangeset> data);

@@ -12,7 +12,7 @@ namespace TableTopCrucible.Data.SaveFile.DataTransferObjects
     public class FileInfoHashKeyDTO
     {
         [DataMember]
-        public string Hash { get; set; }
+        public byte[] Hash { get; set; }
         [DataMember]
         public long FileSize { get; set; }
         public FileInfoHashKeyDTO()
@@ -21,10 +21,10 @@ namespace TableTopCrucible.Data.SaveFile.DataTransferObjects
         }
         public FileInfoHashKeyDTO(FileInfoHashKey origin)
         {
-            this.Hash = Encoding.UTF8.GetString(origin.FileHash.Data);
+            this.Hash = origin.FileHash.Data;
             this.FileSize = origin.FileSize;
         }
         public FileInfoHashKey ToEntity()
-            => new FileInfoHashKey(new FileHash(Encoding.UTF8.GetBytes(Hash)), FileSize);
+            => new FileInfoHashKey(new FileHash(Hash), FileSize);
     }
 }

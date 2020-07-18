@@ -1,10 +1,17 @@
-﻿using System;
+﻿using ReactiveUI;
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
+using System.Windows;
 
+using TableTopCrucible.Core.Models.Enums;
+using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Data.SaveFile.DataTransferObjects;
 using TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects;
@@ -21,25 +28,60 @@ namespace TableTopCrucible.Data.SaveFile.Services
         private readonly IFileDataService _fileDataService;
         private readonly IDirectoryDataService _directoryDataService;
         private readonly ISettingsService _settingsService;
+        private readonly INotificationCenterService _notificationCenterService;
 
-        public SaveService(IItemService itemService, IFileDataService _fileDataService, IDirectoryDataService directoryDataService, ISettingsService settingsService)
+        public SaveService(IItemService itemService, IFileDataService _fileDataService, IDirectoryDataService directoryDataService, ISettingsService settingsService, INotificationCenterService notificationCenterService)
         {
             this._itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
             this._fileDataService = _fileDataService;
             this._directoryDataService = directoryDataService ?? throw new ArgumentNullException(nameof(directoryDataService));
             this._settingsService = settingsService;
+            this._notificationCenterService = notificationCenterService;
         }
 
-        public async void Load(string file)
+        public void Load(string file)
         {
-            using FileStream fs = File.OpenRead(file);
+            var job = _notificationCenterService.CreateSingleTaskJob(out var proc, $"loading savefile {file}");
+            try
+            {
 
-            MasterDTO masterDTO = await JsonSerializer.DeserializeAsync<MasterDTO>(fs);
+                proc.State = AsyncState.InProgress;
+                MasterDTO masterDTO = JsonSerializer.Deserialize<MasterDTO>(File.ReadAllText(file));
 
-            _fileDataService.Set(masterDTO.Files.Select(dto => dto.ToEntity()));
-            _itemService.Set(masterDTO.Items.Select(dto => dto.ToEntity()));
-            _directoryDataService.Set(masterDTO.Directories.Select(dto => dto.ToEntity()));
+                var size1 = GC.GetTotalMemory(true) / (decimal)1000000;
+
+                proc.Details = $"loading {masterDTO.Directories.Count()} directories";
+                _directoryDataService.Set(masterDTO.Directories.Select(dto => dto.ToEntity()));
+
+                var size2 = GC.GetTotalMemory(true) / (decimal)1000000;
+
+                proc.Details = $"loading {masterDTO.Files.Count()} files";
+                _fileDataService.Set(masterDTO.Files.Select(dto => dto.ToEntity()));
+
+                var size3 = GC.GetTotalMemory(true) / (decimal)1000000;
+
+                proc.Details = $"loading {masterDTO.Items.Count()} items";
+                _itemService.Set(masterDTO.Items.Select(dto => dto.ToEntity()));
+
+                var size4 = GC.GetTotalMemory(true) / (decimal)1000000;
+
+                proc.Details = "done";
+                proc.State = AsyncState.Done;
+
+                MessageBox.Show($"before: {size1}mb after:{size4}mb{Environment.NewLine}dir size: {size2 - size1}mb{Environment.NewLine}file size: {size3 - size2}mb{Environment.NewLine}itemSize: {size4 - size3}mb");
+            }
+            catch (Exception ex)
+            {
+                proc.Details = ex.ToString();
+                proc.State = AsyncState.Failed;
+            }
+            finally
+            {
+                job.Dispose();
+            }
         }
+
+
 
         public async void Save(string file)
         {
@@ -52,59 +94,5 @@ namespace TableTopCrucible.Data.SaveFile.Services
             using FileStream fs = File.Create(file);
             await JsonSerializer.SerializeAsync(fs, masterDTO);
         }
-
-        #region test-setup
-        private void _devTestSetup()
-        {
-            _addItem("test 1");
-            this._itemService.Patch(_getTaggyItem("taggy item 1"));
-            this._itemService.Patch(_getTaggyItem("taggy item 2"));
-            _directoryDataService.Patch(new DirectorySetupChangeset()
-            {
-                Path = @"F:\tmp\Folder A",
-                Name = @"Folder A"
-            });
-
-            _directoryDataService.Patch(new DirectorySetupChangeset()
-            {
-                Path = @"D:\__MANAGED_FILES__\DnD\Shelf\wallhalla-fantasy-stonework",
-                Name = @"Test Folder"
-            });
-            _directoryDataService.Patch(new DirectorySetupChangeset()
-            {
-                Path = @"F:\tmp\Folder B",
-                Name = @"Folder B"
-            });
-        }
-
-
-        private void _addItem(string name)
-            => _itemService.Patch(_getItem(name));
-        private void _addItems(params string[] names)
-            => _itemService.Patch(names.Select(name => _getItem(name)));
-        private ItemChangeset _getItem(string name)
-        {
-            return new ItemChangeset()
-            {
-                Name = name,
-                Tags = new List<Tag> { (Tag)"Tag 1", (Tag)"Tag 2" },
-                //Thumbnail = "https://i.etsystatic.com/19002916/r/il/617e49/1885302518/il_fullxfull.1885302518_9ovo.jpg"
-                //Thumbnail = (Thumbnail)@"D:\__MANAGED_FILES__\DnD\__Thumbnails__\20200126_191331.jpg"
-            };
-        }
-        private ItemChangeset _getTaggyItem(string name)
-        {
-            return new ItemChangeset()
-            {
-                Name = name,
-                Tags = new List<Tag> { (Tag)"Tag 0", (Tag)"Tag 1", (Tag)"Tag 2", (Tag)"Tag 3", (Tag)"Tag 4",
-                                       (Tag)"Tag 5", (Tag)"Tag 6", (Tag)"Tag 7", (Tag)"Tag 8", (Tag)"Tag 9",
-                                       (Tag)"Tag 10", (Tag)"Tag 11", (Tag)"Tag 12", (Tag)"Tag 13", (Tag)"Tag 14",
-                                       (Tag)"Tag 15", (Tag)"Tag 16", (Tag)"Tag 17", (Tag)"Tag 18", (Tag)"Tag 19", },
-                //Thumbnail = "https://i.etsystatic.com/19002916/r/il/617e49/1885302518/il_fullxfull.1885302518_9ovo.jpg"
-                //Thumbnail = (Thumbnail)@"D:\__MANAGED_FILES__\DnD\__Thumbnails__\20200126_191331.jpg"
-            };
-        }
-        #endregion
     }
 }

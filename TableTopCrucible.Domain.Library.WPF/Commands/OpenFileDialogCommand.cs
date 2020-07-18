@@ -1,8 +1,11 @@
 ﻿using Microsoft.Win32;
 
+using ReactiveUI;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Input;
 
@@ -22,10 +25,14 @@ namespace TableTopCrucible.Domain.Library.WPF.Commands
         public bool CanExecute(object parameter) => true;
         public void Execute(object parameter)
         {
-            var dialog = new OpenFileDialog();
-            dialog.Filter = "Table Top Crucible Library (*.ttcl)|*.*";
-            if (dialog.ShowDialog() ==true)
-                _saveService.Load(dialog.FileName);
+            Observable.Start(()=>
+            {
+                var dialog = new OpenFileDialog();
+                dialog.Filter = "Table Top Crucible Library (*.ttcl)|*.*";
+                if (dialog.ShowDialog() == true)
+                    _saveService.Load(dialog.FileName);
+            }, RxApp.TaskpoolScheduler);
+
         }
     }
 }

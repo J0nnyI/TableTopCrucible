@@ -40,6 +40,11 @@ namespace TableTopCrucible.Data.Services
             => this.cache.WatchValue(id);
         public IObservable<IChangeSet<Tentity, Tid>> Get(IEnumerable<Tid> ids)
             => _readOnlyCache.Connect().Filter(item => ids.Contains(item.Id));
+        // post
+        public void Post(Tentity entity)
+            => this.cache.AddOrUpdate(entity);
+        public void Post(IEnumerable<Tentity> entity)
+            => this.cache.AddOrUpdate(entity);
         // patch
         public Tentity Patch(Tchangeset change)
         {
@@ -79,7 +84,7 @@ namespace TableTopCrucible.Data.Services
         void IDataService<Tentity, Tid, Tchangeset>.Set(IEnumerable<Tentity> data)
         {
             this.cache.Clear();
-            this.cache.AddOrUpdate(data);
+            this.Post(data);
         }
 
         protected virtual void Dispose(bool disposing)

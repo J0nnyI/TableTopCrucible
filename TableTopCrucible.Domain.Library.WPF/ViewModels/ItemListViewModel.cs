@@ -9,6 +9,7 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -88,8 +89,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     return viewModel;
                 })
                 .DisposeMany()
-                .Bind(out _items)
                 .TakeUntil(destroy)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Bind(out _items)
                 .Subscribe(x =>
                 {
                     if (this.ItemsDataView == null)
@@ -100,6 +102,10 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                         };
                         this.Sort(nameof(ItemName));
                     }
+                },
+                (Exception ex)=>
+                {
+                    Debugger.Break();
                 });
 
             });

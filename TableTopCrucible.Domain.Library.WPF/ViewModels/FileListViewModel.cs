@@ -1,5 +1,7 @@
 ﻿using DynamicData;
 
+using ReactiveUI;
+
 using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
@@ -32,6 +34,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this._fileInfoService
                 .GetExtended()
                 .Connect()
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(out _files)
                 .TakeUntil(destroy)
                 .Subscribe();

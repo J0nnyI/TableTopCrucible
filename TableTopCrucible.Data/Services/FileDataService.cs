@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-
+using ReactiveUI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -45,18 +45,15 @@ namespace TableTopCrucible.Data.Services
 
 
         private readonly IDirectoryDataService _directorySetupService;
-        private readonly IUiDispatcherService _uiDispatcherService;
         private readonly INotificationCenterService _notificationCenterService;
         private readonly ISettingsService _settingsService;
 
         public FileDataService(
             IDirectoryDataService directorySetupService,
-            IUiDispatcherService uiDispatcherService,
             INotificationCenterService notificationCenterService,
             ISettingsService settingsService)
         {
             this._directorySetupService = directorySetupService;
-            this._uiDispatcherService = uiDispatcherService;
             this._notificationCenterService = notificationCenterService;
             this._settingsService = settingsService;
             _getFullFileInfo = this._directorySetupService
@@ -103,7 +100,7 @@ namespace TableTopCrucible.Data.Services
         {
 
             AsyncProcessState setupProcessState;
-            AsyncJobState setupJobState = this._notificationCenterService.CreateSingleTaskJob(out setupProcessState, "Synchronizing Files", "initial Setup", _uiDispatcherService.UiDispatcher);
+            AsyncJobState setupJobState = this._notificationCenterService.CreateSingleTaskJob(out setupProcessState, "Synchronizing Files", "initial Setup");
 
             setupJobState.ProcessChanges.OnNext(setupProcessState.AsArray());
 
@@ -195,10 +192,7 @@ namespace TableTopCrucible.Data.Services
                         };
 
                     setupProcessState.OnNextStep("updating the service");
-                    this._uiDispatcherService.UiDispatcher.Invoke(() =>
-                    {
-                        this.Patch(mergedFiles);
-                    });
+                    this.Patch(mergedFiles);
                     setupProcessState.OnNextStep("done");
                     setupProcessState.State = AsyncState.Done;
                 }
@@ -217,7 +211,7 @@ namespace TableTopCrucible.Data.Services
         }
 
 
-        
+
 
 
         public void UpdateHashes() => this.UpdateHashes(_settingsService.ThreadCount);
@@ -227,8 +221,8 @@ namespace TableTopCrucible.Data.Services
 
             var job = new AsyncJobState("hashing the files");
             var prepProcess = new AsyncProcessState("preparing");
-            var hashing = Enumerable.Range(1, threadcount).Select(x => new AsyncProcessState($"hashing #{x}", "", this._uiDispatcherService.UiDispatcher)).ToArray();
-            var finalizer = new AsyncProcessState("finalizing", "", this._uiDispatcherService.UiDispatcher);
+            var hashing = Enumerable.Range(1, threadcount).Select(x => new AsyncProcessState($"hashing #{x}", "")).ToArray();
+            var finalizer = new AsyncProcessState("finalizing", "");
 
             finalizer.AddProgress(threadcount);
 
@@ -332,11 +326,9 @@ namespace TableTopCrucible.Data.Services
 
                         try
                         {
-                            this._uiDispatcherService.UiDispatcher.Invoke(() =>
-                            {
-                                this.Patch(result);
-                                finalizer.OnNextStep($"done with thread #{resCounter}");
-                            });
+                            
+                            this.Patch(result);
+                            finalizer.OnNextStep($"done with thread #{resCounter}");
                         }
                         catch (Exception ex)
                         {

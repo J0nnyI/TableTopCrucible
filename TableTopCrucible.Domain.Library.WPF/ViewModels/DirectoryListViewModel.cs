@@ -2,6 +2,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
+using ReactiveUI;
+
 using System;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
@@ -50,11 +52,12 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                             vm.DirectorySetupChanges.OnNext(item);
                             return vm;
                         })
-                        .Bind(out _directories)
                         .TakeUntil(destroy)
+                        .DisposeMany()
+                        .ObserveOn(RxApp.MainThreadScheduler)
+                        .Bind(out _directories)
                         .Subscribe();
                 });
-
         }
     }
 }

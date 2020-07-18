@@ -92,6 +92,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
             this.ItemChanges
                 .TakeUntil(destroy)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(item =>
                 {
                     this.ItemName = (string)item?.Name;

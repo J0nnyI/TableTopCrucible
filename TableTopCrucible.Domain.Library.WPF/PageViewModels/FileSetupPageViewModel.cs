@@ -20,6 +20,7 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
             FileListViewModel fileList, 
             ItemListViewModel itemList, 
             NotificationCenterViewModel notificationCenter
+            
             ) : base("File Setup", PackIconKind.File)
         {
             this.DirList = dirList;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -53,7 +53,6 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<ISettingsService, Settings>();
             // library domain services
             services.AddSingleton<IItemService, ItemService>();
-            services.AddSingleton<IUiDispatcherService, UiDispatcherService>();
             services.AddSingleton<IItemTagService, ItemTagService>();
             services.AddSingleton<IFileDataService, FileDataService>();
             services.AddSingleton<IDirectoryDataService, DirectoryDataService>();

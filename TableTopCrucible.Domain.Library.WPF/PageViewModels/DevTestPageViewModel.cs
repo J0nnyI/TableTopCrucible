@@ -15,14 +15,20 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 
         public DevTestPageViewModel(
             SaveFileDialogCommand saveFile,
-            OpenFileDialogCommand openFile
+            OpenFileDialogCommand openFile,
+            DirectoryListViewModel dirList,
+            NotificationCenterViewModel notificationCenter
             ) : base("dev test", PackIconKind.DeveloperBoard)
         {
             this.SaveFile = saveFile;
             this.OpenFile = openFile;
+            this.DirList = dirList;
+            this.NotificationCenter = notificationCenter;
         }
 
         public ICommand SaveFile { get; }
         public ICommand OpenFile { get; }
+        public DirectoryListViewModel DirList { get; }
+        public NotificationCenterViewModel NotificationCenter { get; }
     }
 }

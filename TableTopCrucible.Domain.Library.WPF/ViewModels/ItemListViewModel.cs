@@ -31,22 +31,15 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private readonly IInjectionProviderService _injectionProviderService;
         public CreateItemCommand CreateItemCommand { get; }
 
-        ReadOnlyObservableCollection<ItemCardViewModel> _items;
-        public ReadOnlyObservableCollection<ItemCardViewModel> Items => _items;
+        ReadOnlyObservableCollection<Item> _items;
+        public ReadOnlyObservableCollection<Item> Items => _items;
         [Reactive]
         public CollectionViewSource ItemsDataView { get; private set; }
 
         #region reactive properties
 
-        private readonly BehaviorSubject<ItemCardViewModel> _selectedItemVmChanges = new BehaviorSubject<ItemCardViewModel>(null);
-        private IObservable<ItemCardViewModel> SelectedItemVmChanges => _selectedItemVmChanges;
-        private readonly ObservableAsPropertyHelper<ItemCardViewModel> _selectedItemVm;
-        public ItemCardViewModel SelectedItemVm
-        {
-            get => _selectedItemVm.Value;
-            set => _selectedItemVmChanges.OnNext(value);
-        }
-        public IObservable<Item?> SelectedItemChanges { get; }
+        private BehaviorSubject<Item?> _selectedItemChanges { get; } = new BehaviorSubject<Item?>(null);
+        public IObservable<Item?> SelectedItemChanges => _selectedItemChanges;
         private readonly ObservableAsPropertyHelper<Item?> _selectedItem;
         public Item? SelectedItem
         {
@@ -59,8 +52,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private void selectItem(Item? item)
         {
             if (!item.HasValue)
-                this.SelectedItemVm = null;
-            this.SelectedItemVm = Items.FirstOrDefault(curItem => curItem?.Item?.Id == item?.Id);
+                this.SelectedItem = null;
+            this.SelectedItem = Items.FirstOrDefault(curItem => curItem.Id == item?.Id);
         }
 
         public ItemListViewModel(
@@ -82,12 +75,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 this._itemService
                 .Get()
                 .Connect()
-                .Transform((item) =>
-                {
-                    var viewModel = provider.GetRequiredService<ItemCardViewModel>();
-                    viewModel.ItemChanges.OnNext(item);
-                    return viewModel;
-                })
                 .DisposeMany()
                 .TakeUntil(destroy)
                 .ObserveOn(RxApp.MainThreadScheduler)
@@ -110,21 +97,13 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
             });
 
-            this.SelectedItemChanges =
-                _selectedItemVmChanges
-                .Select(vm => vm?.Item)
-                .TakeUntil(destroy);
 
             this._selectedItem =
                 SelectedItemChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(SelectedItem));
-            this._selectedItemVm =
-                SelectedItemVmChanges
-                .TakeUntil(destroy)
-                .ToProperty(this, nameof(SelectedItemVm));
 
-            this.disposables.Add(_selectedItemVmChanges, _selectedItemVm);
+            this.disposables.Add(_selectedItemChanges, _selectedItem);
         }
         private void Sort(string sortBy, ListSortDirection direction = ListSortDirection.Ascending)
         {

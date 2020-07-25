@@ -1,7 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:views="clr-namespace:TableTopCrucible.Domain.Library.WPF.Views"
-                    xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels">
+                    xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
+                    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:sourceModels="clr-namespace:TableTopCrucible.Domain.Models.Sources;assembly=TableTopCrucible.Data">
     
     <!--views-->
     <DataTemplate DataType="{x:Type viewModels:ItemListViewModel}">
@@ -30,5 +32,54 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type viewModels:AppSettingsViewModel}">
         <views:AppSettingsView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type sourceModels:Item}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Image Source="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_Thumbnail}}" 
+                   Grid.Column="0"
+                   Grid.Row="0"
+                   Grid.RowSpan="2">
+            </Image>
+            <md:PackIcon Visibility="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}" 
+                         Kind="Image"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Center"
+                         Foreground="LightGray"
+                         Width="120px"
+                         Height="120px"
+                         Grid.Column="0"
+                         Grid.Row="0"
+                         Grid.RowSpan="2"/>
+            
+            <Label Content="{Binding Name}"
+                   Grid.Column="1"
+                   Grid.Row="0"/>
+            <ListBox ItemsSource="{Binding Tags}" 
+                     Style="{StaticResource MaterialDesignFilterChipListBox}"
+                     md:ListBoxAssist.IsToggle="False"
+                     Grid.Column="1"
+                     Grid.Row="1">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem"
+                        BasedOn="{StaticResource MaterialDesignFilterChipListBoxItem}">
+                        <Setter Property="Focusable"
+                            Value="False"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </Grid>
     </DataTemplate>
 </ResourceDictionary>

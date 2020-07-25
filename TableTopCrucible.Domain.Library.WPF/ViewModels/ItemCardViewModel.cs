@@ -128,16 +128,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.ToggleExpansionCommand = new RelayCommand(_ => this.IsExpanded = !this.IsExpanded);
             #endregion
 
-
-            #region validators
-
-            foreach (Validator<string> validator in Models.ValueTypes.ItemName.Validators)
-                this.ValidationRule(
-                    vm => vm.ItemName,
-                    name => validator.IsValid(name),
-                    validator.Message)
-                    .DisposeWith(disposables);
-            #endregion
         }
 
         private void SaveItemCommand_ItemSaved(object sender, ItemSavedEventArgs e)

@@ -40,6 +40,18 @@ namespace TableTopCrucible.Data.Services
     }
     public class FileDataService : DataServiceBase<FileInfo, FileInfoId, FileInfoChangeset>, IFileDataService
     {
+        private struct DirSetupFile
+        {
+            public DirSetupFile(string path, DirectorySetup dirSetup)
+            {
+                Path = path ?? throw new ArgumentNullException(nameof(path));
+                DirSetup = dirSetup;
+            }
+
+            public string Path { get; }
+            public DirectorySetup DirSetup { get; }
+        }
+
         private IObservableCache<FileInfo, FileInfoHashKey> _fileHashCache;
         public IObservable<FileInfo> Get(FileInfoHashKey key)
             => _fileHashCache.WatchValue(key);
@@ -92,21 +104,6 @@ namespace TableTopCrucible.Data.Services
             return this.cache.Connect()
                 .Filter(fi => fi.DirectorySetupId == directorySetupId)
                 .AsObservableCache();
-        }
-
-
-        private bool synchronizing = false;
-
-        private struct DirSetupFile
-        {
-            public DirSetupFile(string path, DirectorySetup dirSetup)
-            {
-                Path = path ?? throw new ArgumentNullException(nameof(path));
-                DirSetup = dirSetup;
-            }
-
-            public string Path { get; }
-            public DirectorySetup DirSetup { get; }
         }
 
         public void UpdateHashes() => this.UpdateHashes(_settingsService.ThreadCount);

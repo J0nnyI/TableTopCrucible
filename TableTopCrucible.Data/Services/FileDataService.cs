@@ -1,5 +1,7 @@
 ﻿using DynamicData;
+
 using ReactiveUI;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,7 +32,6 @@ namespace TableTopCrucible.Data.Services
 {
     public interface IFileDataService : IDataService<FileInfo, FileInfoId, FileInfoChangeset>
     {
-        void Synchronize();
         void UpdateHashes();
         void UpdateHashes(int threadcount);
         public IObservableCache<ExtendedFileInfo, FileInfoId> GetExtended();
@@ -96,123 +97,17 @@ namespace TableTopCrucible.Data.Services
 
         private bool synchronizing = false;
 
-        public void Synchronize()
+        private struct DirSetupFile
         {
-
-            AsyncProcessState setupProcessState;
-            AsyncJobState setupJobState = this._notificationCenterService.CreateSingleTaskJob(out setupProcessState, "Synchronizing Files", "initial Setup");
-
-            setupJobState.ProcessChanges.OnNext(setupProcessState.AsArray());
-
-            Task task = new Task(() =>
+            public DirSetupFile(string path, DirectorySetup dirSetup)
             {
+                Path = path ?? throw new ArgumentNullException(nameof(path));
+                DirSetup = dirSetup;
+            }
 
-                try
-                {
-                    if (synchronizing)
-                        return;
-                    synchronizing = true;
-
-                    setupProcessState.AddProgress(8, "reading directory Setups");
-
-                    IEnumerable<DirectorySetup> dirSetups =
-                        this._directorySetupService
-                        .Get()
-                        .KeyValues
-                        .Select(x => x.Value).ToArray()
-                        .ToArray();
-
-                    setupProcessState.OnNextStep("reading fileinfos");
-
-                    IEnumerable<ExtendedFileInfo> fileInfos =
-                        this.GetExtended()
-                        .KeyValues
-                        .Select(x => x.Value).ToArray()
-                        .ToArray();
-
-                    setupProcessState.OnNextStep("getting the local file information");
-
-                    var actualDirSetupFiles =
-                        dirSetups
-                        .Where(dirSetup => dirSetup.IsValid)
-                        .Select(dirSetup =>
-                        new
-                        {
-                            files = Directory.GetFiles(dirSetup.Path.LocalPath, "*", SearchOption.AllDirectories),
-                            dirSetup
-                        })
-                        .ToArray();
-
-                    setupProcessState.OnNextStep("getting the known files");
-
-                    var flatDirSetupFiles = actualDirSetupFiles
-                        .SelectMany(files => files.files.Select(path => new { files.dirSetup, path }))
-                        .ToArray();
-
-                    setupProcessState.OnNextStep("creating a list of all the local files");
-
-                    IEnumerable<string> actualFiles = actualDirSetupFiles
-                        .SelectMany(dirSetupFiles => dirSetupFiles.files)
-                        .ToArray();
-
-                    setupProcessState.OnNextStep("merging local and known files");
-
-                    var allPaths = fileInfos
-                            .Select(x => x.AbsolutePath)
-                            .Union(actualFiles)
-                            .Distinct()
-                            .Select(path => new { path, info = new SysFileInfo(path) })
-                            .ToArray();
-
-                    setupProcessState.OnNextStep("creating the missing files");
-
-                    IEnumerable<FileInfoChangeset> mergedFiles =
-                        from file in allPaths
-                        join foundFile in flatDirSetupFiles
-                            on file.path equals foundFile.path into foundFiles
-                        join definedFile in fileInfos
-                            on file.path equals definedFile.AbsolutePath into definedFiles
-
-                        select new FileInfoChangeset(definedFiles.Any() ? definedFiles.First().FileInfo as FileInfo? : null)
-                        {
-                            Path =
-                                new Uri(Uri.UnescapeDataString(
-                                    (
-                                    definedFiles.Any()
-                                        ? definedFiles.First().DirectorySetup
-                                        : foundFiles.First().dirSetup
-                                    ).Path.MakeRelativeUri(new Uri(file.path))
-                                    .ToString()
-                                ), UriKind.Relative),
-                            CreationTime = file.info.CreationTime,
-                            LastWriteTime = file.info.LastWriteTime,
-                            FileSize = file.info.Length,
-                            IsAccessible = foundFiles.Any(),
-                            DirectorySetupId = foundFiles.Any() ? foundFiles.First().dirSetup.Id : definedFiles.First().DirectorySetup.Id
-                        };
-
-                    setupProcessState.OnNextStep("updating the service");
-                    this.Patch(mergedFiles);
-                    setupProcessState.OnNextStep("done");
-                    setupProcessState.State = AsyncState.Done;
-                }
-                catch (Exception ex)
-                {
-                    setupProcessState.StateChanges.OnNext(AsyncState.Failed);
-                    setupProcessState.ErrorChanges.OnNext(ex.ToString());
-                }
-                finally
-                {
-                    setupProcessState.Complete();
-                    synchronizing = false;
-                }
-            });
-            task.Start();
+            public string Path { get; }
+            public DirectorySetup DirSetup { get; }
         }
-
-
-
-
 
         public void UpdateHashes() => this.UpdateHashes(_settingsService.ThreadCount);
         public void UpdateHashes(int threadcount)
@@ -326,7 +221,7 @@ namespace TableTopCrucible.Data.Services
 
                         try
                         {
-                            
+
                             this.Patch(result);
                             finalizer.OnNextStep($"done with thread #{resCounter}");
                         }

@@ -17,7 +17,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
     public class DirectoryListViewModel : DisposableReactiveObjectBase
     {
-        public SychronizeFilesCommand SynchronizeFiles { get; }
+        public SynchronizeFilesCommand SynchronizeFiles { get; }
         public CreateDirectorySetupCommand CreateDirectorySetup { get; }
 
 
@@ -29,7 +29,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public DirectoryListViewModel(
             IDirectoryDataService directorySetupService,
             IInjectionProviderService injectionProviderService,
-            SychronizeFilesCommand synchronizeFiles,
+            SynchronizeFilesCommand synchronizeFiles,
             CreateDirectorySetupCommand createDirectorySetup)
         {
             this._directorySetupService = directorySetupService;

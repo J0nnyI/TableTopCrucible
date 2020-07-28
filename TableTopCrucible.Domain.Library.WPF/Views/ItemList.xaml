@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
 
         <ListView ItemsSource="{Binding ItemsDataView.View}"
-                  SelectedItem="{Binding SelectedItemVm}"
+                  SelectedItem="{Binding SelectedItem}"
                   md:RippleAssist.IsDisabled="True"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   SelectionMode="Single"

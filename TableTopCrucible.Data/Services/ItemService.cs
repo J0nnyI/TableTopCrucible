@@ -80,7 +80,6 @@ namespace TableTopCrucible.Data.Services
                 .AsObservableCache();
 
             this._getExtended =
-            #region link items with files
                 this.Get()
                 .Connect()
                 .Filter(x => x.File.HasValue)
@@ -90,16 +89,11 @@ namespace TableTopCrucible.Data.Services
                     file => file.HashKey,
                     (item, files) => new ExtendedItem(item, files.Items))
                 .ChangeKey(x => x.Item.Id)
-            #endregion
-                .FullJoin(// basically a concat
-            #region get items without files and format them
-                    this.Get()
+                .Merge(
+                    Get()
                     .Connect()
                     .Filter(x => !x.File.HasValue)
-                    .Transform(item => new ExtendedItem(item, new ExtendedFileInfo[0])),
-            #endregion
-                    x => x.Item.Id,
-                    (x, y) => x.HasValue ? x.Value : y.Value)
+                    .Transform(item => new ExtendedItem(item, new ExtendedFileInfo[0])))
                 .AsObservableCache();
 
         }

@@ -44,17 +44,11 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public Item? SelectedItem
         {
             get => _selectedItem.Value;
-            set => selectItem(value);
+            set => _selectedItemChanges.OnNext(value);
         }
 
         #endregion
 
-        private void selectItem(Item? item)
-        {
-            if (!item.HasValue)
-                this.SelectedItem = null;
-            this.SelectedItem = Items.FirstOrDefault(curItem => curItem.Id == item?.Id);
-        }
 
         public ItemListViewModel(
             IItemService itemService,

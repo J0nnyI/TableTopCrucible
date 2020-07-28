@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+
 using ReactiveUI;
+
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -15,6 +17,7 @@ using TableTopCrucible.Core.WPF.Services;
 using TableTopCrucible.Core.WPF.ViewModels;
 using TableTopCrucible.Data.SaveFile.Services;
 using TableTopCrucible.Data.Services;
+using TableTopCrucible.Domain.Library;
 using TableTopCrucible.Domain.Library.WPF.Commands;
 using TableTopCrucible.Domain.Library.WPF.Pages;
 using TableTopCrucible.Domain.Library.WPF.PageViewModels;
@@ -57,6 +60,7 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<IFileDataService, FileDataService>();
             services.AddSingleton<IDirectoryDataService, DirectoryDataService>();
             services.AddSingleton<ISaveService, SaveService>();
+            services.AddSingleton<ILibraryManagementService, LibraryManagementService>();
             services.AddScoped<IInjectionProviderService, InjectionProviderService>();
 
             // WPF Services
@@ -85,7 +89,7 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<CreateItemCommand>();
             services.AddSingleton<DeleteItemCommand>();
             services.AddSingleton<SaveItemCommand>();
-            services.AddSingleton<SychronizeFilesCommand>();
+            services.AddSingleton<SynchronizeFilesCommand>();
             services.AddSingleton<CreateDirectorySetupCommand>();
             services.AddSingleton<SaveDirectorySetupCommand>();
             services.AddSingleton<DeleteDirectorySetupCommand>();

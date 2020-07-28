@@ -67,6 +67,7 @@
                                                Grid.Column="0"
                                                Grid.Row="0"/>
                                         <Label Content="{Binding Details}"
+                                               ToolTip="{Binding Details}"
                                                Grid.Column="1"
                                                Grid.Row="0"/>
                                         <ProgressBar Minimum="{Binding Progress.Min, Mode=OneWay}"
@@ -77,9 +78,9 @@
                                         <TextBlock MaxWidth="200px"
                                                    Grid.Column="1"
                                                    Grid.Row="1">
-                                            <Run Text="{Binding Progress.Value, Mode=OneWay}"/>
+                                            <Run Text="{Binding Path=Progress.Value, Mode=OneWay}"/>
                                             <Run>/</Run>
-                                            <Run Text="{Binding Progress.Max, Mode=OneWay}"/>
+                                            <Run Text="{Binding Path=Progress.Max, Mode=OneWay}"/>
                                         </TextBlock>
                                     </Grid>
                                 </DataTemplate>

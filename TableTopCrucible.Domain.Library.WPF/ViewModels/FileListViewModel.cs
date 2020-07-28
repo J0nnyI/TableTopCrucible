@@ -24,7 +24,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public ICommand SynchronizeFiles { get; }
         public ICommand HashFiles { get; }
         public ICommand GenerateItems { get; }
-        public FileListViewModel(IFileDataService fileInfoService, GenerateItemsFromFilesCommand generateItems, SychronizeFilesCommand synchronizeFiles, HashFilesCommand hashFiles)
+        public FileListViewModel(IFileDataService fileInfoService, GenerateItemsFromFilesCommand generateItems, SynchronizeFilesCommand synchronizeFiles, HashFilesCommand hashFiles)
         {
             this.SynchronizeFiles = synchronizeFiles;
             this.HashFiles = hashFiles;

@@ -120,5 +120,11 @@
                            Name="tb_text"/>
             </Grid>
         </Label>
+        <Button Command="{Binding Save}"
+                Style="{StaticResource MaterialDesignIconForegroundButton}"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Right">
+            <md:PackIcon Kind="ContentSave"/>
+        </Button>
     </Grid>
 </UserControl>

@@ -42,7 +42,11 @@ namespace TableTopCrucible.Data.Services
         private readonly INotificationCenterService _notificationCenterService;
         private readonly ISettingsService _settingsService;
 
-        public ItemService(IFileDataService fileInfoService, INotificationCenterService notificationCenterService, ISettingsService settingsService)
+        public ItemService(
+            IFileDataService fileInfoService,
+            INotificationCenterService notificationCenterService,
+            ISettingsService settingsService)
+            :base(settingsService, notificationCenterService)
         {
             this._fileService = fileInfoService;
             this._notificationCenterService = notificationCenterService;

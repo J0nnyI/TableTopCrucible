@@ -73,6 +73,7 @@
                                         <ProgressBar Minimum="{Binding Progress.Min, Mode=OneWay}"
                                                      Value="{Binding Progress.Value, Mode=OneWay}"
                                                      Maximum="{Binding Progress.Max, Mode=OneWay}"
+                                                     MinWidth="200px"
                                                      Grid.Column="0"
                                                      Grid.Row="1"/>
                                         <TextBlock MaxWidth="200px"

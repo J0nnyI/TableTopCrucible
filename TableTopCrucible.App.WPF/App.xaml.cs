@@ -36,7 +36,7 @@ namespace TableTopCrucible.App.WPF
         {
             var serviceProvider = this._createServiceProvider();
             this._disposables.Add(serviceProvider);
-
+            
             var providerService = serviceProvider.GetRequiredService<IInjectionProviderService>() as InjectionProviderService;
             providerService.SetProvider(serviceProvider);
 

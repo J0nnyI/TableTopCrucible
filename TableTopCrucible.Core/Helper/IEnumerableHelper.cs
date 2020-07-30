@@ -28,10 +28,17 @@ namespace TableTopCrucible.WPF.Helper
         public static IEnumerable<T> Distinct<T>(this IEnumerable<T> list, Func<T, T, bool> comparer)
             => list.Distinct(new proxyComparer<T>(comparer));
 
-        public static IEnumerable<IGrouping<int,T>> SplitEvenly<T>(this IEnumerable<T> list, int count)
+        public static IEnumerable<IGrouping<int, T>> SplitEvenly<T>(this IEnumerable<T> list, int count)
         {
             int i = 0;
             return list.GroupBy(_ => Convert.ToInt32(decimal.Remainder(i++, count)));
+        }
+        public static IEnumerable<IEnumerable<T>> ChunkBy<T>(this IEnumerable<T> list, int maxSize)
+        {
+            for (int i = 0; i < list.Count(); i += maxSize)
+            {
+                yield return list.Skip(i).Take(Math.Min(maxSize, list.Count() - i));
+            }
         }
     }
 }

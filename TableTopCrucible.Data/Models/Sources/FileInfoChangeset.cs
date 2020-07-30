@@ -7,6 +7,7 @@ using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.WPF.Helper;
+
 using SysFileInfo = System.IO.FileInfo;
 
 namespace TableTopCrucible.Domain.Models.Sources
@@ -51,11 +52,11 @@ namespace TableTopCrucible.Domain.Models.Sources
         }
         public void SetSysFileInfo(DirectorySetup directorySetup, SysFileInfo fileInfo)
         {
-            Path = directorySetup.Path.MakeUnescapedRelativeUri(fileInfo.FullName);
-            CreationTime = fileInfo.CreationTime;
+            Path = fileInfo != null ? directorySetup.Path.MakeUnescapedRelativeUri(fileInfo?.FullName) : null;
+            CreationTime = fileInfo?.CreationTime ?? default;
             FileHash = null;
-            LastWriteTime = fileInfo.LastWriteTime;
-            FileSize = fileInfo.Length;
+            LastWriteTime = fileInfo?.LastWriteTime ?? default;
+            FileSize = fileInfo?.Length ?? default;
         }
         public override FileInfo Apply()
             => new FileInfo(this.Origin.Value, Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, FileSize, IsAccessible);

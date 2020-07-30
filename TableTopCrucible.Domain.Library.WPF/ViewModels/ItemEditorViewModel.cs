@@ -5,15 +5,17 @@ using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-
+using System.Windows.Input;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.Domain.Models.Views;
+using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
@@ -34,7 +36,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         [Reactive] public string Thumbnail { get; set; }
         [Reactive] public IEnumerable<ExtendedFileInfo> Files { get; set; }
 
-
+        public ICommand Save { get; }
 
 
         public ItemEditorViewModel(TagEditorViewModel tagEdiotr, IItemService itemService)
@@ -51,11 +53,19 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this._selectedItem = SelectedItemChanges
                 .ToProperty(this, nameof(SelectedItem));
 
+            this.Save = new RelayCommand(_ => _save());
 
             this.SelectedItemChanges.Subscribe(LoadItem);
         }
 
-
+        private void _save()
+        {
+            var cs = new ItemChangeset(SelectedItem.Value.Item);
+            cs.Name = this.Name;
+            cs.Thumbnail = this.Thumbnail;
+            cs.Tags = this.TagEdiotr.Tags;
+            this._itemService.Patch(cs);
+        }
         public void SelectItem(ItemId? id)
             => this._selectedItemIdChanges.OnNext(id);
 

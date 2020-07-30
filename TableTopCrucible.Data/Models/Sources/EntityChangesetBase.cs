@@ -19,7 +19,7 @@ namespace TableTopCrucible.Core.Models.Sources
         protected IEnumerable<string> changedValues
             => _changedValues;
 
-        public Tid Id { get; }
+        public Tid Id { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

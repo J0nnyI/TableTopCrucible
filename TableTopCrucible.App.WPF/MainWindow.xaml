@@ -6,8 +6,10 @@
         xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels;assembly=TableTopCrucible.Domain.Library.WPF"
         mc:Ignorable="d"
         Title="TableTopCrucible"
-        Height="450" 
-        Width="800"
+        Height="900" 
+        Width="1400"
+        MaxWidth="1200"
+        WindowStartupLocation="CenterScreen"
         d:DataContext="{d:DesignInstance Type=viewModels:MainViewModel}"
         Content="{Binding Tabs}"
         />

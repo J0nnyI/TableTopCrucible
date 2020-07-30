@@ -11,6 +11,7 @@ using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.Domain.Models.Views;
 using TableTopCrucible.WPF.Helper;
 
@@ -59,7 +60,7 @@ namespace TableTopCrucible.Domain.Library
 
         private IEnumerable<LocalFile> getLocalFiles(DirectorySetup directorySetup)
         {
-            return Directory.GetFiles(directorySetup.Path.LocalPath)
+            return Directory.GetFiles(directorySetup.Path.LocalPath, "*", SearchOption.AllDirectories)
                 .Select(file => new LocalFile(directorySetup, file));
         }
 
@@ -101,6 +102,7 @@ namespace TableTopCrucible.Domain.Library
             result.SetSysFileInfo(dirSetup, localFile?.FileInfo);
             result.Path = dirSetup.Path.MakeUnescapedRelativeUri(path);
             result.DirectorySetupId = localFile?.DirectorySetup.Id ?? definedFile.Value.DirectorySetup.Id;
+            result.Id = definedFile?.FileInfo.Id??FileInfoId.New();
 
             return result;
         }

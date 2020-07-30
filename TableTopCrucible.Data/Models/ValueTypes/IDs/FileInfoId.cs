@@ -31,5 +31,8 @@ namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
             => new FileInfoId(id);
         public override string ToString()
             => _guid.ToString();
+        public static FileInfoId New()
+            => (FileInfoId)Guid.NewGuid();
+
     }
 }

@@ -19,8 +19,8 @@
             <RowDefinition/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-
-        <ListView ItemsSource="{Binding ItemsDataView.View}"
+        <!--ItemsSource="{Binding ItemsDataView.View}"-->
+        <ListView 
                   SelectedItem="{Binding SelectedItem}"
                   md:RippleAssist.IsDisabled="True"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"

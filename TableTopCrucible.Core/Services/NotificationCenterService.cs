@@ -35,10 +35,5 @@ namespace TableTopCrucible.Core.Services
             this.Register(job);
             return job;
         }
-
-        public void IncreaseProgress()
-        {
-
-        }
     }
 }

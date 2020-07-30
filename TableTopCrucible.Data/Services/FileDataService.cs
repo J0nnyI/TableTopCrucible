@@ -65,6 +65,7 @@ namespace TableTopCrucible.Data.Services
             IDirectoryDataService directorySetupService,
             INotificationCenterService notificationCenterService,
             ISettingsService settingsService)
+            :base(settingsService, notificationCenterService)
         {
             this._directorySetupService = directorySetupService;
             this._notificationCenterService = notificationCenterService;

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -30,7 +31,12 @@ namespace TableTopCrucible.Data.SaveFile.Services
         private readonly ISettingsService _settingsService;
         private readonly INotificationCenterService _notificationCenterService;
 
-        public SaveService(IItemService itemService, IFileDataService _fileDataService, IDirectoryDataService directoryDataService, ISettingsService settingsService, INotificationCenterService notificationCenterService)
+        public SaveService(
+            IItemService itemService,
+            IFileDataService _fileDataService,
+            IDirectoryDataService directoryDataService,
+            ISettingsService settingsService,
+            INotificationCenterService notificationCenterService)
         {
             this._itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
             this._fileDataService = _fileDataService;
@@ -46,29 +52,9 @@ namespace TableTopCrucible.Data.SaveFile.Services
             {
 
                 proc.State = AsyncState.InProgress;
-                MasterDTO masterDTO = JsonSerializer.Deserialize<MasterDTO>(File.ReadAllText(file));
+                Observable.Start(() => loadFile(file))
+                    .Subscribe(dto => applyFile(dto, proc));
 
-                var size1 = GC.GetTotalMemory(true) / (decimal)1000000;
-
-                proc.Details = $"loading {masterDTO.Directories.Count()} directories";
-                _directoryDataService.Set(masterDTO.Directories.Select(dto => dto.ToEntity()));
-
-                var size2 = GC.GetTotalMemory(true) / (decimal)1000000;
-
-                proc.Details = $"loading {masterDTO.Files.Count()} files";
-                _fileDataService.Set(masterDTO.Files.Select(dto => dto.ToEntity()));
-
-                var size3 = GC.GetTotalMemory(true) / (decimal)1000000;
-
-                proc.Details = $"loading {masterDTO.Items.Count()} items";
-                _itemService.Set(masterDTO.Items.Select(dto => dto.ToEntity()));
-
-                var size4 = GC.GetTotalMemory(true) / (decimal)1000000;
-
-                proc.Details = "done";
-                proc.State = AsyncState.Done;
-
-                MessageBox.Show($"before: {size1}mb after:{size4}mb{Environment.NewLine}dir size: {size2 - size1}mb{Environment.NewLine}file size: {size3 - size2}mb{Environment.NewLine}itemSize: {size4 - size3}mb");
             }
             catch (Exception ex)
             {
@@ -81,7 +67,36 @@ namespace TableTopCrucible.Data.SaveFile.Services
             }
         }
 
+        private MasterDTO loadFile(string file)
+            => JsonSerializer.Deserialize<MasterDTO>(File.ReadAllText(file));
 
+        private void applyFile(MasterDTO dto, AsyncProcessState proc)
+        {
+
+            proc.Details = $"loading {dto.Directories.Count()} directories";
+            var dirTask = Observable.Start(() => _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity())), RxApp.TaskpoolScheduler);
+
+
+            proc.Details = $"loading {dto.Files.Count()} files";
+            var fileTask = Observable.Start(() => _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity())), RxApp.TaskpoolScheduler);
+
+
+            proc.Details = $"loading {dto.Items.Count()} items";
+            var itemTask = Observable.Start(() => _itemService.Set(dto.Items.Select(dto => dto.ToEntity())), RxApp.TaskpoolScheduler);
+
+            Observable.CombineLatest(dirTask, fileTask, itemTask)
+                .Take(1)
+                .Subscribe(_ =>
+                {
+                    proc.Details = "done";
+                    proc.State = AsyncState.Done;
+                },
+                ex =>
+                {
+                    proc.Details = ex.ToString();
+                    proc.State = AsyncState.Failed;
+                });
+        }
 
         public async void Save(string file)
         {

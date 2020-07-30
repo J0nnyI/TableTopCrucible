@@ -105,7 +105,7 @@ namespace TableTopCrucible.Core.Models.Sources
             {
                 ProgressChanges.OnNext(Progress.Value.OnNextStep());
                 if (message != null)
-                    this.Details += message + Environment.NewLine;
+                    this.Details = message;
             });
         }
         private void _dispatch(Action action)

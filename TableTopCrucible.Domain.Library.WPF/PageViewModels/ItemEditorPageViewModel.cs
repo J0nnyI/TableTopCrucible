@@ -20,7 +20,7 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
             this.ItemList = itemList;
             this.ItemEditor = itemEditor;
 
-            this.ItemList.SelectedItemChanges.Subscribe(x => itemEditor.SelectItem(x?.Id));
+            this.ItemList.SelectedItemChanges.Subscribe(x => itemEditor.SelectItem(x?.Item.Id));
         }
 
     }

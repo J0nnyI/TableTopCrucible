@@ -19,8 +19,7 @@
             <RowDefinition/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <!--ItemsSource="{Binding ItemsDataView.View}"-->
-        <ListView 
+        <ListView ItemsSource="{Binding ItemsDataView.View}"
                   SelectedItem="{Binding SelectedItem}"
                   md:RippleAssist.IsDisabled="True"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -40,6 +39,12 @@
                     </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ContentPresenter Content="{Binding}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            
             <ListView.Resources>
             </ListView.Resources>
         </ListView>

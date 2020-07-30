@@ -3,7 +3,8 @@
                     xmlns:views="clr-namespace:TableTopCrucible.Domain.Library.WPF.Views"
                     xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
                     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
-                    xmlns:sourceModels="clr-namespace:TableTopCrucible.Domain.Models.Sources;assembly=TableTopCrucible.Data">
+                    xmlns:sourceModels="clr-namespace:TableTopCrucible.Domain.Models.Sources;assembly=TableTopCrucible.Data"
+                    xmlns:dataViews="clr-namespace:TableTopCrucible.Domain.Models.Views;assembly=TableTopCrucible.Data">
     
     <!--views-->
     <DataTemplate DataType="{x:Type viewModels:ItemListViewModel}">
@@ -33,21 +34,29 @@
     <DataTemplate DataType="{x:Type viewModels:AppSettingsViewModel}">
         <views:AppSettingsView/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type sourceModels:Item}">
+    <DataTemplate DataType="{x:Type dataViews:ExtendedItem}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="200px"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Image Source="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_Thumbnail}}" 
+                   Width="200px"
                    Grid.Column="0"
                    Grid.Row="0"
                    Grid.RowSpan="2">
             </Image>
+            <StackPanel Grid.Column="1"
+                       Grid.Row="1"
+                       VerticalAlignment="Bottom"
+                       HorizontalAlignment="Right">
+                <Label Content="{Binding Files.Count}"/>
+                <Label Content="{Binding Item.File}"/>
+            </StackPanel>
             <md:PackIcon Visibility="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}" 
                          Kind="Image"
                          VerticalAlignment="Center"
@@ -59,10 +68,10 @@
                          Grid.Row="0"
                          Grid.RowSpan="2"/>
             
-            <Label Content="{Binding Name}"
+            <Label Content="{Binding Item.Name}"
                    Grid.Column="1"
                    Grid.Row="0"/>
-            <ListBox ItemsSource="{Binding Tags}" 
+            <ListBox ItemsSource="{Binding Item.Tags}" 
                      Style="{StaticResource MaterialDesignFilterChipListBox}"
                      md:ListBoxAssist.IsToggle="False"
                      Grid.Column="1"

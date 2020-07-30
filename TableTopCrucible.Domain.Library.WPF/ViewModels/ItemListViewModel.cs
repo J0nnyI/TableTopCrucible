@@ -21,6 +21,7 @@ using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
+using TableTopCrucible.Domain.Models.Views;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
@@ -31,17 +32,17 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private readonly IInjectionProviderService _injectionProviderService;
         public CreateItemCommand CreateItemCommand { get; }
 
-        ReadOnlyObservableCollection<Item> _items;
-        public ReadOnlyObservableCollection<Item> Items => _items;
+        ReadOnlyObservableCollection<ExtendedItem> _items;
+        public ReadOnlyObservableCollection<ExtendedItem> Items => _items;
         [Reactive]
         public CollectionViewSource ItemsDataView { get; private set; }
 
         #region reactive properties
 
-        private BehaviorSubject<Item?> _selectedItemChanges { get; } = new BehaviorSubject<Item?>(null);
-        public IObservable<Item?> SelectedItemChanges => _selectedItemChanges;
-        private readonly ObservableAsPropertyHelper<Item?> _selectedItem;
-        public Item? SelectedItem
+        private BehaviorSubject<ExtendedItem?> _selectedItemChanges { get; } = new BehaviorSubject<ExtendedItem?>(null);
+        public IObservable<ExtendedItem?> SelectedItemChanges => _selectedItemChanges;
+        private readonly ObservableAsPropertyHelper<ExtendedItem?> _selectedItem;
+        public ExtendedItem? SelectedItem
         {
             get => _selectedItem.Value;
             set => _selectedItemChanges.OnNext(value);
@@ -67,7 +68,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
 
                 this._itemService
-                .Get()
+                .GetExtended()
                 .Connect()
                 .DisposeMany()
                 .TakeUntil(destroy)

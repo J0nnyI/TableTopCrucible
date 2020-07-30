@@ -73,10 +73,24 @@
                       Grid.Column="0"
                       Grid.ColumnSpan="4"
                       Grid.Row="3"
-                      DisplayMemberPath="{Binding Name}"
                       BorderBrush="Red"
-                      BorderThickness="3"/>
-
+                      BorderThickness="3">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="text"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Label
+                Grid.Column="0"
+                Grid.ColumnSpan="4"
+                Grid.Row="4"
+                BorderBrush="Red"
+                BorderThickness="2px"
+                Content="{Binding SelectedItem.Item}"
+                >
+                <!--Files-->
+            </Label>
 
             <Label Content="3d viewport here"
                    Style="{StaticResource Placeholder}"
@@ -126,5 +140,13 @@
                 HorizontalAlignment="Right">
             <md:PackIcon Kind="ContentSave"/>
         </Button>
+
+        <TextBlock Text="Work in progress"
+                   FontSize="30"
+                   Background="red"
+                   Foreground="White"
+                   Padding="16px"
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Top"/>
     </Grid>
 </UserControl>

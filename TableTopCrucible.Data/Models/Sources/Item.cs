@@ -36,7 +36,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             this.Identity = Guid.NewGuid();
         }
 
-        public override string ToString() => $"Tile {Id} ({Name})";
+        public override string ToString() => $"Tile {Id} ({Name}), File: {this.File}";
         public override bool Equals(object obj) => obj is Item item && this == item;
         public override int GetHashCode() => HashCode.Combine(this.Identity);
 

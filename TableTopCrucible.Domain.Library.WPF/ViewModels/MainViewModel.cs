@@ -34,9 +34,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             tabService.Append(itemEditor, true);
             tabService.Append(fileSetup, false);
             tabService.Append(settings, false);
-            //#if DEBUG
+#if DEBUG
             tabService.Append(devTest, false);
-//#endif
+#endif
         }
     }
 }

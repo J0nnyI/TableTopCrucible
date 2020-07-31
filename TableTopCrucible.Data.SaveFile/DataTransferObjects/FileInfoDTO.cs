@@ -47,6 +47,16 @@ namespace TableTopCrucible.Data.SaveFile.DataTransferObjects
         }
 
         public FileInfo ToEntity()
-            => new FileInfo(Path, FileCreationTime, new FileHash(FileHash), LastWriteTime, (DirectorySetupId)DirectorySetupId, FileSize, IsAccessible, (FileInfoId)Id, Created, LastChange);
+            => new FileInfo(
+                Path,
+                FileCreationTime,
+                FileHash != null ? new FileHash(FileHash) as FileHash? : null,
+                LastWriteTime,
+                (DirectorySetupId)DirectorySetupId,
+                FileSize,
+                IsAccessible,
+                (FileInfoId)Id,
+                Created,
+                LastChange);
     }
 }

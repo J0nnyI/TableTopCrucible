@@ -34,6 +34,9 @@
     <DataTemplate DataType="{x:Type viewModels:AppSettingsViewModel}">
         <views:AppSettingsView/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:FileVersionListViewModel}">
+        <views:FileVersionListView/>
+    </DataTemplate>
     <DataTemplate DataType="{x:Type dataViews:ExtendedItem}">
         <Grid>
             <Grid.RowDefinitions>
@@ -50,11 +53,6 @@
                    Grid.Row="0"
                    Grid.RowSpan="2">
             </Image>
-            <Label Content="{Binding FileCount}"
-                   VerticalAlignment="Bottom"
-                   HorizontalAlignment="Right"
-                   Grid.Column="1"
-                   Grid.Row="1"/>
             <md:PackIcon Visibility="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}" 
                          Kind="Image"
                          VerticalAlignment="Center"
@@ -87,6 +85,15 @@
                     </Style>
                 </ListBox.ItemContainerStyle>
             </ListBox>
+            <TextBlock VerticalAlignment="Bottom"
+                   HorizontalAlignment="Right"
+                   Grid.Column="1"
+                   Grid.Row="1">
+                <Run Text="{Binding LatestVersion, Mode=OneWay}"/>
+                <Run>(</Run>
+                <Run Text="{Binding FileCount, Mode=OneWay}"/>
+                <Run>)</Run>
+            </TextBlock>
         </Grid>
     </DataTemplate>
 

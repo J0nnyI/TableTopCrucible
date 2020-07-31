@@ -72,32 +72,34 @@ namespace TableTopCrucible.Data.SaveFile.Services
 
         private void applyFile(MasterDTO dto, AsyncProcessState proc)
         {
-
-            proc.Details = $"loading {dto.Directories.Count()} directories";
-            var dirTask = Observable.Start(() => _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity())), RxApp.TaskpoolScheduler);
-
-
-            proc.Details = $"loading {dto.Files.Count()} files";
-            var fileTask = Observable.Start(() => _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity())), RxApp.TaskpoolScheduler);
-
-            proc.Details = $"loading {dto.Items.Count()} file-item links";
-            var fileItemLinkTask = Observable.Start(() => fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity())), RxApp.TaskpoolScheduler);
-
-            proc.Details = $"loading {dto.Items.Count()} items";
-            var itemTask = Observable.Start(() => _itemService.Set(dto.Items.Select(dto => dto.ToEntity())), RxApp.TaskpoolScheduler);
-
-            Observable.CombineLatest(dirTask, fileTask, itemTask)
-                .Take(1)
-                .Subscribe(_ =>
+            Observable.Start(() =>
+            {
+                try
                 {
+
+                    proc.Details = $"loading {dto.Directories.Count()} directories";
+                    _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()));
+
+                    proc.Details = $"loading {dto.Files.Count()} files";
+                    _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()));
+
+                    proc.Details = $"loading {dto.Items.Count()} file-item links";
+                    fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity()));
+
+                    proc.Details = $"loading {dto.Items.Count()} items";
+                    _itemService.Set(dto.Items.Select(dto => dto.ToEntity()));
+
                     proc.Details = "done";
                     proc.State = AsyncState.Done;
-                },
-                ex =>
+                }
+                catch (Exception ex)
                 {
                     proc.Details = ex.ToString();
                     proc.State = AsyncState.Failed;
-                });
+                }
+
+
+            }, RxApp.TaskpoolScheduler);
         }
 
         public async void Save(string file)
@@ -106,7 +108,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
             {
                 Items = _itemService.Get().KeyValues.Select(item => new ItemDTO(item.Value)).ToArray(),
                 Files = _fileDataService.Get().KeyValues.Select(file => new FileInfoDTO(file.Value)).ToArray(),
-                FileItemLinks = fileItemLinkService.Get().KeyValues.Select(file=>new FileItemLinkDTO(file.Value)).ToArray(),
+                FileItemLinks = fileItemLinkService.Get().KeyValues.Select(file => new FileItemLinkDTO(file.Value)).ToArray(),
                 Directories = _directoryDataService.Get().KeyValues.Select(dir => new DirectorySetupDTO(dir.Value))
             };
             using FileStream fs = File.Create(file);

@@ -33,7 +33,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
 
         public TagEditorViewModel TagEdiotr { get; }
-
+        public FileVersionListViewModel FileVersionList { get; }
 
         [Reactive] public string Name { get; set; }
         [Reactive] public string Thumbnail { get; set; }
@@ -42,11 +42,15 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public ICommand Save { get; }
 
 
-        public ItemEditorViewModel(TagEditorViewModel tagEdiotr, IItemService itemService)
+        public ItemEditorViewModel(
+            TagEditorViewModel tagEdiotr,
+            IItemService itemService,
+            FileVersionListViewModel fileVersionList)
         {
             this.TagEdiotr = tagEdiotr;
             this.TagEdiotr.IsEditmode = true;
             this._itemService = itemService;
+            FileVersionList = fileVersionList;
             this.disposables.Add(_selectedItemIdChanges);
 
             this.SelectedItemChanges = 
@@ -76,6 +80,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         {
             this.Name = (string)item?.Name;
             this.Thumbnail = (string)item?.Thumbnail;
+            this.FileVersionList.SetFiles(item?.Files);
             this.TagEdiotr.Tags = item?.Tags;
             this.Files = item?.Files;
         }

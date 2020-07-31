@@ -54,15 +54,15 @@ namespace TableTopCrucible.App.WPF
             // core services
             services.AddSingleton<INotificationCenterService, NotificationCenterService>();
             services.AddSingleton<ISettingsService, Settings>();
+            services.AddScoped<IInjectionProviderService, InjectionProviderService>();
+            services.AddSingleton<ISaveService, SaveService>();
             // library domain services
             services.AddSingleton<IItemService, ItemService>();
             services.AddSingleton<IItemTagService, ItemTagService>();
             services.AddSingleton<IFileItemLinkService, FileItemLinkService>();
             services.AddSingleton<IFileDataService, FileDataService>();
             services.AddSingleton<IDirectoryDataService, DirectoryDataService>();
-            services.AddSingleton<ISaveService, SaveService>();
             services.AddSingleton<ILibraryManagementService, LibraryManagementService>();
-            services.AddScoped<IInjectionProviderService, InjectionProviderService>();
 
             // WPF Services
             services.AddScoped<TabService>();
@@ -79,6 +79,7 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<NotificationCenterViewModel>();
             services.AddTransient<TabViewModel>();
             services.AddTransient<AppSettingsViewModel>();
+            services.AddTransient<FileVersionListViewModel>();
 
             //   pages
             services.AddScoped<DevTestPageViewModel>();

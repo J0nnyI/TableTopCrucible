@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
+             xmlns:hx="http://helix-toolkit.org/wpf"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type viewModels:ItemEditorViewModel}}">
@@ -38,8 +39,6 @@
                 <RowDefinition Height="auto" MinHeight="50"/>
                 <RowDefinition Height="auto" MinHeight="50"/>
                 <RowDefinition Height="auto" MinHeight="50"/>
-                <RowDefinition Height="auto" MinHeight="50"/>
-                <RowDefinition Height="auto" MinHeight="50"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <TextBox Text="{Binding Name}"
@@ -69,60 +68,37 @@
                 <TextBox Text="{Binding Thumbnail, UpdateSourceTrigger=PropertyChanged}"
                          md:HintAssist.Hint="Thumbnail"/>
             </StackPanel>
-            <TextBlock Text="{Binding LatestFile.AbsolutePath}"/>
-            <!--VersionedFile?-->
-            <ListView ItemsSource="{Binding Files}"
-                      Grid.Column="0"
-                      Grid.ColumnSpan="4"
-                      Grid.Row="3"
-                      BorderBrush="Red"
-                      BorderThickness="3">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <TextBlock>
-                                <Run Text="{Binding Link.Version, Mode=OneWay}"/>
-                                <Run Text="{Binding Link.FileCount, Mode=OneWay}"/>
-                            </TextBlock>
-                            <!--ExtendedFileInfo-->
-                            <ListView ItemsSource="{Binding Files}">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding AbsolutePath}"/>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <Label
-                Grid.Column="0"
-                Grid.ColumnSpan="4"
-                Grid.Row="4"
-                BorderBrush="Red"
-                BorderThickness="2px"
-                Content="{Binding SelectedItem.Item}"
-                >
-                <!--Files-->
-            </Label>
+            <ContentPresenter Content="{Binding FileVersionList}"
+                              Grid.Column="0"
+                              Grid.ColumnSpan="4"
+                              Grid.Row="3"/>
 
-            <Label Content="3d viewport here"
-                   Style="{StaticResource Placeholder}"
-                   Grid.Column="0"
-                   Grid.ColumnSpan="4"
-                   Grid.Row="30"/>
+            <TextBlock 
+                       Grid.Column="0"
+                                Grid.ColumnSpan="4"
+                                Grid.Row="4">
+                <Run>path: </Run>
+                <Run Text="{Binding SelectedItem.LatestFile, Mode=OneWay}"/>
+            </TextBlock>
 
-            <!--<TextBlock Background="#AAAAAAAA"
-                   Grid.Column="0"
-                   Grid.ColumnSpan="2"
-                   Grid.Row="0"
-                   Grid.RowSpan="2">
-                <TextBlock.Effect>
-                        <BlurEffect Radius="5"/>
-                </TextBlock.Effect>
-            </TextBlock>-->
+            <hx:HelixViewport3D Grid.Column="0"
+                                Grid.ColumnSpan="4"
+                                Grid.Row="4">
 
+                <hx:DefaultLights/>
+                
+                <hx:FileModelVisual3D Source="{Binding SelectedItem.LatestFile.AbsolutePath, Mode=OneWay}">
+                    <hx:FileModelVisual3D.DefaultMaterial>
+                        <DiffuseMaterial>
+                            <DiffuseMaterial.Brush>
+                                <SolidColorBrush Color="Blue">
+                                </SolidColorBrush>
+                            </DiffuseMaterial.Brush>
+                        </DiffuseMaterial>
+                    </hx:FileModelVisual3D.DefaultMaterial>
+                </hx:FileModelVisual3D>
+
+            </hx:HelixViewport3D>
         </Grid>
         <Label Background="#AAAAAAAA"
                Visibility="{Binding SelectedItem, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}"

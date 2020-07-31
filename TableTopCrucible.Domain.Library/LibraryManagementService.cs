@@ -166,7 +166,7 @@ namespace TableTopCrucible.Domain.Library
                 try
                 {
                     process.State = AsyncState.InProgress;
-                    var object3dExtensions = new string[] { ".obj", ".stl", ".3mf" };
+                    var object3dExtensions = new string[] { ".obj", ".stl" };
                     var threadcount = settingsService.ThreadCount;
 
                     var files = this.fileDataService

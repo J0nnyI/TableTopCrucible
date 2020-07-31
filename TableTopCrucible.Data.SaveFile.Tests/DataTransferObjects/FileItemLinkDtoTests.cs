@@ -9,40 +9,42 @@ using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
+using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
+
 namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
 {
     [TestClass]
-    public class ItemDtoTests
+    public class FileItemLinkDtoTests
     {
-        private Item createTestEntity()
-            => new Item(
+        private FileItemLink createTestEntity()
+            => new FileItemLink(
+                FileItemLinkId.New(),
                 ItemId.New(),
-                (ItemName)"itenName",
-                new string[] { "tag 1", "tag 2" }.Select(x=>(Tag)x).ToArray(),
-                (Thumbnail)@"C:\test\test.png",
+                new FileInfoHashKey(FileInfoDtoTests.createTestEntity()),
+                new Version(1, 2, 3),
                 DateTime.Now.AddMinutes(-5),
                 DateTime.Now);
 
-        void compareEntityToDto(Item entity, ItemDTO dto)
+        void compareEntityToDto(FileItemLink entity, FileItemLinkDTO dto)
         {
 
             Assert.AreEqual((Guid)entity.Id, dto.Id, "faulty id");
             Assert.AreEqual(entity.Created, dto.Created, "faulty creation timestamp");
             Assert.AreEqual(entity.LastChange, dto.LastChange, "faulty last change timestamp");
 
-            Assert.AreEqual(entity.Tags?.Select(x=>(string)x)?.Except(dto.Tags)?.Count(), 0, "faulty tags");
-            Assert.AreEqual((string)entity.Name, dto.Name, "faulty name");
-            Assert.AreEqual((string)entity.Thumbnail, dto.Thumbnail, "faulty thumbnail");
+            Assert.AreEqual((Guid)entity.ItemId, dto.ItemId, "faulty item-id");
+            Assert.AreEqual(entity.FileKey, dto.FileKey.ToEntity(), "faulty FileHash");
+            Assert.AreEqual(entity.Version, dto.Version.ToEntity(), "faulty version");
         }
-        void compareEntities(Item entityA, Item entityB)
+        void compareEntities(FileItemLink entityA, FileItemLink entityB)
         {
             Assert.AreEqual(entityA.Id, entityB.Id, "faulty id");
             Assert.AreEqual(entityA.Created, entityB.Created, "faulty creation timestamp");
             Assert.AreEqual(entityA.LastChange, entityB.LastChange, "faulty last change timestamp");
-            Assert.AreEqual(entityA.Tags.Except(entityB.Tags).Count(), 0, "faulty tags");
-            Assert.AreEqual(entityA.Name, entityB.Name, "faulty name");
-            Assert.AreEqual(entityA.Thumbnail, entityB.Thumbnail, "faulty thumbnail");
-            Assert.AreNotEqual(entityA.Identity, entityB.Identity, "it's the same instance");
+
+            Assert.AreEqual(entityA.ItemId, entityB.ItemId, "faulty item-id");
+            Assert.AreEqual(entityA.FileKey, entityB.FileKey, "faulty FileHash");
+            Assert.AreEqual(entityA.Version, entityB.Version, "faulty version");
         }
 
         [TestMethod]
@@ -50,7 +52,7 @@ namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
         {
             var entity = createTestEntity();
 
-            var dto = new ItemDTO(entity);
+            var dto = new FileItemLinkDTO(entity);
 
             compareEntityToDto(entity, dto);
         }
@@ -58,7 +60,7 @@ namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
         public void Dto_to_entity_works()
         {
 
-            var dto = new ItemDTO(createTestEntity());
+            var dto = new FileItemLinkDTO(createTestEntity());
 
             var entity = dto.ToEntity();
 
@@ -68,10 +70,10 @@ namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
         public void serialization_works()
         {
             var srcEntity = createTestEntity();
-            var srcDto = new ItemDTO(srcEntity);
+            var srcDto = new FileItemLinkDTO(srcEntity);
 
             var str = JsonSerializer.Serialize(srcDto);
-            var dstDto = JsonSerializer.Deserialize<ItemDTO>(str);
+            var dstDto = JsonSerializer.Deserialize<FileItemLinkDTO>(str);
             var dstEntity = dstDto.ToEntity();
 
             compareEntities(srcEntity, dstEntity);

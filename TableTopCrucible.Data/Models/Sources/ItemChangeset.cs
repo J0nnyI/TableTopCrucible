@@ -41,13 +41,6 @@ namespace TableTopCrucible.Domain.Models.Sources
             get => _thumbnail.Value;
             set => ThumbnailChanges.OnNext(value);
         }
-        public BehaviorSubject<FileInfoHashKey?> FileChanges { get; } = new BehaviorSubject<FileInfoHashKey?>(null);
-        private readonly ObservableAsPropertyHelper<FileInfoHashKey?> _file;
-        public FileInfoHashKey? File
-        {
-            get => _file.Value;
-            set => FileChanges.OnNext(value);
-        }
         public ItemChangeset(Item? origin = null) : base(origin)
         {
             _name = NameChanges
@@ -56,10 +49,8 @@ namespace TableTopCrucible.Domain.Models.Sources
                 .ToProperty(this, nameof(Thumbnail));
             _tags = TagsChanges
                 .ToProperty(this, nameof(Tags));
-            _file = FileChanges
-                .ToProperty(this, nameof(File));
 
-            this.disposables.Add(NameChanges, ThumbnailChanges, TagsChanges, FileChanges);
+            this.disposables.Add(NameChanges, ThumbnailChanges, TagsChanges);
 
             if (Origin.HasValue)
             {
@@ -83,7 +74,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             => Apply(true);
         public Item Apply(bool dispose)
         {
-            var res = new Item(this.Origin.Value, (ItemName)this.Name, this.Tags, this.File, (Thumbnail?)this.Thumbnail);
+            var res = new Item(this.Origin.Value, (ItemName)this.Name, this.Tags, (Thumbnail?)this.Thumbnail);
             if (dispose)
                 this.Dispose();
             return res;
@@ -92,7 +83,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             => ToEntity(true);
         public Item ToEntity(bool dispose)
         {
-            var res = new Item((ItemName)this.Name, this.Tags, this.File, string.IsNullOrWhiteSpace(this.Thumbnail) ? null as Thumbnail? : (Thumbnail)this.Thumbnail);
+            var res = new Item((ItemName)this.Name, this.Tags,  string.IsNullOrWhiteSpace(this.Thumbnail) ? null as Thumbnail? : (Thumbnail)this.Thumbnail);
             if (dispose)
                 this.Dispose();
             return res;

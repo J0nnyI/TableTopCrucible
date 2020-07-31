@@ -1,6 +1,7 @@
 ﻿using System;
 
 using TableTopCrucible.Core.Models.ValueTypes.IDs;
+using TableTopCrucible.Domain.Models.Sources;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
 {
@@ -18,6 +19,9 @@ namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
 
         public override int GetHashCode() => this._guid.GetHashCode();
         public Guid ToGuid() => this._guid;
+
+        public static FileItemLinkId New()
+            => (FileItemLinkId)Guid.NewGuid();
 
         public override string ToString() => _guid.ToString();
         public static bool operator ==(FileItemLinkId id1, FileItemLinkId id2)

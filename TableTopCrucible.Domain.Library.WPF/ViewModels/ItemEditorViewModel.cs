@@ -2,6 +2,7 @@
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +11,9 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
+
 using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
@@ -34,7 +37,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
         [Reactive] public string Name { get; set; }
         [Reactive] public string Thumbnail { get; set; }
-        [Reactive] public IEnumerable<ExtendedFileInfo> Files { get; set; }
+        [Reactive] public IEnumerable<VersionedFile> Files { get; set; }
 
         public ICommand Save { get; }
 

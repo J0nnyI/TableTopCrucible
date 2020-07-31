@@ -15,6 +15,8 @@ namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
         [DataMember]
         public IEnumerable<ItemDTO> Items { get; set; }
         [DataMember]
+        public IEnumerable<FileItemLinkDTO> FileItemLinks{ get; set; }
+        [DataMember]
         public IEnumerable<DirectorySetupDTO> Directories { get; set; }
     }
 }

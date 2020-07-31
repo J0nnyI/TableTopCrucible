@@ -4,8 +4,8 @@
                     xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
                     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:sourceModels="clr-namespace:TableTopCrucible.Domain.Models.Sources;assembly=TableTopCrucible.Data"
-                    xmlns:dataViews="clr-namespace:TableTopCrucible.Domain.Models.Views;assembly=TableTopCrucible.Data">
-    
+                    xmlns:dataViews="clr-namespace:TableTopCrucible.Data.Models.Views;assembly=TableTopCrucible.Data">
+
     <!--views-->
     <DataTemplate DataType="{x:Type viewModels:ItemListViewModel}">
         <views:ItemList/>
@@ -50,13 +50,11 @@
                    Grid.Row="0"
                    Grid.RowSpan="2">
             </Image>
-            <StackPanel Grid.Column="1"
-                       Grid.Row="1"
-                       VerticalAlignment="Bottom"
-                       HorizontalAlignment="Right">
-                <Label Content="{Binding Files.Count}"/>
-                <Label Content="{Binding Item.File}"/>
-            </StackPanel>
+            <Label Content="{Binding FileCount}"
+                   VerticalAlignment="Bottom"
+                   HorizontalAlignment="Right"
+                   Grid.Column="1"
+                   Grid.Row="1"/>
             <md:PackIcon Visibility="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}" 
                          Kind="Image"
                          VerticalAlignment="Center"
@@ -67,7 +65,7 @@
                          Grid.Column="0"
                          Grid.Row="0"
                          Grid.RowSpan="2"/>
-            
+
             <Label Content="{Binding Item.Name}"
                    Grid.Column="1"
                    Grid.Row="0"/>
@@ -90,5 +88,59 @@
                 </ListBox.ItemContainerStyle>
             </ListBox>
         </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type dataViews:VersionedFile}">
+        <StackPanel>
+            <TextBlock FontWeight="Bold">Versioned File</TextBlock>
+            <TextBlock>Link</TextBlock>
+            <ContentPresenter Content="{Binding Link}"
+                              Margin="8px 0px"/>
+            <TextBlock>
+                <Run>Files: </Run>
+                <Run Text="{Binding Files.Count, Mode=OneWay}"/>
+            </TextBlock>
+            <ListView ItemsSource="{Binding Files}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding AbsolutePath}"/>
+                            <TextBlock Text="{Binding RelativePath}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type sourceModels:FileItemLink}">
+        <StackPanel>
+            <TextBlock>fileKey</TextBlock>
+            <TextBlock Text="{Binding FileKey}"/>
+            <TextBlock>itemId</TextBlock>
+            <TextBlock Text="{Binding ItemId}"/>
+            <TextBlock>version</TextBlock>
+            <TextBlock Text="{Binding Version}"/>
+        </StackPanel>        
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type dataViews:ExtendedFileInfo}">
+        <StackPanel>
+            <TextBlock Text="{Binding AbsolutePath}"/>
+            <ContentPresenter Content="{Binding DirectorySetup}"/>
+            <ContentPresenter Content="{Binding FileInfo}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type sourceModels:DirectorySetup}">
+        <StackPanel>
+            <TextBlock Text="{Binding Name}"/>
+            <TextBlock Text="{Binding Path}"/>
+            <TextBlock Text="{Binding Description}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type sourceModels:FileInfo}">
+        <TextBlock Text="{Binding Path}"/>
     </DataTemplate>
 </ResourceDictionary>

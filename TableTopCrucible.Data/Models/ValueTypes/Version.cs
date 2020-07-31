@@ -45,5 +45,6 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
         => v1.Equals(v2);
         public static bool operator !=(Version v1, Version v2)
         => !v1.Equals(v2);
+        public override string ToString() => $"{Major}.{Minor}.{Patch}";
     }
 }

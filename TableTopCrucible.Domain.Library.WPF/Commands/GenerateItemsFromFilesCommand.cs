@@ -2,16 +2,17 @@
 using System.Windows.Input;
 
 using TableTopCrucible.Data.Services;
+using TableTopCrucible.Domain.Library;
 
 namespace TableTopCrucible.WPF.Commands
 {
     public class GenerateItemsFromFilesCommand : ICommand
     {
-        private readonly IItemService _itemService;
+        private readonly ILibraryManagementService libraryManagement;
 
-        public GenerateItemsFromFilesCommand(IItemService itemService)
+        public GenerateItemsFromFilesCommand(ILibraryManagementService libraryManagement)
         {
-            this._itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
+            this.libraryManagement = libraryManagement;
         }
 
 
@@ -22,7 +23,7 @@ namespace TableTopCrucible.WPF.Commands
         public bool CanExecute(object parameter) => true;
         public void Execute(object parameter)
         {
-            this._itemService.AutoGenerateItems();
+            this.libraryManagement.AutoGenerateItems();
         }
     }
 }

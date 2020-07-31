@@ -14,29 +14,27 @@ namespace TableTopCrucible.Domain.Models.Sources
         public Thumbnail? Thumbnail { get; }
         public IEnumerable<Tag> Tags { get; }
         public Guid Identity { get; }
-        public FileInfoHashKey? File { get; }
 
         public DateTime Created { get; }
         public DateTime LastChange { get; }
 
-        public Item(ItemName name, IEnumerable<Tag> tags = null, FileInfoHashKey? file = null, Thumbnail? thumbnail = null)
-            : this((ItemId)Guid.NewGuid(), name, tags, file, thumbnail, DateTime.Now) { }
-        public Item(Item origin, ItemName name, IEnumerable<Tag> tags, FileInfoHashKey? file, Thumbnail? thumbnail)
-            : this(origin.Id, name, tags, file, thumbnail, origin.Created) { }
+        public Item(ItemName name, IEnumerable<Tag> tags = null, Thumbnail? thumbnail = null)
+            : this((ItemId)Guid.NewGuid(), name, tags, thumbnail, DateTime.Now) { }
+        public Item(Item origin, ItemName name, IEnumerable<Tag> tags, Thumbnail? thumbnail)
+            : this(origin.Id, name, tags, thumbnail, origin.Created) { }
 
-        public Item(ItemId id, ItemName name, IEnumerable<Tag> tags, FileInfoHashKey? file, Thumbnail? thumbnail, DateTime created, DateTime? lastChange = null)
+        public Item(ItemId id, ItemName name, IEnumerable<Tag> tags, Thumbnail? thumbnail, DateTime created, DateTime? lastChange = null)
         {
             this.Id = id;
             this.Name = name;
             this.Thumbnail = thumbnail;
             this.Tags = tags ?? throw new ArgumentNullException(nameof(tags));
-            this.File = file;
             this.Created = created;
             this.LastChange = lastChange ?? DateTime.Now;
             this.Identity = Guid.NewGuid();
         }
 
-        public override string ToString() => $"Tile {Id} ({Name}), File: {this.File}";
+        public override string ToString() => $"Tile {Id} ({Name})";
         public override bool Equals(object obj) => obj is Item item && this == item;
         public override int GetHashCode() => HashCode.Combine(this.Identity);
 

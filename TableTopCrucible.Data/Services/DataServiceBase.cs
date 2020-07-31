@@ -14,10 +14,9 @@ using TableTopCrucible.WPF.Helper;
 
 namespace TableTopCrucible.Data.Services
 {
-    public class DataServiceBase<Tentity, Tid, Tchangeset> : IDataService<Tentity, Tid, Tchangeset>
+    public class DataServiceBase<Tentity, Tid> : IDataService<Tentity, Tid>
         where Tentity : struct, IEntity<Tid>
         where Tid : ITypedId
-        where Tchangeset : IEntityChangeset<Tentity, Tid>
     {
 
         // fields
@@ -78,6 +77,56 @@ namespace TableTopCrucible.Data.Services
                 job.Dispose();
             }
         }
+
+        protected DataServiceBase(
+            ISettingsService settingsService,
+            INotificationCenterService notificationCenter)
+        {
+            _readOnlyCache = cache.AsObservableCache();
+            this.cache.DisposeWith(disposables);
+            this.settingsService = settingsService;
+            this.notificationCenter = notificationCenter;
+        }
+        public void Clear() => this.cache.Clear();
+
+        private bool _disposedValue = false; // To detect redundant calls
+        public void Set(IEnumerable<Tentity> data)
+        {
+            this.cache.Clear();
+            this.Post(data);
+        }
+
+        #region IDisposable Support
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                    // dispose
+                    this.cache.Dispose();
+                // large fields, unmanaged
+                this.cache = null;
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+
+        #endregion
+    }
+    public class DataServiceBase<Tentity, Tid, Tchangeset> :DataServiceBase<Tentity, Tid>, IDataService<Tentity, Tid, Tchangeset>
+        where Tentity : struct, IEntity<Tid>
+        where Tid : ITypedId
+        where Tchangeset : IEntityChangeset<Tentity, Tid>
+    {
+        protected DataServiceBase(ISettingsService settingsService, INotificationCenterService notificationCenter) : base(settingsService, notificationCenter)
+        {
+        }
+
         // patch
         public Tentity Patch(Tchangeset change)
         {
@@ -105,44 +154,5 @@ namespace TableTopCrucible.Data.Services
             return this.cache.Keys.Contains(changeset.Origin.Value.Id);
         }
 
-        protected DataServiceBase(
-            ISettingsService settingsService,
-            INotificationCenterService notificationCenter)
-        {
-            _readOnlyCache = cache.AsObservableCache();
-            this.cache.DisposeWith(disposables);
-            this.settingsService = settingsService;
-            this.notificationCenter = notificationCenter;
-        }
-        void IDataService<Tentity, Tid, Tchangeset>.Clear() => this.cache.Clear();
-
-        #region IDisposable Support
-        private bool _disposedValue = false; // To detect redundant calls
-        void IDataService<Tentity, Tid, Tchangeset>.Set(IEnumerable<Tentity> data)
-        {
-            this.cache.Clear();
-            this.Post(data);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                    // dispose
-                    this.cache.Dispose();
-                // large fields, unmanaged
-                this.cache = null;
-                _disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-
-        #endregion
     }
 }

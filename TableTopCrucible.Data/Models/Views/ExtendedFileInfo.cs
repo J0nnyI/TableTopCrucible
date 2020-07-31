@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 
-namespace TableTopCrucible.Domain.Models.Views
+namespace TableTopCrucible.Data.Models.Views
 {
     public struct ExtendedFileInfo
     {
@@ -34,9 +34,9 @@ namespace TableTopCrucible.Domain.Models.Views
             if (directorySetup.Id != fileInfo.DirectorySetupId)
                 throw new InvalidOperationException($"{nameof(ExtendedFileInfo)} tried to link dirSetup {directorySetup.Id} with fileInfo {fileInfo} with the dirSetupId {fileInfo.DirectorySetupId}");
 
-            this.FileInfo = fileInfo;
-            this.DirectorySetup = directorySetup;
-            this.AbsoluteUri = new Uri(directorySetup.Path, fileInfo.Path);
+            FileInfo = fileInfo;
+            DirectorySetup = directorySetup;
+            AbsoluteUri = new Uri(directorySetup.Path, fileInfo.Path);
         }
 
 
@@ -48,7 +48,7 @@ namespace TableTopCrucible.Domain.Models.Views
         private class ComparerClass : IEqualityComparer<ExtendedFileInfo>, IEqualityComparer
         {
             bool IEqualityComparer.Equals(object x, object y)
-                => x is ExtendedFileInfo ex && y is ExtendedFileInfo ey && this.Equals(ex, ey);
+                => x is ExtendedFileInfo ex && y is ExtendedFileInfo ey && Equals(ex, ey);
             public bool Equals(ExtendedFileInfo x, ExtendedFileInfo y)
                 => x == y;
             int IEqualityComparer.GetHashCode(object obj) => obj.GetHashCode();
@@ -63,7 +63,7 @@ namespace TableTopCrucible.Domain.Models.Views
             return false;
         }
         public override int GetHashCode()
-            => HashCode.Combine(this.FileInfo, this.DirectorySetup);
+            => HashCode.Combine(FileInfo, DirectorySetup);
     }
 
 }

@@ -27,21 +27,21 @@ namespace TableTopCrucible.Data.SaveFile.Services
     {
         private readonly IItemService _itemService;
         private readonly IFileDataService _fileDataService;
+        private readonly IFileItemLinkService fileItemLinkService;
         private readonly IDirectoryDataService _directoryDataService;
-        private readonly ISettingsService _settingsService;
         private readonly INotificationCenterService _notificationCenterService;
 
         public SaveService(
             IItemService itemService,
             IFileDataService _fileDataService,
+            IFileItemLinkService _fileItemLinkService,
             IDirectoryDataService directoryDataService,
-            ISettingsService settingsService,
             INotificationCenterService notificationCenterService)
         {
             this._itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
             this._fileDataService = _fileDataService;
+            fileItemLinkService = _fileItemLinkService;
             this._directoryDataService = directoryDataService ?? throw new ArgumentNullException(nameof(directoryDataService));
-            this._settingsService = settingsService;
             this._notificationCenterService = notificationCenterService;
         }
 
@@ -80,6 +80,8 @@ namespace TableTopCrucible.Data.SaveFile.Services
             proc.Details = $"loading {dto.Files.Count()} files";
             var fileTask = Observable.Start(() => _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity())), RxApp.TaskpoolScheduler);
 
+            proc.Details = $"loading {dto.Items.Count()} file-item links";
+            var fileItemLinkTask = Observable.Start(() => fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity())), RxApp.TaskpoolScheduler);
 
             proc.Details = $"loading {dto.Items.Count()} items";
             var itemTask = Observable.Start(() => _itemService.Set(dto.Items.Select(dto => dto.ToEntity())), RxApp.TaskpoolScheduler);
@@ -104,6 +106,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
             {
                 Items = _itemService.Get().KeyValues.Select(item => new ItemDTO(item.Value)).ToArray(),
                 Files = _fileDataService.Get().KeyValues.Select(file => new FileInfoDTO(file.Value)).ToArray(),
+                FileItemLinks = fileItemLinkService.Get().KeyValues.Select(file=>new FileItemLinkDTO(file.Value)).ToArray(),
                 Directories = _directoryDataService.Get().KeyValues.Select(dir => new DirectorySetupDTO(dir.Value))
             };
             using FileStream fs = File.Create(file);

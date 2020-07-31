@@ -69,6 +69,8 @@
                 <TextBox Text="{Binding Thumbnail, UpdateSourceTrigger=PropertyChanged}"
                          md:HintAssist.Hint="Thumbnail"/>
             </StackPanel>
+            <TextBlock Text="{Binding LatestFile.AbsolutePath}"/>
+            <!--VersionedFile?-->
             <ListView ItemsSource="{Binding Files}"
                       Grid.Column="0"
                       Grid.ColumnSpan="4"
@@ -77,7 +79,20 @@
                       BorderThickness="3">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="text"/>
+                        <StackPanel>
+                            <TextBlock>
+                                <Run Text="{Binding Link.Version, Mode=OneWay}"/>
+                                <Run Text="{Binding Link.FileCount, Mode=OneWay}"/>
+                            </TextBlock>
+                            <!--ExtendedFileInfo-->
+                            <ListView ItemsSource="{Binding Files}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding AbsolutePath}"/>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

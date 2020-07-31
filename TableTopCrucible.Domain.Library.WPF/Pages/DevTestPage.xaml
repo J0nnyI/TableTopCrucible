@@ -20,11 +20,40 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition MaxWidth="600"/>
             <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition/>            
         </Grid.ColumnDefinitions>
-        <Button Content="save" Command="{Binding SaveFile}" Grid.Column="1"/>
-        <Button Content="open" Command="{Binding OpenFile}" Grid.Column="2"/>
-        <ContentPresenter Content="{Binding DirList}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"/>
-        <ContentPresenter Content="{Binding NotificationCenter}" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"/>
+        
+        <ContentPresenter Content="{Binding NotificationCenter}"
+                          Grid.Row="0" 
+                          Grid.RowSpan="2"
+                          Grid.Column="0"/>
+
+        <TextBlock Text="{Binding Vfiles.Count}"
+                   HorizontalAlignment="Right"
+                   Grid.Row="0"
+                   Grid.Column="1"/>
+        <ListView ItemsSource="{Binding Vfiles}" 
+                  Grid.Row="0"
+                  Grid.Column="1"/>
+        <TextBlock Text="{Binding Items.Count}"
+                   HorizontalAlignment="Right"
+                   Grid.Row="1"
+                   Grid.Column="1"/>
+        <ListView ItemsSource="{Binding Items}"
+                  Grid.Row="1"
+                  Grid.Column="1">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock>Item</TextBlock>
+                        <TextBlock Text="{Binding Name}"/>
+                        <ListView ItemsSource="{Binding Files}">
+                            
+                        </ListView>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
     </Grid>
 </Page>

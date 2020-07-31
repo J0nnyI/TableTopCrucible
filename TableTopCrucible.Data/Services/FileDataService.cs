@@ -19,10 +19,10 @@ using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Core.ValueTypes;
+using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
-using TableTopCrucible.Domain.Models.Views;
 using TableTopCrucible.WPF.Helper;
 
 using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;

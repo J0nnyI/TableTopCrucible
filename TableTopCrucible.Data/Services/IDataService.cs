@@ -8,7 +8,7 @@ using TableTopCrucible.Core.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Data.Services
 {
-    public interface IDataService<Tentity, Tid, TChangeset> : IDisposable
+    public interface IDataService<Tentity, Tid> : IDisposable
         where Tentity : IEntity<Tid>
         where Tid : ITypedId
     {
@@ -18,13 +18,18 @@ namespace TableTopCrucible.Data.Services
 
         public void Post(Tentity entity);
         public void Post(IEnumerable<Tentity> entity);
-        Tentity Patch(TChangeset data);
         void Set(IEnumerable<Tentity> data);
-        IEnumerable<Tentity> Patch(IEnumerable<TChangeset> data);
-        bool CanPatch(TChangeset changeset);
         void Delete(Tid key);
         void Delete(IEnumerable<Tid> key);
         void Clear();
         bool CanDelete(Tid key);
+    }
+    public interface IDataService<Tentity, Tid, TChangeset> :  IDataService<Tentity, Tid>
+    where Tentity : IEntity<Tid>
+    where Tid : ITypedId
+    {
+        Tentity Patch(TChangeset data);
+        IEnumerable<Tentity> Patch(IEnumerable<TChangeset> data);
+        bool CanPatch(TChangeset changeset);
     }
 }

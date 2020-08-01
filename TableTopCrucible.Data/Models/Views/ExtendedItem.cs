@@ -25,12 +25,15 @@ namespace TableTopCrucible.Data.Models.Views
         public int FileCount => Files
             .SelectMany(files => files.Files)
             .Count();
-        public ExtendedFileInfo? LatestFile => 
-            Files.OrderByDescending(x=>x.Link.Version)
-                .FirstOrDefault()
-                .Files
-                .Select(x=>x as ExtendedFileInfo?)
-                .FirstOrDefault(file=>file?.IsFileAccessible==true);
+        public VersionedFile LatestVersionedFile =>
+            Files
+                .OrderByDescending(x => x.Link.Version)
+                .FirstOrDefault();
+        public ExtendedFileInfo? LatestFile =>
+            LatestVersionedFile
+            .Files
+            .Select(x=>x as ExtendedFileInfo?)
+            .FirstOrDefault(file=>file?.IsFileAccessible==true);
         public Version? LatestVersion =>
             Files.Max(x => x.Link.Version);
         public IEnumerable<DirectorySetup> Directories =>

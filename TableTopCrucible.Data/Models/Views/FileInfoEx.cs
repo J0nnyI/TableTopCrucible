@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.IO;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 
+using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
+
 namespace TableTopCrucible.Data.Models.Views
 {
-    public struct ExtendedFileInfo
+    public struct FileInfoEx
     {
         public FileInfo FileInfo { get; }
         public DirectorySetup DirectorySetup { get; }
@@ -17,6 +19,7 @@ namespace TableTopCrucible.Data.Models.Views
 
         public Uri AbsoluteUri { get; }
         public string AbsolutePath => AbsoluteUri.LocalPath;
+        public string SafeAbsolutePath => File.Exists(AbsolutePath) ? AbsolutePath : null;
         public FileHash? FileHash => FileInfo.FileHash;
         public DateTime LastWriteTime => FileInfo.LastWriteTime;
         public bool IsFileAccessible => FileInfo.IsAccessible;
@@ -29,10 +32,10 @@ namespace TableTopCrucible.Data.Models.Views
 
 
 
-        public ExtendedFileInfo(DirectorySetup directorySetup, FileInfo fileInfo)
+        public FileInfoEx(DirectorySetup directorySetup, FileInfo fileInfo)
         {
             if (directorySetup.Id != fileInfo.DirectorySetupId)
-                throw new InvalidOperationException($"{nameof(ExtendedFileInfo)} tried to link dirSetup {directorySetup.Id} with fileInfo {fileInfo} with the dirSetupId {fileInfo.DirectorySetupId}");
+                throw new InvalidOperationException($"{nameof(FileInfoEx)} tried to link dirSetup {directorySetup.Id} with fileInfo {fileInfo} with the dirSetupId {fileInfo.DirectorySetupId}");
 
             FileInfo = fileInfo;
             DirectorySetup = directorySetup;
@@ -40,25 +43,25 @@ namespace TableTopCrucible.Data.Models.Views
         }
 
 
-        public static bool operator ==(ExtendedFileInfo fileA, ExtendedFileInfo fileB)
+        public static bool operator ==(FileInfoEx fileA, FileInfoEx fileB)
             => fileA.FileInfo == fileB.FileInfo && fileA.DirectorySetup == fileB.DirectorySetup;
-        public static bool operator !=(ExtendedFileInfo fileA, ExtendedFileInfo fileB)
+        public static bool operator !=(FileInfoEx fileA, FileInfoEx fileB)
             => fileA.FileInfo.Identity != fileB.FileInfo.Identity || fileA.FileInfo.Identity != fileB.FileInfo.Identity;
 
-        private class ComparerClass : IEqualityComparer<ExtendedFileInfo>, IEqualityComparer
+        private class ComparerClass : IEqualityComparer<FileInfoEx>, IEqualityComparer
         {
             bool IEqualityComparer.Equals(object x, object y)
-                => x is ExtendedFileInfo ex && y is ExtendedFileInfo ey && Equals(ex, ey);
-            public bool Equals(ExtendedFileInfo x, ExtendedFileInfo y)
+                => x is FileInfoEx ex && y is FileInfoEx ey && Equals(ex, ey);
+            public bool Equals(FileInfoEx x, FileInfoEx y)
                 => x == y;
             int IEqualityComparer.GetHashCode(object obj) => obj.GetHashCode();
-            public int GetHashCode(ExtendedFileInfo obj) => obj.GetHashCode();
+            public int GetHashCode(FileInfoEx obj) => obj.GetHashCode();
         }
-        public static IEqualityComparer<ExtendedFileInfo> Comparer { get; } = new ComparerClass();
+        public static IEqualityComparer<FileInfoEx> Comparer { get; } = new ComparerClass();
 
         public override bool Equals(object obj)
         {
-            if (obj is ExtendedFileInfo fileInfo)
+            if (obj is FileInfoEx fileInfo)
                 return fileInfo == this;
             return false;
         }

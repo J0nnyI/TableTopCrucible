@@ -4,11 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 using TableTopCrucible.Core.Models.Enums;
+using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
@@ -17,6 +22,7 @@ using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.WPF.Helper;
 
+using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
 using SysFileInfo = System.IO.FileInfo;
 using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 namespace TableTopCrucible.Domain.Library
@@ -24,8 +30,11 @@ namespace TableTopCrucible.Domain.Library
 {
     public interface ILibraryManagementService
     {
+        void UpdateHashes();
+        void UpdateHashes(int threadcount);
         void AutoGenerateItems();
         void SynchronizeFiles();
+        FileInfo? UpdateFile(DirectorySetup dirSetup, Uri relativePath);
     }
 
     public class LibraryManagementService : ILibraryManagementService
@@ -66,7 +75,7 @@ namespace TableTopCrucible.Domain.Library
         }
 
         #region file sync
-        private IEnumerable<ExtendedFileInfo> getDefinedFiles()
+        private IEnumerable<FileInfoEx> getDefinedFiles()
         {
             return fileDataService
                 .GetExtended()
@@ -83,7 +92,7 @@ namespace TableTopCrucible.Domain.Library
         private IEnumerable<LocalFile> getLocalFiles(IEnumerable<DirectorySetup> dirSetups)
             => dirSetups.SelectMany(setup => getLocalFiles(setup));
 
-        private IEnumerable<string> getDistinctPaths(IEnumerable<LocalFile> localFiles, IEnumerable<ExtendedFileInfo> definedFiles)
+        private IEnumerable<string> getDistinctPaths(IEnumerable<LocalFile> localFiles, IEnumerable<FileInfoEx> definedFiles)
         {
             var localPaths = localFiles.Select(file => file.FileInfo.FullName);
             var definedPaths = definedFiles.Select(file => file.AbsolutePath);
@@ -92,7 +101,7 @@ namespace TableTopCrucible.Domain.Library
 
         private IEnumerable<DirectorySetup> getDirSetups()
             => this.directoryDataService.Get().KeyValues.Select(x => x.Value);
-        private FileInfoChangeset synchronizeFile(LocalFile? localFile, ExtendedFileInfo? definedFile)
+        private FileInfoChangeset synchronizeFile(LocalFile? localFile, FileInfoEx? definedFile)
         {
             if (localFile.HasValue && definedFile.HasValue)
             {
@@ -139,7 +148,7 @@ namespace TableTopCrucible.Domain.Library
                          on file equals localFile.FileInfo.FullName into mLocalFile
                      join definedFile in definedFiles
                          on file equals definedFile.AbsolutePath into mDefinedFile
-                     select synchronizeFile(mLocalFile.Any() ? mLocalFile.First() as LocalFile? : null, mDefinedFile.Any() ? mDefinedFile.First() as ExtendedFileInfo? : null))
+                     select synchronizeFile(mLocalFile.Any() ? mLocalFile.First() as LocalFile? : null, mDefinedFile.Any() ? mDefinedFile.First() as FileInfoEx? : null))
                     .Where(x => x != null);
 
                 var changesets = mergedFiles.Where(x => x.IsAccessible).ToArray();
@@ -157,6 +166,7 @@ namespace TableTopCrucible.Domain.Library
             }
         }
         #endregion
+
 
         public void AutoGenerateItems()
         {
@@ -182,8 +192,8 @@ namespace TableTopCrucible.Domain.Library
                         .Items;
 
                     var takenKeys = items
-                        .Where(x => x.Files.Any())
-                        .SelectMany(x => x.Files)
+                        .Where(x => x.FileVersions.Any())
+                        .SelectMany(x => x.FileVersions)
                         .Select(x => x.Link.FileKey);
 
                     var knownKeys = files
@@ -202,7 +212,7 @@ namespace TableTopCrucible.Domain.Library
 
                             var item = new Item((ItemName)Path.GetFileNameWithoutExtension(file.AbsolutePath), new Tag[] { (Tag)"new" });
 
-                            var link = new FileItemLink(item.Id, file.HashKey.Value, new Version(1, 0, 0));
+                            var link = new FileItemLink(item.Id, file.HashKey.Value,null, new Version(1, 0, 0));
 
                             return new { item, link };
                         }).ToArray();
@@ -231,6 +241,194 @@ namespace TableTopCrucible.Domain.Library
 
             }, RxApp.TaskpoolScheduler);
 
+        }
+
+        public FileInfo? UpdateFile(DirectorySetup dirSetup, Uri relativePath)
+        {
+            var localPath = new Uri(dirSetup.Path, relativePath).LocalPath;
+            var fileInfo = new SysFileInfo(localPath);
+            return this.fileDataService.Patch(
+            new FileInfoChangeset()
+            {
+                Path = relativePath,
+                CreationTime = fileInfo.CreationTime,
+                FileHash = _hashFile(localPath),
+                DirectorySetupId = dirSetup.Id,
+                FileSize = fileInfo.Length,
+                IsAccessible = File.Exists(localPath),
+                LastWriteTime = fileInfo.LastWriteTime
+            });
+        }
+
+        public void UpdateHashes() => this.UpdateHashes(settingsService.ThreadCount);
+        public void UpdateHashes(int threadcount)
+        {
+
+
+            var job = new AsyncJobState("hashing the files");
+            var prepProcess = new AsyncProcessState("preparing");
+            var hashing = Enumerable.Range(1, threadcount).Select(x => new AsyncProcessState($"hashing #{x}", "")).ToArray();
+            var finalizer = new AsyncProcessState("finalizing", "");
+
+            finalizer.AddProgress(threadcount);
+
+            var processes = new List<AsyncProcessState>();
+            processes.Insert(0, finalizer);
+            processes.InsertRange(0, hashing.ToList());
+            processes.Insert(0, prepProcess);
+            job.ProcessChanges.OnNext(processes);
+            this.notificationCenter.Register(job);
+
+            prepProcess.State = AsyncState.InProgress;
+
+            try
+            {
+                prepProcess.AddProgress(1, "reading files");
+
+
+
+                CompositeDisposable finalDisposer = new CompositeDisposable();
+
+                var changedFiles = this.fileDataService.GetExtended()
+                    .KeyValues
+                    .Select(file => new { file = file.Value, sysFileInfo = new SysFileInfo(file.Value.AbsolutePath) })
+                    .Where(file =>
+                        file.sysFileInfo.Exists &&
+                        (file.sysFileInfo.LastWriteTime != file.file.LastWriteTime || !file.file.FileHash.HasValue))
+                    .ToArray();
+
+                prepProcess.OnNextStep("grouping files");
+
+                var groups = changedFiles
+                    .SplitEvenly(threadcount)
+                    .ToArray();
+
+                prepProcess.OnNextStep("creating tasks");
+
+
+
+                var tasks = groups
+                    .Select(group =>
+                    {
+                        var result = new Subject<IEnumerable<FileInfoChangeset>>();
+                        var files = group;
+                        return new
+                        {
+                            files = files.ToArray(),
+                            result,
+                            task = new Task(() =>
+                            {
+                                using (HashAlgorithm hashAlgorithm = SHA512.Create())
+                                {
+                                    var proc = hashing[group.Key];
+                                    try
+                                    {
+                                        proc.AddProgress(files.Count(), "hashing...");
+
+                                        var res = files.Select(file =>
+                                        {
+                                            {
+                                                proc.OnNextStep();
+                                                proc.Details = $"[{DateTime.Now}] hashing file '{file.file.AbsolutePath}'";
+                                                try
+                                                {
+                                                    return new FileInfoChangeset(file.file.FileInfo)
+                                                    {
+                                                        FileHash = _hashFile(hashAlgorithm, file.file.AbsolutePath),
+                                                        IsAccessible = File.Exists(file.file.AbsolutePath)
+                                                    };
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    proc.State = AsyncState.Failed;
+                                                    proc.Errors += ex.ToString();
+                                                }
+                                                return default;
+                                            }
+                                        }).ToArray();
+
+                                        result.OnNext(res);
+                                        result.OnCompleted();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        proc.State = AsyncState.Failed;
+                                        proc.Errors += ex.ToString();
+                                    }
+                                }
+                            })
+                        };
+                    }).ToArray();
+
+                int resCounter = 0;
+
+                prepProcess.OnNextStep("creating finalizer");
+
+                tasks.ToList().ForEach(taskWatcher =>
+                {
+                    taskWatcher.result
+                    .Subscribe(result =>
+                    {
+
+                        try
+                        {
+
+                            this.fileDataService.Patch(result);
+                            finalizer.OnNextStep($"done with thread #{resCounter}");
+                        }
+                        catch (Exception ex)
+                        {
+                            finalizer.Errors += $"error on task #{resCounter}:{Environment.NewLine}{ex}{Environment.NewLine}";
+                        }
+
+                        resCounter++;
+                        if (resCounter != threadcount)
+                            return;
+                        finalDisposer.Dispose();
+                    });
+
+                });
+
+                prepProcess.OnNextStep("launching tasks");
+
+                tasks.ToList().ForEach(task => task.task.Start());
+                prepProcess.OnNextStep("done");
+                prepProcess.State = AsyncState.Done;
+            }
+            catch (Exception ex)
+            {
+                prepProcess.Details += "Task failes" + Environment.NewLine;
+                prepProcess.Errors = ex.ToString();
+                prepProcess.State = AsyncState.Failed;
+            }
+            finally
+            {
+                prepProcess.Complete();
+            }
+
+        }
+
+        private FileHash _hashFile(string path)
+        {
+            using (HashAlgorithm hashAlgorithm = SHA512.Create())
+                return _hashFile(hashAlgorithm, path);
+        }
+
+        private FileHash _hashFile(HashAlgorithm hashAlgorithm, string path)
+        {
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"could not find file {path}");
+
+            FileHash result;
+
+            using (FileStream stream = File.OpenRead(path))
+            {
+                byte[] data = hashAlgorithm.ComputeHash(stream);
+                result = new FileHash(data);
+            }
+
+
+            return result;
         }
     }
 }

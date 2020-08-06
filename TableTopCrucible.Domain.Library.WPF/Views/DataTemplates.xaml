@@ -37,7 +37,7 @@
     <DataTemplate DataType="{x:Type viewModels:FileVersionListViewModel}">
         <views:FileVersionListView/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type dataViews:ExtendedItem}">
+    <DataTemplate DataType="{x:Type dataViews:ItemEx}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
@@ -47,13 +47,13 @@
                 <ColumnDefinition Width="200px"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Image Source="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_Thumbnail}}" 
+            <Image Source="{Binding Path=LatestThumbnail.AbsolutePath}" 
                    Width="200px"
                    Grid.Column="0"
                    Grid.Row="0"
                    Grid.RowSpan="2">
             </Image>
-            <md:PackIcon Visibility="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}" 
+            <md:PackIcon Visibility="{Binding Path=LatestThumbnail.AbsolutePath, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}" 
                          Kind="Image"
                          VerticalAlignment="Center"
                          HorizontalAlignment="Center"
@@ -131,7 +131,7 @@
         </StackPanel>        
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type dataViews:ExtendedFileInfo}">
+    <DataTemplate DataType="{x:Type dataViews:FileInfoEx}">
         <StackPanel>
             <TextBlock Text="{Binding AbsolutePath}"/>
             <ContentPresenter Content="{Binding DirectorySetup}"/>

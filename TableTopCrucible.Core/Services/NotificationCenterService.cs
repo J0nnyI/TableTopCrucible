@@ -1,5 +1,6 @@
 ﻿using DynamicData;
-
+using System;
+using System.Windows;
 using System.Windows.Threading;
 
 using TableTopCrucible.Core.Models.Sources;
@@ -13,6 +14,7 @@ namespace TableTopCrucible.Core.Services
         AsyncJobState CreateSingleTaskJob(out AsyncProcessState processState, string jobName, string processName = "", Dispatcher dispatcher =null);
         public void Register(IAsyncJobState job);
         public IObservableCache<IAsyncJobState, AsyncJobId> GetJobs();
+        public void OnError(Exception ex);
     }
     public class NotificationCenterService : INotificationCenterService
     {
@@ -34,6 +36,12 @@ namespace TableTopCrucible.Core.Services
 
             this.Register(job);
             return job;
+        }
+
+        public void OnError(Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
+            this.CreateSingleTaskJob(out var _, ex.ToString());
         }
     }
 }

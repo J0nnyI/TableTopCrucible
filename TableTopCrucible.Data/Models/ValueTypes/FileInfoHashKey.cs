@@ -31,7 +31,7 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
         public override string ToString() => $"{FileHash} : ${FileSize}";
         public override bool Equals(object obj)
         => obj is FileInfoHashKey key && this.FileHash == key.FileHash && this.FileSize == key.FileSize;
-        public override int GetHashCode() => HashCode.Combine(this.FileHash, this.FileSize);
+        public override int GetHashCode() => this == default ? 0 : HashCode.Combine(this.FileHash, this.FileSize);
 
         public static bool operator ==(FileInfoHashKey key1, FileInfoHashKey key2)
             => key1.Equals(key2);

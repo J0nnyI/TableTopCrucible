@@ -11,23 +11,21 @@ namespace TableTopCrucible.Domain.Models.Sources
     {
         public ItemId Id { get; }
         public ItemName Name { get; }
-        public Thumbnail? Thumbnail { get; }
         public IEnumerable<Tag> Tags { get; }
         public Guid Identity { get; }
 
         public DateTime Created { get; }
         public DateTime LastChange { get; }
 
-        public Item(ItemName name, IEnumerable<Tag> tags = null, Thumbnail? thumbnail = null)
-            : this((ItemId)Guid.NewGuid(), name, tags, thumbnail, DateTime.Now) { }
-        public Item(Item origin, ItemName name, IEnumerable<Tag> tags, Thumbnail? thumbnail)
-            : this(origin.Id, name, tags, thumbnail, origin.Created) { }
+        public Item(ItemName name, IEnumerable<Tag> tags = null)
+            : this((ItemId)Guid.NewGuid(), name, tags, DateTime.Now) { }
+        public Item(Item origin, ItemName name, IEnumerable<Tag> tags)
+            : this(origin.Id, name, tags, origin.Created) { }
 
-        public Item(ItemId id, ItemName name, IEnumerable<Tag> tags, Thumbnail? thumbnail, DateTime created, DateTime? lastChange = null)
+        public Item(ItemId id, ItemName name, IEnumerable<Tag> tags, DateTime created, DateTime? lastChange = null)
         {
             this.Id = id;
             this.Name = name;
-            this.Thumbnail = thumbnail;
             this.Tags = tags ?? throw new ArgumentNullException(nameof(tags));
             this.Created = created;
             this.LastChange = lastChange ?? DateTime.Now;

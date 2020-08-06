@@ -21,6 +21,7 @@ namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
                 FileItemLinkId.New(),
                 ItemId.New(),
                 new FileInfoHashKey(FileInfoDtoTests.createTestEntity()),
+                null,
                 new Version(1, 2, 3),
                 DateTime.Now.AddMinutes(-5),
                 DateTime.Now);

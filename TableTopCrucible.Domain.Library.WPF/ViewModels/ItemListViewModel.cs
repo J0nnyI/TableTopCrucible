@@ -32,24 +32,31 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private readonly IInjectionProviderService _injectionProviderService;
         public CreateItemCommand CreateItemCommand { get; }
 
-        ReadOnlyObservableCollection<ExtendedItem> _items;
-        public ReadOnlyObservableCollection<ExtendedItem> Items => _items;
+        ReadOnlyObservableCollection<ItemEx> _items;
+        public ReadOnlyObservableCollection<ItemEx> Items => _items;
         [Reactive]
         public CollectionViewSource ItemsDataView { get; private set; }
 
         #region reactive properties
 
-        private BehaviorSubject<ExtendedItem?> _selectedItemChanges { get; } = new BehaviorSubject<ExtendedItem?>(null);
-        public IObservable<ExtendedItem?> SelectedItemChanges => _selectedItemChanges;
-        private readonly ObservableAsPropertyHelper<ExtendedItem?> _selectedItem;
-        public ExtendedItem? SelectedItem
+        private BehaviorSubject<ItemEx?> _selectedItemChanges { get; } = new BehaviorSubject<ItemEx?>(null);
+        public IObservable<ItemEx?> SelectedItemChanges => _selectedItemChanges;
+        private readonly ObservableAsPropertyHelper<ItemEx?> _selectedItem;
+        public ItemEx? SelectedItem
         {
             get => _selectedItem.Value;
-            set => _selectedItemChanges.OnNext(value);
+            set
+            {
+                if (disconnected)
+                    return;
+                _selectedItemChanges.OnNext(value);
+            }
         }
+        ItemEx? _selectedItemBuffer = null;
 
         #endregion
 
+        private bool disconnected = false;
 
         public ItemListViewModel(
             IItemService itemService,
@@ -66,30 +73,30 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 if (provider == null)
                     throw new InvalidOperationException("provider is null");
 
-
                 this._itemService
                 .GetExtended()
                 .Connect()
                 .DisposeMany()
                 .TakeUntil(destroy)
                 .ObserveOn(RxApp.MainThreadScheduler)
+                .Do(_ =>
+                {
+                    this.disconnected = true;
+                    _selectedItemBuffer = SelectedItem;
+                })
                 .Bind(out _items)
-                .Subscribe(x =>
+                .Do(_ =>
                 {
-                    if (this.ItemsDataView == null)
-                    {
-                        this.ItemsDataView = new CollectionViewSource()
-                        {
-                            Source = this.Items,
-                        };
-                        this.Sort(nameof(ItemName));
-                    }
-                },
-                (Exception ex)=>
-                {
-                    Debugger.Break();
-                });
+                    this.disconnected = false;
+                    this.SelectedItem = _items.FirstOrDefault(x => x.SourceItem.Id == _selectedItemBuffer?.SourceItem.Id);
+                })
+                .Subscribe();
 
+                this.ItemsDataView = new CollectionViewSource()
+                {
+                    Source = this.Items,
+                };
+                this.Sort(nameof(ItemName));
             });
 
 

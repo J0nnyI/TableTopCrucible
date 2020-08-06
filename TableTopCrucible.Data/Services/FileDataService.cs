@@ -32,11 +32,9 @@ namespace TableTopCrucible.Data.Services
 {
     public interface IFileDataService : IDataService<FileInfo, FileInfoId, FileInfoChangeset>
     {
-        void UpdateHashes();
-        void UpdateHashes(int threadcount);
-        public IObservableCache<ExtendedFileInfo, FileInfoId> GetExtended();
+        public IObservableCache<FileInfoEx, FileInfoId> GetExtended();
         public IObservableCache<FileInfo, FileInfoId> Get(DirectorySetupId directorySetupId);
-        public IObservableCache<ExtendedFileInfo, FileInfoHashKey> GetExtendedByHash();
+        public IObservableCache<FileInfoEx, FileInfoHashKey> GetExtendedByHash();
     }
     public class FileDataService : DataServiceBase<FileInfo, FileInfoId, FileInfoChangeset>, IFileDataService
     {
@@ -76,7 +74,7 @@ namespace TableTopCrucible.Data.Services
                 .LeftJoinMany(
                 this.cache.Connect(),
                 (dirSetup) => dirSetup.DirectorySetupId,
-                    (left, right) => right.Items.Select(item => new ExtendedFileInfo(left, item))
+                    (left, right) => right.Items.Select(item => new FileInfoEx(left, item))
                 )
                 .TransformMany(x => x, x => x.FileInfo.Id)
                 .TakeUntil(destroy)
@@ -95,10 +93,10 @@ namespace TableTopCrucible.Data.Services
                 .AsObservableCache();
         }
 
-        private readonly IObservableCache<ExtendedFileInfo, FileInfoId> _getFullFileInfo;
-        public IObservableCache<ExtendedFileInfo, FileInfoId> GetExtended() => _getFullFileInfo;
-        private readonly IObservableCache<ExtendedFileInfo, FileInfoHashKey> _getFullFIleInfoByHash;
-        public IObservableCache<ExtendedFileInfo, FileInfoHashKey> GetExtendedByHash() => _getFullFIleInfoByHash;
+        private readonly IObservableCache<FileInfoEx, FileInfoId> _getFullFileInfo;
+        public IObservableCache<FileInfoEx, FileInfoId> GetExtended() => _getFullFileInfo;
+        private readonly IObservableCache<FileInfoEx, FileInfoHashKey> _getFullFIleInfoByHash;
+        public IObservableCache<FileInfoEx, FileInfoHashKey> GetExtendedByHash() => _getFullFIleInfoByHash;
 
         public IObservableCache<FileInfo, FileInfoId> Get(DirectorySetupId directorySetupId)
         {
@@ -107,170 +105,6 @@ namespace TableTopCrucible.Data.Services
                 .AsObservableCache();
         }
 
-        public void UpdateHashes() => this.UpdateHashes(_settingsService.ThreadCount);
-        public void UpdateHashes(int threadcount)
-        {
-
-
-            var job = new AsyncJobState("hashing the files");
-            var prepProcess = new AsyncProcessState("preparing");
-            var hashing = Enumerable.Range(1, threadcount).Select(x => new AsyncProcessState($"hashing #{x}", "")).ToArray();
-            var finalizer = new AsyncProcessState("finalizing", "");
-
-            finalizer.AddProgress(threadcount);
-
-            var processes = new List<AsyncProcessState>();
-            processes.Insert(0, finalizer);
-            processes.InsertRange(0, hashing.ToList());
-            processes.Insert(0, prepProcess);
-            job.ProcessChanges.OnNext(processes);
-            this._notificationCenterService.Register(job);
-
-            prepProcess.State = AsyncState.InProgress;
-
-            try
-            {
-                prepProcess.AddProgress(1, "reading files");
-
-
-
-                CompositeDisposable finalDisposer = new CompositeDisposable();
-
-                var changedFiles = this.GetExtended()
-                    .KeyValues
-                    .Select(file => new { file = file.Value, sysFileInfo = new SysFileInfo(file.Value.AbsolutePath) })
-                    .Where(file =>
-                        file.sysFileInfo.Exists &&
-                        (file.sysFileInfo.LastWriteTime != file.file.LastWriteTime || !file.file.FileHash.HasValue))
-                    .ToArray();
-
-                prepProcess.OnNextStep("grouping files");
-
-                var groups = changedFiles
-                    .SplitEvenly(threadcount)
-                    .ToArray();
-
-                prepProcess.OnNextStep("creating tasks");
-
-
-
-                var tasks = groups
-                    .Select(group =>
-                    {
-                        var result = new Subject<IEnumerable<FileInfoChangeset>>();
-                        var files = group;
-                        return new
-                        {
-                            files = files.ToArray(),
-                            result,
-                            task = new Task(() =>
-                            {
-                                using (HashAlgorithm hashAlgorithm = SHA512.Create())
-                                {
-                                    var proc = hashing[group.Key];
-                                    try
-                                    {
-                                        proc.AddProgress(files.Count(), "hashing...");
-
-                                        var res = files.Select(file =>
-                                        {
-                                            {
-                                                proc.OnNextStep();
-                                                proc.Details = $"[{DateTime.Now}] hashing file '{file.file.AbsolutePath}'";
-                                                try
-                                                {
-                                                    return new FileInfoChangeset(file.file.FileInfo)
-                                                    {
-                                                        FileHash = _hashFile(hashAlgorithm, file.file.AbsolutePath),
-                                                        IsAccessible = File.Exists(file.file.AbsolutePath)
-                                                    };
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    proc.State = AsyncState.Failed;
-                                                    proc.Errors += ex.ToString();
-                                                }
-                                                return default;
-                                            }
-                                        }).ToArray();
-
-                                        result.OnNext(res);
-                                        result.OnCompleted();
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        proc.State = AsyncState.Failed;
-                                        proc.Errors += ex.ToString();
-                                    }
-                                }
-                            })
-                        };
-                    }).ToArray();
-
-                int resCounter = 0;
-
-                prepProcess.OnNextStep("creating finalizer");
-
-                tasks.ToList().ForEach(taskWatcher =>
-                {
-                    taskWatcher.result
-                    .Subscribe(result =>
-                    {
-
-                        try
-                        {
-
-                            this.Patch(result);
-                            finalizer.OnNextStep($"done with thread #{resCounter}");
-                        }
-                        catch (Exception ex)
-                        {
-                            finalizer.Errors += $"error on task #{resCounter}:{Environment.NewLine}{ex}{Environment.NewLine}";
-                        }
-
-                        resCounter++;
-                        if (resCounter != threadcount)
-                            return;
-                        finalDisposer.Dispose();
-                    });
-
-                });
-
-                prepProcess.OnNextStep("launching tasks");
-
-                tasks.ToList().ForEach(task => task.task.Start());
-                prepProcess.OnNextStep("done");
-                prepProcess.State = AsyncState.Done;
-            }
-            catch (Exception ex)
-            {
-                prepProcess.Details += "Task failes" + Environment.NewLine;
-                prepProcess.Errors = ex.ToString();
-                prepProcess.State = AsyncState.Failed;
-            }
-            finally
-            {
-                prepProcess.Complete();
-            }
-
-        }
-
-        private FileHash _hashFile(HashAlgorithm hashAlgorithm, string path)
-        {
-            if (!File.Exists(path))
-                throw new FileNotFoundException($"could not find file {path}");
-
-            FileHash result;
-
-            using (FileStream stream = File.OpenRead(path))
-            {
-                byte[] data = hashAlgorithm.ComputeHash(stream);
-                result = new FileHash(data);
-            }
-
-
-            return result;
-        }
 
     }
 }

@@ -9,17 +9,21 @@ using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 
 namespace TableTopCrucible.Domain.Models.Sources
 {
-    public struct FileItemLinkChangeset : IEntityChangeset<FileItemLink, FileItemLinkId>
+    public class FileItemLinkChangeset : IEntityChangeset<FileItemLink, FileItemLinkId>
     {
         public ItemId ItemId { get; set; }
 
         public FileInfoHashKey FileKey { get; set; }
 
         public Version Version { get; set; }
-        public FileItemLink? Origin { get; }
-
-        public FileItemLink Apply() => new FileItemLink();
+        public FileItemLink? Origin { get; set; }
+        public FileInfoHashKey? ThumbnailKey { get; set; }
+        public FileItemLinkChangeset(FileItemLink? origin = null) 
+        {
+            this.Origin = origin;
+        }
+        public FileItemLink Apply() => new FileItemLink(Origin.Value, this.ItemId, this.FileKey, this.ThumbnailKey, this.Version);
         public IEnumerable<string> GetErrors() => throw new NotImplementedException();
-        public FileItemLink ToEntity() => throw new NotImplementedException();
+        public FileItemLink ToEntity() => new FileItemLink(this.ItemId, this.FileKey, this.ThumbnailKey, this.Version);
     }
 }

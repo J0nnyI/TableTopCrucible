@@ -2,16 +2,18 @@
 using System.Windows.Input;
 
 using TableTopCrucible.Data.Services;
+using TableTopCrucible.Domain.Library;
 
 namespace TableTopCrucible.WPF.Commands
 {
 
     public class HashFilesCommand : ICommand
     {
-        private readonly IFileDataService _fileInfoService;
-        public HashFilesCommand(IFileDataService fileInfoService)
+        private readonly ILibraryManagementService libraryManagement;
+
+        public HashFilesCommand(ILibraryManagementService libraryManagement)
         {
-            this._fileInfoService = fileInfoService;
+            this.libraryManagement = libraryManagement;
         }
 
         public event EventHandler CanExecuteChanged;
@@ -20,7 +22,7 @@ namespace TableTopCrucible.WPF.Commands
         public bool CanExecute(object parameter) => true;
         public void Execute(object parameter)
         {
-            this._fileInfoService.UpdateHashes();
+            this.libraryManagement.UpdateHashes();
         }
     }
 }

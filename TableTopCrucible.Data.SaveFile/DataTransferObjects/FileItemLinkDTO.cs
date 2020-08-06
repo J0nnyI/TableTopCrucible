@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
+
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
@@ -15,24 +16,27 @@ namespace TableTopCrucible.Data.SaveFile.DataTransferObjects
     {
         [DataMember]
         public Guid ItemId { get; set; }
-        
+
         [DataMember]
         public FileInfoHashKeyDTO FileKey { get; set; }
 
         [DataMember]
         public VersionDTO Version { get; set; }
+        [DataMember]
+        public FileInfoHashKeyDTO ThumbnailKey { get; set; }
         public FileItemLinkDTO()
         {
 
         }
-        public FileItemLinkDTO(FileItemLink source):base(source)
+        public FileItemLinkDTO(FileItemLink source) : base(source)
         {
             this.ItemId = (Guid)source.ItemId;
             this.FileKey = new FileInfoHashKeyDTO(source.FileKey);
             this.Version = new VersionDTO(source.Version);
+            this.ThumbnailKey = source.ThumbnailKey.HasValue ? new FileInfoHashKeyDTO(source.ThumbnailKey.Value) : null;
         }
 
         public FileItemLink ToEntity()
-            => new FileItemLink((FileItemLinkId)Id, (ItemId)ItemId, FileKey.ToEntity(), Version.ToEntity(), Created, LastChange);
+            => new FileItemLink((FileItemLinkId)Id, (ItemId)ItemId, FileKey.ToEntity(), ThumbnailKey?.ToEntity(), Version.ToEntity(), Created, LastChange);
     }
 }

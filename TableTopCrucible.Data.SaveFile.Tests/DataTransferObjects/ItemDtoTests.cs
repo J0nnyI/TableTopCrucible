@@ -19,7 +19,6 @@ namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
                 ItemId.New(),
                 (ItemName)"itenName",
                 new string[] { "tag 1", "tag 2" }.Select(x=>(Tag)x).ToArray(),
-                (Thumbnail)@"C:\test\test.png",
                 DateTime.Now.AddMinutes(-5),
                 DateTime.Now);
 
@@ -32,7 +31,6 @@ namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
 
             Assert.AreEqual(entity.Tags?.Select(x=>(string)x)?.Except(dto.Tags)?.Count(), 0, "faulty tags");
             Assert.AreEqual((string)entity.Name, dto.Name, "faulty name");
-            Assert.AreEqual((string)entity.Thumbnail, dto.Thumbnail, "faulty thumbnail");
         }
         void compareEntities(Item entityA, Item entityB)
         {
@@ -41,7 +39,6 @@ namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
             Assert.AreEqual(entityA.LastChange, entityB.LastChange, "faulty last change timestamp");
             Assert.AreEqual(entityA.Tags.Except(entityB.Tags).Count(), 0, "faulty tags");
             Assert.AreEqual(entityA.Name, entityB.Name, "faulty name");
-            Assert.AreEqual(entityA.Thumbnail, entityB.Thumbnail, "faulty thumbnail");
             Assert.AreNotEqual(entityA.Identity, entityB.Identity, "it's the same instance");
         }
 

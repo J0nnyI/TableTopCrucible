@@ -30,7 +30,6 @@ namespace TableTopCrucible.Data.SaveFile.DataTransferObjects
         {
             this.Name = (string)source.Name;
             this.Tags = source.Tags.Select(x => (string)x).ToArray();
-            this.Thumbnail = (string)source.Thumbnail;
         }
 
 
@@ -39,7 +38,6 @@ namespace TableTopCrucible.Data.SaveFile.DataTransferObjects
                 (ItemId)this.Id,
                 (ItemName)this.Name,
                 this.Tags?.Select(x => (Tag)x)?.ToArray(),
-                this.Thumbnail == null ? null : (Thumbnail?)this.Thumbnail,
                 this.Created,
                 this.LastChange);
     }

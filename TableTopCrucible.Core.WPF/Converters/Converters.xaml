@@ -8,4 +8,5 @@
     <local:MinMaxModConverter x:Key="cv_minMaxMod"/>
     <local:BlurConverter x:Key="cv_blur"/>
     <local:NumericConverter x:Key="cv_num"/>
+    <local:ImageConverter x:Key="cv_img"/>
 </ResourceDictionary>

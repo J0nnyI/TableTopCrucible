@@ -17,8 +17,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
     public class FileListViewModel : DisposableReactiveObjectBase
     {
-        private readonly ReadOnlyObservableCollection<ExtendedFileInfo> _files;
-        public ReadOnlyObservableCollection<ExtendedFileInfo> Files => _files;
+        private readonly ReadOnlyObservableCollection<FileInfoEx> _files;
+        public ReadOnlyObservableCollection<FileInfoEx> Files => _files;
         private readonly IFileDataService _fileInfoService;
 
         public ICommand SynchronizeFiles { get; }

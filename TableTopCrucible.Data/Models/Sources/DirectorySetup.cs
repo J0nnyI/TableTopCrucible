@@ -10,6 +10,10 @@ namespace TableTopCrucible.Domain.Models.Sources
     public struct DirectorySetup : IEntity<DirectorySetupId>
     {
         public Uri Path { get; }
+        /// <summary>
+        /// the path where thumbnails are stored
+        /// </summary>
+        public Uri ThumbnailPath { get; }
         public DirectorySetupName Name { get; }
         public Description Description { get; }
 
@@ -35,6 +39,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             this.Path = path;
             this.Name = name;
             this.Description = description;
+            this.ThumbnailPath = new Uri(@"\Thumbnails", UriKind.Relative);
 
             this.Id = id;
             this.Identity = Guid.NewGuid();

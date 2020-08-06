@@ -53,12 +53,12 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Image Source="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_Thumbnail}}" 
+            <Image Source="{Binding Path=Item.LatestThumbnail.AbsolutePath}" 
                    Grid.Column="0"
                    Grid.Row="0"
                    Grid.RowSpan="2">
             </Image>
-            <md:PackIcon Visibility="{Binding Path=Item.Thumbnail, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}" 
+            <md:PackIcon Visibility="{Binding Path=Item.LatestThumbnail.AbsolutePath, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}" 
                          Kind="Image"
                          VerticalAlignment="Center"
                          HorizontalAlignment="Center"

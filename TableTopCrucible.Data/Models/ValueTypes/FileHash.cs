@@ -14,10 +14,12 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
         public byte[] Data { get; }
 
         public override bool Equals(object obj)
-            => obj is FileHash hash && Enumerable.SequenceEqual(this.Data, hash.Data);
-        public override int GetHashCode() 
+            => obj is FileHash hash &&
+            (this.Data != null && hash.Data != null && Enumerable.SequenceEqual(this.Data, hash.Data) ||
+            (this.Data == null && hash.Data == null));
+        public override int GetHashCode()
             => this.ToString().GetHashCode();
-        public override string ToString() 
+        public override string ToString()
             => BitConverter.ToString(this.Data);
 
         public static bool operator !=(FileHash hashA, FileHash hashB)

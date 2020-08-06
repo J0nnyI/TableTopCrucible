@@ -22,8 +22,8 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
         public ReadOnlyObservableCollection<VersionedFile> _vFiles;
         public ReadOnlyObservableCollection<VersionedFile> Vfiles => _vFiles;
 
-        public ReadOnlyObservableCollection<ExtendedItem> _items;
-        public ReadOnlyObservableCollection<ExtendedItem> Items => _items;
+        public ReadOnlyObservableCollection<ItemEx> _items;
+        public ReadOnlyObservableCollection<ItemEx> Items => _items;
 
         public DevTestPageViewModel(
             SaveFileDialogCommand saveFile,

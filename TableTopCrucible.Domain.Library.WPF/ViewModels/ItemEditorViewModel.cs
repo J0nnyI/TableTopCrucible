@@ -31,9 +31,14 @@ using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.WPF.Commands;
+using TableTopCrucible.Core.Helper;
 
 using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
 using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
+using TableTopCrucible.Core.WPF.Commands;
+using System.Windows.Media.Media3D;
+using HelixToolkit.Wpf;
+using TableTopCrucible.Core.Utils;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
@@ -47,10 +52,11 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private readonly INotificationCenterService notificationCenter;
         private readonly ILibraryManagementService libraryManagement;
         private readonly IFileItemLinkService fileItemLinkService;
-        private readonly IFileDataService fileDataService;
 
         public TagEditorViewModel TagEdiotr { get; }
         public FileVersionListViewModel FileVersionList { get; }
+        public ICommand OpenFile { get; }
+        public FileToClipboardCommand FileToClipboard { get; }
 
         private readonly SourceCache<FileItemLink, FileItemLinkId> newLinks = new SourceCache<FileItemLink, FileItemLinkId>(x => x.Id);
 
@@ -58,6 +64,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         [Reactive] public ItemEx? SelectedItem { get; set; }
         [Reactive] public string Name { get; set; }
         [Reactive] public Version? SelectedVersion { get; set; }
+        [Reactive] public Model3D ViewportContent { get; set; }
+        public readonly ObservableAsPropertyHelper<VersionedFile?> _selectedFiles;
+        public VersionedFile? SelectedFiles => _selectedFiles.Value;
 
         public ICommand Save { get; }
         public ICommand CreateThumbnail { get; }
@@ -69,7 +78,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             INotificationCenterService notificationCenter,
             ILibraryManagementService libraryManagement,
             IFileItemLinkService fileItemLinkService,
-            IFileDataService fileDataService)
+            OpenFileCommand openFile,
+            FileToClipboardCommand fileToClipboard)
         {
             this.TagEdiotr = tagEdiotr;
             this._itemService = itemService;
@@ -77,7 +87,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.notificationCenter = notificationCenter;
             this.libraryManagement = libraryManagement;
             this.fileItemLinkService = fileItemLinkService;
-            this.fileDataService = fileDataService;
+            OpenFile = openFile;
+            FileToClipboard = fileToClipboard;
             this.TagEdiotr.IsEditmode = true;
             this.disposables.Add(_selectedItemIdChanges);
 
@@ -91,25 +102,61 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
             var selectedVersionChanges = this.WhenAnyValue(x => x.SelectedVersion).TakeUntil(destroy);
 
+            var curLink = this.newLinks.Connect()
+                .ChangeKey(link => link.Version)
+                .WatchValue(selectedVersionChanges, link => link.Version);
+
+            var curFileFilter = selectedVersionChanges.ToFilter(
+                (VersionedFile vFile, Version? version)
+                => version.HasValue && vFile.Version == version.Value);
+
+            var files = this.fileItemLinkService.BuildversionedFiles(newLinks.Connect());
+
+            var curFiles = files.Filter(curFileFilter)
+                .Select(x => x.FirstOrDefault(x => x.Reason != ChangeReason.Remove).Current.ToNullable());
+
+            this._selectedFiles = curFiles
+                .TakeUntil(destroy)
+                .ToProperty(this, nameof(SelectedFiles));
+
+            curFiles
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .TakeUntil(destroy)
+                .Subscribe(files =>
+            {
+                if(!files.HasValue || files?.File.AbsolutePath == null)
+                {
+                    this.ViewportContent = null;
+                    return;
+                }
+                ModelImporter importer = new ModelImporter()
+                {
+                    DefaultMaterial= Materials.LightGray
+                };
+                Model3DGroup model = importer.Load(files.Value.File.AbsolutePath);
+                model.PlaceAtOrigin();
+                this.ViewportContent = model;
+            });
+
+
+
             var linkFilter = selectedVersionChanges.Select(version =>
-                new Func<FileItemLink, bool>(link =>link.Version == version)
+                new Func<FileItemLink, bool>(link => link.Version == version)
             );
 
-            this.newLinks
+            var selectedLinkChanges = this.newLinks
                 .Connect()
                 .RemoveKey()
                 .Filter(linkFilter)
-                .FirstOrDefaultAsync()
-                .Select(x => x.FirstOrDefault().Item.Current)
-                .Subscribe(x =>
-                {
+                .Select(x => x.FirstOrDefault().Item.Current);
 
-                });
+
 
             this.SelectedItemChanges.Subscribe(
                 LoadItem,
                 ex => this.notificationCenter.OnError(ex));
         }
+
 
         private void createThumbnail()
         {

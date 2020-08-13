@@ -76,6 +76,19 @@
                     Grid.Row="0"
                     Grid.RowSpan="2"
                     VerticalAlignment="Bottom">
+            <Button Style="{StaticResource MaterialDesignIconButton}"
+                    Validation.ErrorTemplate="{x:Null}"
+                    Command="{Binding AddTag}"
+                    CommandParameter="{Binding NewTag}"
+                    >
+                <md:PackIcon Kind="TagAdd"/>
+            </Button>
+            <Button Style="{StaticResource MaterialDesignIconButton}"
+                    Validation.ErrorTemplate="{x:Null}"
+                    Command="{Binding RemoveTags}"
+                    CommandParameter="{Binding SelectedTags}">
+                <md:PackIcon Kind="TagOff"/>
+            </Button>
         </StackPanel>
     </Grid>
 </UserControl>

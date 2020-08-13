@@ -13,6 +13,7 @@ using System.Windows;
 
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Core.Utilities;
+using TableTopCrucible.Core.WPF.Commands;
 using TableTopCrucible.Core.WPF.Services;
 using TableTopCrucible.Core.WPF.ViewModels;
 using TableTopCrucible.Data.SaveFile.Services;
@@ -99,6 +100,8 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<GenerateItemsFromFilesCommand>();
             services.AddSingleton<SaveFileDialogCommand>();
             services.AddSingleton<OpenFileDialogCommand>();
+            services.AddSingleton<OpenFileCommand>();
+            services.AddSingleton<FileToClipboardCommand>();
 
 
             return services.BuildServiceProvider();

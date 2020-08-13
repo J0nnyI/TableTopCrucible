@@ -18,7 +18,7 @@ namespace TableTopCrucible.Data.Models.Views
         public Uri RootPath => DirectorySetup.Path;
 
         public Uri AbsoluteUri { get; }
-        public string AbsolutePath => AbsoluteUri.LocalPath;
+        public string AbsolutePath => AbsoluteUri?.LocalPath;
         public string SafeAbsolutePath => File.Exists(AbsolutePath) ? AbsolutePath : null;
         public FileHash? FileHash => FileInfo.FileHash;
         public DateTime LastWriteTime => FileInfo.LastWriteTime;

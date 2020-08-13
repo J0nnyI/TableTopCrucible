@@ -90,13 +90,16 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     this.disconnected = false;
                     this.SelectedItem = _items.FirstOrDefault(x => x.SourceItem.Id == _selectedItemBuffer?.SourceItem.Id);
                 })
-                .Subscribe();
+                .Subscribe(_=>
+                {
+                    this.ItemsDataView.View.Refresh();
+                });
 
                 this.ItemsDataView = new CollectionViewSource()
                 {
                     Source = this.Items,
                 };
-                this.Sort(nameof(ItemName));
+                this.Sort(nameof(ItemEx.Name));
             });
 
 

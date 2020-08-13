@@ -45,7 +45,7 @@
                     <ContentPresenter Content="{Binding}"/>
                 </DataTemplate>
             </ListView.ItemTemplate>
-            
+
             <ListView.Resources>
             </ListView.Resources>
         </ListView>

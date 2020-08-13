@@ -7,6 +7,7 @@
              xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
              xmlns:hx="http://helix-toolkit.org/wpf"
              mc:Ignorable="d" 
+             x:Name="self"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type viewModels:ItemEditorViewModel}}">
     <UserControl.Resources>
@@ -58,13 +59,13 @@
                             Grid.RowSpan="2"
                              Width="240px"
                              Height="240px">
-                    <Image  Source="{Binding Path=Thumbnail.AbsolutePath, Converter={StaticResource cv_img}}"
+                    <Image  Source="{Binding Path=SelectedFiles.Thumbnail.AbsolutePath, Converter={StaticResource cv_img}}"
                             VerticalAlignment="Bottom"/>
-                    <md:PackIcon Visibility="{Binding Path=Thumbnail, Converter={StaticResource cv_visibillity}, ConverterParameter=invert_collapsed_file}" 
+                    <md:PackIcon Visibility="{Binding Path=SelectedFiles.Thumbnail.AbsolutePath, Converter={StaticResource cv_visibillity}, ConverterParameter=invert_collapsed_file}" 
+                                 Width="240px"
+                                 Height="240px"
                                  Kind="Image"
                                  Foreground="LightGray"/>
-                    <!--<TextBox Text="{Binding Thumbnail, UpdateSourceTrigger=PropertyChanged}"
-                             md:HintAssist.Hint="Thumbnail"/>-->
                 </StackPanel>
                 <!--#endregion-->
                 <!--#region name / version-->
@@ -95,21 +96,48 @@
 
 
             <!--#endregion-->
-            <ListView ItemsSource="{Binding SelectedVersionDetails.Files}"
+            <Expander Header="Files"
+                      IsExpanded="False"
                       Grid.Row="1">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                        <Setter Property="HorizontalContentAlignment" 
-                            Value="Stretch" />
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBox Text="{Binding AbsolutePath, Mode=OneWay}" 
-                                 IsReadOnly="True"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                <ListView ItemsSource="{Binding SelectedFiles.Files}"
+                      >
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem"
+                           BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                            <Setter Property="HorizontalContentAlignment" 
+                                Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Text="{Binding AbsolutePath, Mode=OneWay}" 
+                                         Name="tb_row"
+                                         IsReadOnly="True"
+                                         VerticalAlignment="Center"
+                                         Grid.Column="0"/>
+                                <StackPanel Grid.Column="1"
+                                            Orientation="Horizontal">
+                                    <Button Command="{Binding ElementName=self, Path=DataContext.FileToClipboard}"
+                                            CommandParameter="{Binding AbsolutePath}"
+                                            Style="{StaticResource MaterialDesignIconButton}">
+                                        <md:PackIcon Kind="Clipboard"/>
+                                    </Button>
+                                    <Button Command="{Binding ElementName=self, Path=DataContext.OpenFile}"
+                                            CommandParameter="{Binding AbsolutePath}"
+                                            Style="{StaticResource MaterialDesignIconButton}">
+                                        <md:PackIcon Kind="File"/>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Expander>
             <!--<ContentPresenter Content="{Binding FileVersionList}"
                               Grid.Column="0"
                               Grid.Row="1"/>-->
@@ -126,17 +154,7 @@
                                 Grid.Row="4" x:Name="viewport">
                 <hx:DefaultLights/>
 
-                <hx:FileModelVisual3D Source="{Binding SelectedItem.LatestFile.SafeAbsolutePath, Mode=OneWay}">
-                    <hx:FileModelVisual3D.DefaultMaterial>
-                        <DiffuseMaterial>
-                            <DiffuseMaterial.Brush>
-                                <SolidColorBrush Color="Blue">
-                                </SolidColorBrush>
-                            </DiffuseMaterial.Brush>
-                        </DiffuseMaterial>
-                    </hx:FileModelVisual3D.DefaultMaterial>
-                </hx:FileModelVisual3D>
-
+                <ModelVisual3D Content="{Binding ViewportContent}"/>
             </hx:HelixViewport3D>
         </Grid>
         <Label Background="#AAAAAAAA"

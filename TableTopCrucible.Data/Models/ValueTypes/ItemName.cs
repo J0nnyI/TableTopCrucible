@@ -6,7 +6,7 @@ using TableTopCrucible.Core.Models.ValueTypes;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes
 {
-    public struct ItemName
+    public struct ItemName:IComparable
     {
         private string _name { get; }
         public ItemName(string name)
@@ -44,6 +44,14 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
                 .Select(x => x.Message)
                 .ToArray();
         }
+
+        public int CompareTo(object obj)
+        {
+            if (obj is ItemName otherName)
+                return this._name.CompareTo(otherName._name);
+                else return -1;
+        }
+
         public static IEnumerable<Validator<string>> Validators { get; } = new Validator<string>[] {
             new Validator<string>(itemName=>!string.IsNullOrWhiteSpace(itemName),"The name must not be empty")
         };

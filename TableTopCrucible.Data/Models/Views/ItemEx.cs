@@ -7,6 +7,7 @@ using System.Linq;
 using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 
@@ -22,6 +23,7 @@ namespace TableTopCrucible.Data.Models.Views
 
         public Item SourceItem { get; }
         public ItemName Name => SourceItem.Name;
+        public ItemId ItemId => this.SourceItem.Id;
         public IEnumerable<Tag> Tags => SourceItem.Tags;
         public int FileCount => FileVersions
             .SelectMany(files => files.Files)
@@ -43,7 +45,7 @@ namespace TableTopCrucible.Data.Models.Views
             .Select(x => x as FileInfoEx?)
             .FirstOrDefault(file => file?.IsFileAccessible == true);
         public Version? LatestVersion =>
-            FileVersions.Max(x => x.Link.Version);
+            FileVersions.Any() ? (Version?)FileVersions.Max(x => x.Link.Version) : null;
         public IEnumerable<DirectorySetup> Directories =>
             FileVersions
             .SelectMany(x => x.Files)
@@ -54,10 +56,10 @@ namespace TableTopCrucible.Data.Models.Views
             .Select(x => x.Link.Version);
         public IEnumerable<VersionedFile> FileVersions { get; }
         public FileInfoEx? LatestThumbnail => this.LatestVersionedFile.Thumbnail;
-        public IEnumerable<FileInfoHashKey> Thumbnails => 
+        public IEnumerable<FileInfoHashKey> Thumbnails =>
             this.FileVersions
             .Select(file => file.Thumbnail)
-            .Where(thumbnail=>thumbnail.HasValue)
+            .Where(thumbnail => thumbnail.HasValue)
             .Cast<FileInfoHashKey>();
 
         public VersionedFile this[Version version]

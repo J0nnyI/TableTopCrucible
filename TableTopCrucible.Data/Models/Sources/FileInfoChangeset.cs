@@ -57,6 +57,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             FileHash = null;
             LastWriteTime = fileInfo?.LastWriteTime ?? default;
             FileSize = fileInfo?.Length ?? default;
+            IsAccessible = fileInfo != null;
         }
         public override FileInfo Apply()
             => new FileInfo(this.Origin.Value, Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, FileSize, IsAccessible);

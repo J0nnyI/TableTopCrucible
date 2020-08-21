@@ -1,5 +1,5 @@
 ﻿using ReactiveUI;
-
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Reactive.Subjects;
 using System.Windows.Threading;
@@ -45,14 +45,7 @@ namespace TableTopCrucible.Core.Models.Sources
 
 
 
-        public BehaviorSubject<Progress?> ProgressChanges { get; } = new BehaviorSubject<Progress?>(null);
-        IObservable<Progress?> IAsyncProcessState.ProgressChanges => ProgressChanges;
-        public Progress? Progress
-        {
-            get => _progress.Value;
-            set => _dispatch(() => ProgressChanges.OnNext(value));
-        }
-        private readonly ObservableAsPropertyHelper<Progress?> _progress;
+        [Reactive] public Progress? Progress { get; set; }
 
 
 
@@ -73,13 +66,12 @@ namespace TableTopCrucible.Core.Models.Sources
             this._dispatcher = dispatcher;
             this._state = StateChanges.ToProperty(this, nameof(State));
             this._title = TitleChanges.ToProperty(this, nameof(Title));
-            this._progress = ProgressChanges.ToProperty(this, nameof(Progress));
             this._details = DetailsChanges.ToProperty(this, nameof(Details));
             this._errors = ErrorChanges.ToProperty(this, nameof(Errors));
 
             this.Title = title;
             this.Details = details;
-            this.disposables.Add(StateChanges, TitleChanges, DetailsChanges, ProgressChanges, ErrorChanges);
+            this.disposables.Add(StateChanges, TitleChanges, DetailsChanges, ErrorChanges);
         }
 
         public void Complete()
@@ -87,14 +79,13 @@ namespace TableTopCrucible.Core.Models.Sources
             this.StateChanges.OnCompleted();
             this.TitleChanges.OnCompleted();
             this.DetailsChanges.OnCompleted();
-            this.ProgressChanges.OnCompleted();
             this.ErrorChanges.OnCompleted();
         }
         public void AddProgress(int stepCount, string message = null)
         {
             _dispatch(() =>
             {
-                this.ProgressChanges.OnNext(new Progress(0, stepCount));
+                this.Progress=new Progress(0, stepCount);
                 if (message != null)
                     this.Details += message + Environment.NewLine;
             });
@@ -103,7 +94,7 @@ namespace TableTopCrucible.Core.Models.Sources
         {
             _dispatch(() =>
             {
-                ProgressChanges.OnNext(Progress.Value.OnNextStep());
+                Progress=Progress.Value.OnNextStep();
                 if (message != null)
                     this.Details = message;
             });

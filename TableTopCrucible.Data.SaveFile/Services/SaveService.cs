@@ -104,6 +104,9 @@ namespace TableTopCrucible.Data.SaveFile.Services
 
         public async void Save(string file)
         {
+            if (Path.GetExtension(file) != ".ttcl")
+                file = Path.ChangeExtension(file, ".ttcl");
+
             MasterDTO masterDTO = new MasterDTO()
             {
                 Items = _itemService.Get().KeyValues.Select(item => new ItemDTO(item.Value)).ToArray(),

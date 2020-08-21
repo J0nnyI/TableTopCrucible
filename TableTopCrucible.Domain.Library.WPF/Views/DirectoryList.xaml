@@ -25,11 +25,18 @@
                     Grid.Column="0"
                     Grid.Row="0">
             <Button Command="{Binding SynchronizeFiles}"
-                    Style="{StaticResource MaterialDesignIconButton}">
+                    Style="{StaticResource MaterialDesignIconButton}"
+                    ToolTip="Refrech Files">
                 <md:PackIcon Kind="Sync"/>
             </Button>
+            <Button Command="{Binding FullSync}"
+                    Style="{StaticResource MaterialDesignIconButton}"
+                    ToolTip="FullSync">
+                <md:PackIcon Kind="SyncCircle"/>
+            </Button>
             <Button Command="{Binding CreateDirectorySetup}"
-                    Style="{StaticResource MaterialDesignIconButton}">
+                    Style="{StaticResource MaterialDesignIconButton}"
+                    ToolTip="Add Directory">
                 <md:PackIcon Kind="Add"/>
             </Button>
         </StackPanel>

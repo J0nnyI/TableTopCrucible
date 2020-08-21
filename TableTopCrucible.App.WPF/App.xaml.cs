@@ -6,10 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Navigation;
 
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Core.Utilities;
@@ -37,11 +39,18 @@ namespace TableTopCrucible.App.WPF
         {
             var serviceProvider = this._createServiceProvider();
             this._disposables.Add(serviceProvider);
-            
+
             var providerService = serviceProvider.GetRequiredService<IInjectionProviderService>() as InjectionProviderService;
             providerService.SetProvider(serviceProvider);
 
             var saveService = serviceProvider.GetRequiredService<ISaveService>();
+            var tabService = serviceProvider.GetRequiredService<TabService>();
+
+            if (e.Args.Length > 0 && File.Exists(e.Args[0]) && Path.GetExtension(e.Args[0]) == ".ttcl")
+            {
+                saveService.Load(e.Args[0]);
+                tabService.SetTabIndex(1);
+            }
 
             new MainWindow()
             {
@@ -81,6 +90,7 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<TabViewModel>();
             services.AddTransient<AppSettingsViewModel>();
             services.AddTransient<FileVersionListViewModel>();
+            services.AddTransient<MassThumbnailCreatorViewModel>();
 
             //   pages
             services.AddScoped<DevTestPageViewModel>();
@@ -102,6 +112,8 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<OpenFileDialogCommand>();
             services.AddSingleton<OpenFileCommand>();
             services.AddSingleton<FileToClipboardCommand>();
+            services.AddSingleton<CreateAllThumbnailsCommand>();
+            services.AddSingleton<FullSyncCommand>();
 
 
             return services.BuildServiceProvider();

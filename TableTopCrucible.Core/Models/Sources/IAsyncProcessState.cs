@@ -11,7 +11,6 @@ namespace TableTopCrucible.Core.Models.Sources
         AsyncState State { get; }
         IObservable<string> TitleChanges { get; }
         string Title { get; }
-        IObservable<Progress?> ProgressChanges { get; }
         Progress? Progress { get; }
         IObservable<string> DetailsChanges { get; }
         string Details { get; }

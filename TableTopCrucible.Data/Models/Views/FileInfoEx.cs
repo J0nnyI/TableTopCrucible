@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
 
@@ -25,7 +26,7 @@ namespace TableTopCrucible.Data.Models.Views
         public bool IsFileAccessible => FileInfo.IsAccessible;
         public int Hash => FileInfo.HashKey.GetHashCode();
         public FileInfoHashKey? HashKey => FileInfo.HashKey;
-
+        public FileInfoId Id => FileInfo.Id;
 
         public DirectorySetupName DirectorySetupName => DirectorySetup.Name;
         public Description DirectorySetupDescription => DirectorySetup.Description;

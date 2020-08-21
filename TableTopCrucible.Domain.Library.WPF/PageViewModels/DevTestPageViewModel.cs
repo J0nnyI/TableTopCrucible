@@ -19,45 +19,14 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 {
     public class DevTestPageViewModel : PageViewModelBase
     {
-        public ReadOnlyObservableCollection<VersionedFile> _vFiles;
-        public ReadOnlyObservableCollection<VersionedFile> Vfiles => _vFiles;
-
-        public ReadOnlyObservableCollection<ItemEx> _items;
-        public ReadOnlyObservableCollection<ItemEx> Items => _items;
 
         public DevTestPageViewModel(
-            SaveFileDialogCommand saveFile,
-            OpenFileDialogCommand openFile,
-            IItemService itemService,
-            DirectoryListViewModel dirList,
-            NotificationCenterViewModel notificationCenter,
-            IFileItemLinkService fileItemLink
+            CreateAllThumbnailsCommand createAllThumbnails
             ) : base("dev test", PackIconKind.DeveloperBoard)
         {
-            this.SaveFile = saveFile;
-            this.OpenFile = openFile;
-            this.DirList = dirList;
-            this.NotificationCenter = notificationCenter;
-
-
-
-            fileItemLink.GetVersionedFilesByHash()
-                .Connect()
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Bind(out _vFiles)
-                .Subscribe();
-
-
-            itemService.GetExtended()
-                .Connect()
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Bind(out _items)
-                .Subscribe();
+            CreateAllThumbnails = createAllThumbnails;
         }
 
-        public ICommand SaveFile { get; }
-        public ICommand OpenFile { get; }
-        public DirectoryListViewModel DirList { get; }
-        public NotificationCenterViewModel NotificationCenter { get; }
+        public CreateAllThumbnailsCommand CreateAllThumbnails { get; }
     }
 }

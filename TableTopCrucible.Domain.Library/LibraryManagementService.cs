@@ -1,4 +1,6 @@
-﻿using ReactiveUI;
+﻿using DynamicData;
+
+using ReactiveUI;
 
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
@@ -30,6 +33,8 @@ namespace TableTopCrucible.Domain.Library
 {
     public interface ILibraryManagementService
     {
+        public void FullSync();
+        public void FullSync(IEnumerable<DirectorySetup> dirSetups);
         void UpdateHashes();
         void UpdateHashes(int threadcount);
         void AutoGenerateItems();
@@ -74,7 +79,222 @@ namespace TableTopCrucible.Domain.Library
             this.settingsService = settingsService;
         }
 
+
+        public Version GetNextVersion(Version previousVersion, IEnumerable<Version> takenVersions)
+        {
+            var nextMajor = previousVersion.Major + 1;
+            var nextMinor = previousVersion.Minor + 1;
+            var nextPatch = previousVersion.Patch + 10000;
+
+            if (!takenVersions.Any(x =>
+                    x.Major == nextMajor))
+                return new Version(nextMajor, 0, 0);
+
+            if (!takenVersions.Any(x =>
+                    x.Major == previousVersion.Major &&
+                    x.Minor == nextMinor))
+                return new Version(previousVersion.Major, nextMinor, 0);
+
+
+
+            var patchRange = takenVersions.Where(x =>
+                    x.Major == previousVersion.Major &&
+                    x.Minor == previousVersion.Minor &&
+                    x.Patch.Between(previousVersion.Patch + 1, nextPatch));
+
+            if (!patchRange.Any())
+                return new Version(previousVersion.Major, previousVersion.Minor, nextPatch);
+
+            var nextTakenVersion = patchRange.Min();
+
+            var fallbackPatch = (nextTakenVersion.Patch - previousVersion.Patch) / 2 + previousVersion.Patch;
+
+            return new Version(previousVersion.Major, previousVersion.Minor, fallbackPatch);
+        }
+
+        public void FullSync()
+            => FullSync(getDirSetups());
+        public async void FullSync(IEnumerable<DirectorySetup> dirSetups)
+        {
+            try
+            {
+
+                var localFiles = getLocalFiles(dirSetups);
+                var definedFiles = getDefinedFiles(dirSetups);
+
+                var paths = getDistinctPaths(localFiles, definedFiles);
+
+
+                var allFiles = (from file in paths
+                                join localFile in localFiles
+                                    on file.ToLower() equals localFile.FileInfo.FullName.ToLower() into mLocalFile
+                                join definedFile in definedFiles
+                                    on file.ToLower() equals definedFile.AbsolutePath.ToLower() into mDefinedFile
+                                select new
+                                {
+                                    localFile = mLocalFile.Any() ? (mLocalFile.First() as LocalFile?) : null,
+                                    definedFile = mDefinedFile.Any() ? mDefinedFile.First() as FileInfoEx? : null,
+                                    isNew = mLocalFile.Any() && !mDefinedFile.Any(),
+                                    isDeleted = !mLocalFile.Any() & mDefinedFile.Any(),
+                                    isUpdated = mLocalFile.Any() && mDefinedFile.Any() && mLocalFile.First().FileInfo.LastWriteTime != mDefinedFile.First().LastWriteTime || !mDefinedFile.FirstOrDefault().HashKey.HasValue,
+                                    unchanged = mLocalFile.Any() && mDefinedFile.Any() && mLocalFile.First().FileInfo.LastWriteTime == mDefinedFile.First().LastWriteTime
+                                }).ToArray();
+
+                // stage 1: hash new Files
+
+                /**
+                 * await does not work
+                 */
+                var FilesToHash = allFiles
+                    .Where(x => x.isNew || x.isUpdated);
+
+                if (FilesToHash.Any())
+                {
+
+                    var hashedFiles = (await FilesToHash
+                        .SplitEvenly(settingsService.MaxPatchSize)
+                        .Select(chunk =>
+                        {
+                            return Observable.Start(() =>
+                            {
+                                var hasher = SHA512.Create();
+
+                                return chunk.Select(file =>
+                                {
+                                    return new
+                                    {
+                                        isUpdate = file.definedFile.HasValue,
+                                        file.localFile.Value.DirectorySetup,
+                                        file.localFile.Value.FileInfo,
+                                        hash = _hashFile(hasher, file.localFile.Value.FileInfo.FullName)
+                                    };
+                                });
+                            }, RxApp.TaskpoolScheduler);
+                        })
+                        .CombineLatest())
+                        .SelectMany(x => x)
+                        .GroupBy(x => x.isUpdate);
+
+                    var filesToUpdate = hashedFiles
+                        .FirstOrDefault(x => x.Key == true)
+                        ?.Select(x => new { x.DirectorySetup, x.FileInfo, x.hash, x.isUpdate, hashKey = new FileInfoHashKey(x.hash, x.FileInfo.Length) })
+                        ?.Join(
+                            allFiles.Where(x => x.isUpdated),
+                            x => x.FileInfo.FullName,
+                            x => x.localFile?.FileInfo?.FullName,
+                            (localFile, definedFile) => new
+                            {
+                                newHash = localFile.hashKey,
+                                newFileInfo = localFile.FileInfo,
+                                definedFile = definedFile.definedFile.Value
+                            })
+                        ?.GroupBy(x => x.newHash);
+
+                    var fileUpdateChangesets = new List<FileInfoChangeset>();
+                    var fileItemLinkChangesets = new List<FileItemLinkChangeset>();
+                    if (filesToUpdate != null)
+                    {
+                        foreach (var files in filesToUpdate)
+                        {
+                            // prepare links
+                            var relatedLinks = this.fileItemLinkService
+                                .Get()
+                                .KeyValues
+                                .Where(x => files.Any(y => y.definedFile.HashKey == x.Value.FileKey || y.definedFile.HashKey == x.Value.FileKey));
+                            foreach (var link in relatedLinks)
+                            {
+                                var versions = this.fileItemLinkService.Get().Items.Where(x => x.ItemId == link.Value.ItemId).Select(x => x.Version);
+
+                                var version = GetNextVersion(link.Value.Version, versions);
+
+
+                                var newLink = new FileItemLinkChangeset()
+                                {
+                                    Version = version,
+                                    ThumbnailKey = link.Value.ThumbnailKey,
+                                    ItemId = link.Value.ItemId,
+                                    FileKey = link.Value.FileKey,
+                                };
+
+                                if (link.Value.FileKey == files.FirstOrDefault()?.definedFile.HashKey)
+                                {
+                                    newLink.FileKey = files.FirstOrDefault().newHash;
+                                }
+                                if (link.Value.ThumbnailKey == files.FirstOrDefault()?.definedFile.HashKey)
+                                {
+                                    newLink.ThumbnailKey = files.FirstOrDefault().newHash;
+                                }
+
+                                fileItemLinkChangesets.Add(newLink);
+                            }
+
+                            // prepare file
+
+                            fileUpdateChangesets.AddRange(
+                                files.Select(file =>
+                                {
+                                    var changeset = new FileInfoChangeset(file.definedFile.FileInfo);
+                                    changeset.SetSysFileInfo(file.definedFile.DirectorySetup, file.newFileInfo);
+                                    changeset.FileHash = file.newHash.FileHash;
+                                    changeset.DirectorySetupId = file.definedFile.DirectorySetup.Id;
+                                    changeset.Id = FileInfoId.New();
+                                    return changeset;
+                                }));
+
+                        }
+
+                        this.fileDataService.Patch(fileUpdateChangesets);
+                        this.fileItemLinkService.Patch(fileItemLinkChangesets);
+                    }
+
+                    var newFiles = hashedFiles
+                        .FirstOrDefault(x => x.Key == false)
+                        ?.Select(file =>
+                        {
+                            var changeset = new FileInfoChangeset();
+                            changeset.SetSysFileInfo(file.DirectorySetup, file.FileInfo);
+                            changeset.FileHash = file.hash;
+                            changeset.DirectorySetupId = file.DirectorySetup.Id;
+                            changeset.Id = FileInfoId.New();
+                            return changeset;
+                        })
+                        .ToArray();
+                    if (newFiles != null)
+                        this.fileDataService.Patch(newFiles);
+
+                }
+
+
+                // stage 3: remove deleted Files
+
+                this.fileDataService.Delete(allFiles.Where(x => x.isDeleted).Select(x => x.definedFile.Value.Id));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+
+
+
+
+
+
+
+
+
         #region file sync
+
+        private IEnumerable<FileInfoEx> getDefinedFiles(IEnumerable<DirectorySetup> dirSetups)
+        {
+            var dirIDs = dirSetups.Select(x => x.Id);
+            return fileDataService.GetExtended()
+                .KeyValues
+                .Select(x => x.Value)
+                .Where(file => dirIDs
+                .Contains(file.DirectorySetup.Id));
+        }
         private IEnumerable<FileInfoEx> getDefinedFiles()
         {
             return fileDataService
@@ -131,6 +351,12 @@ namespace TableTopCrucible.Domain.Library
 
             return result;
         }
+
+        public void DeleteInaccessibleFiles()
+        {
+
+        }
+
         public void SynchronizeFiles()
         {
             notificationCenter.CreateSingleTaskJob(out var processState, $"working...", "locating files");
@@ -151,13 +377,10 @@ namespace TableTopCrucible.Domain.Library
                      select synchronizeFile(mLocalFile.Any() ? mLocalFile.First() as LocalFile? : null, mDefinedFile.Any() ? mDefinedFile.First() as FileInfoEx? : null))
                     .Where(x => x != null);
 
-                var changesets = mergedFiles.Where(x => x.IsAccessible).ToArray();
-                var deleteSets = mergedFiles.Where(x => !x.IsAccessible).Select(x => x.Id).ToArray();
-                processState.Details = $"patching: located {changesets.Length} files, detected {deleteSets.Length} deleted files";
-                fileDataService.Patch(changesets);
-                fileDataService.Delete(deleteSets);
+                processState.Details = $"patching: upodating {mergedFiles} files";
+                fileDataService.Patch(mergedFiles);
                 processState.State = AsyncState.Done;
-                processState.Details = $"done. located {changesets.Length} files, detected {deleteSets.Length} deleted files";
+                processState.Details = $"done. upodated {mergedFiles} files";
             }
             catch (Exception ex)
             {
@@ -212,7 +435,7 @@ namespace TableTopCrucible.Domain.Library
 
                             var item = new Item((ItemName)Path.GetFileNameWithoutExtension(file.AbsolutePath), new Tag[] { (Tag)"new" });
 
-                            var link = new FileItemLink(item.Id, file.HashKey.Value,null, new Version(1, 0, 0));
+                            var link = new FileItemLink(item.Id, file.HashKey.Value, null, new Version(1, 0, 0));
 
                             return new { item, link };
                         }).ToArray();

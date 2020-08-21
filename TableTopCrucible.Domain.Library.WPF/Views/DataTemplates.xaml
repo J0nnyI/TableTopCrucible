@@ -37,6 +37,9 @@
     <DataTemplate DataType="{x:Type viewModels:FileVersionListViewModel}">
         <views:FileVersionListView/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:MassThumbnailCreatorViewModel}">
+        <views:MassThumbnailCreatorView/>
+    </DataTemplate>
     <DataTemplate DataType="{x:Type dataViews:ItemEx}">
         <Grid>
             <Grid.RowDefinitions>

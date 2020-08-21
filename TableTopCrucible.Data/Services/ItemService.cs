@@ -17,6 +17,7 @@ namespace TableTopCrucible.Data.Services
     public interface IItemService : IDataService<Item, ItemId, ItemChangeset>
     {
         public IObservableCache<ItemEx, ItemId> GetExtended();
+        public IObservable<ItemEx> GetExtended(ItemId item);
         public IObservable<ItemEx?> GetExtended(IObservable<ItemId?> itemIdChanges);
 
     }
@@ -67,6 +68,7 @@ namespace TableTopCrucible.Data.Services
                 .Switch()
                 .TakeUntil(destroy);
         }
-
+        public IObservable<ItemEx> GetExtended(ItemId item)
+            => this.GetExtended().WatchValue(item);
     }
 }

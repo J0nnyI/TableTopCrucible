@@ -11,6 +11,7 @@ using System.Reactive.Linq;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Data.Services;
+using TableTopCrucible.Domain.Library.WPF.Commands;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
@@ -19,7 +20,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     {
         public SynchronizeFilesCommand SynchronizeFiles { get; }
         public CreateDirectorySetupCommand CreateDirectorySetup { get; }
-
+        public FullSyncCommand FullSync { get; }
 
         private ReadOnlyObservableCollection<DirectorySetupCardViewModel> _directories;
         public ReadOnlyObservableCollection<DirectorySetupCardViewModel> Directories => _directories;
@@ -30,13 +31,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             IDirectoryDataService directorySetupService,
             IInjectionProviderService injectionProviderService,
             SynchronizeFilesCommand synchronizeFiles,
-            CreateDirectorySetupCommand createDirectorySetup)
+            CreateDirectorySetupCommand createDirectorySetup,
+            FullSyncCommand fullSync)
         {
             this._directorySetupService = directorySetupService;
             this._injectionProviderService = injectionProviderService;
             this.SynchronizeFiles = synchronizeFiles;
             this.CreateDirectorySetup = createDirectorySetup;
-
+            FullSync = fullSync;
             this._injectionProviderService
                 .Provider
                 .TakeUntil(destroy)

@@ -1,5 +1,6 @@
 ﻿
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Extensions;
 
 using System;
@@ -19,29 +20,15 @@ namespace TableTopCrucible.Domain.Models.Sources
 {
     public class ItemChangeset : ReactiveEntityBase<ItemChangeset, Item, ItemId>, IEntityChangeset<Item, ItemId>
     {
-        public BehaviorSubject<string> NameChanges { get; } = new BehaviorSubject<string>(null);
-        private readonly ObservableAsPropertyHelper<string> _name;
-        public string Name
-        {
-            get => _name.Value;
-            set => NameChanges.OnNext(value);
-        }
-
-        public BehaviorSubject<IEnumerable<Tag>> TagsChanges = new BehaviorSubject<IEnumerable<Tag>>(null);
-        private readonly ObservableAsPropertyHelper<IEnumerable<Tag>> _tags;
-        public IEnumerable<Tag> Tags
-        {
-            get => _tags.Value;
-            set => TagsChanges.OnNext(value);
-        }
+        public IObservable<string> NameChanges { get; }
+        [Reactive] public string Name { get; set; }
+        public IObservable<IEnumerable<Tag>> TagsChanges { get; }
+        [Reactive] public IEnumerable<Tag> Tags { get; set; }
         public ItemChangeset(Item? origin = null) : base(origin)
         {
-            _name = NameChanges
-                .ToProperty(this, nameof(Name));
-            _tags = TagsChanges
-                .ToProperty(this, nameof(Tags));
-
-            this.disposables.Add(NameChanges, TagsChanges);
+            NameChanges = this.WhenAnyValue(x => x.Name);
+            
+            TagsChanges = this.WhenAnyValue(x => x.Tags);
 
             if (Origin.HasValue)
             {

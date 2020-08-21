@@ -122,23 +122,19 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             curFiles
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .TakeUntil(destroy)
-                .Subscribe(files =>
-            {
-                if(!files.HasValue || files?.File.AbsolutePath == null)
+                .Select(files =>
                 {
-                    this.ViewportContent = null;
-                    return;
-                }
-                ModelImporter importer = new ModelImporter()
-                {
-                    DefaultMaterial= Materials.LightGray
-                };
-                Model3DGroup model = importer.Load(files.Value.File.AbsolutePath);
-                model.PlaceAtOrigin();
-                this.ViewportContent = model;
-            });
-
-
+                    if (!files.HasValue || files?.File.AbsolutePath == null)
+                        return null;
+                    ModelImporter importer = new ModelImporter()
+                    {
+                        DefaultMaterial = Materials.LightGray
+                    };
+                    Model3DGroup model = importer.Load(files.Value.File.AbsolutePath);
+                    model.PlaceAtOrigin();
+                    return model;
+                })
+                .Subscribe(model => this.ViewportContent = model);
 
             var linkFilter = selectedVersionChanges.Select(version =>
                 new Func<FileItemLink, bool>(link => link.Version == version)
@@ -217,6 +213,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 return;
             try
             {
+                if(this.SelectedItem != null)
+                    this._save();
+
                 this.SelectedItem = item;
 
                 this.Name = (string)item?.Name;

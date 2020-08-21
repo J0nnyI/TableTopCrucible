@@ -5,6 +5,7 @@ using System.IO;
 
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Data.Models.Views
 {
@@ -19,6 +20,8 @@ namespace TableTopCrucible.Data.Models.Views
 
         public FileItemLinkEx Link { get; }
         public IEnumerable<FileInfoEx> Files { get; }
+        public FileInfoHashKey HashKey => Link.FileKey;
+        public ItemId ItemId => Link.ItemId;
         public FileInfoEx File => Files.FirstOrDefault(x => System.IO.File.Exists(x.AbsolutePath));
         public Version Version => Link.Version;
         public FileInfoEx? Thumbnail => Link.Thumbnail;

@@ -32,6 +32,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private readonly IInjectionProviderService _injectionProviderService;
         public CreateItemCommand CreateItemCommand { get; }
 
+        public BehaviorSubject<Func<ItemEx, bool>> FilterChanges { get; } = new BehaviorSubject<Func<ItemEx, bool>>(_ => true);
         ReadOnlyObservableCollection<ItemEx> _items;
         public ReadOnlyObservableCollection<ItemEx> Items => _items;
         [Reactive]
@@ -77,6 +78,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .GetExtended()
                 .Connect()
                 .DisposeMany()
+                .Filter(FilterChanges)
                 .TakeUntil(destroy)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Do(_ =>

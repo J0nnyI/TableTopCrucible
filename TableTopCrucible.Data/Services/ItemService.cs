@@ -11,6 +11,7 @@ using DynamicData.Alias;
 using System.Reactive.Subjects;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Data.Models.Views;
+using System.Collections.Generic;
 
 namespace TableTopCrucible.Data.Services
 {
@@ -19,7 +20,6 @@ namespace TableTopCrucible.Data.Services
         public IObservableCache<ItemEx, ItemId> GetExtended();
         public IObservable<ItemEx> GetExtended(ItemId item);
         public IObservable<ItemEx?> GetExtended(IObservable<ItemId?> itemIdChanges);
-
     }
     public class ItemService : DataServiceBase<Item, ItemId, ItemChangeset>, IItemService
     {
@@ -70,5 +70,6 @@ namespace TableTopCrucible.Data.Services
         }
         public IObservable<ItemEx> GetExtended(ItemId item)
             => this.GetExtended().WatchValue(item);
+
     }
 }

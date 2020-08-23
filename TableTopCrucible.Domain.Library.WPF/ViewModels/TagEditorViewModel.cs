@@ -33,7 +33,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public bool IsReadOnly { get; set; }
 
 
-        public BehaviorSubject<IEnumerable<Tag>> TagsChanges { get; } = new BehaviorSubject<IEnumerable<Tag>>(null);
+        public BehaviorSubject<IEnumerable<Tag>> TagsChanges { get; } = new BehaviorSubject<IEnumerable<Tag>>(new Tag[0]);
         private readonly ObservableAsPropertyHelper<IEnumerable<Tag>> _tags;
         public IEnumerable<Tag> Tags
         {

@@ -40,6 +40,12 @@
     <DataTemplate DataType="{x:Type viewModels:MassThumbnailCreatorViewModel}">
         <views:MassThumbnailCreatorView/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:ItemListFilterViewModel}">
+        <views:ItemListFilterView/>
+    </DataTemplate>
+
+
+
     <DataTemplate DataType="{x:Type dataViews:ItemEx}">
         <Grid>
             <Grid.RowDefinitions>
@@ -131,7 +137,7 @@
             <TextBlock Text="{Binding ItemId}"/>
             <TextBlock>version</TextBlock>
             <TextBlock Text="{Binding Version}"/>
-        </StackPanel>        
+        </StackPanel>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type dataViews:FileInfoEx}">

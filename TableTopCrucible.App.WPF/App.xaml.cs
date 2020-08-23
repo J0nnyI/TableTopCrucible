@@ -91,6 +91,7 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<AppSettingsViewModel>();
             services.AddTransient<FileVersionListViewModel>();
             services.AddTransient<MassThumbnailCreatorViewModel>();
+            services.AddTransient<ItemListFilterViewModel>();
 
             //   pages
             services.AddScoped<DevTestPageViewModel>();

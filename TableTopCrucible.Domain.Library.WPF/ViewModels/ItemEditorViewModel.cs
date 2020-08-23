@@ -39,6 +39,7 @@ using TableTopCrucible.Core.WPF.Commands;
 using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf;
 using TableTopCrucible.Core.Utils;
+using System.Windows.Threading;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
@@ -120,30 +121,12 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             var curFiles = files.Filter(curFileFilter)
                 .Select(x => x.FirstOrDefault(x => x.Reason != ChangeReason.Remove).Current.ToNullable());
 
-            selectedVersionChanges.Subscribe(x =>
-            {
-
-            });
-            curFiles.Subscribe(x =>
-            {
-
-            });
-            files.Subscribe(Y =>
-            {
-
-            });
-            Observable.CombineLatest(selectedVersionChanges, curFiles, files, (selectedVersionChanges, curFiles, files) => new { selectedVersionChanges, curFiles, files })
-                .Subscribe(x =>
-                {
-
-                });
-
             this._selectedFiles = curFiles
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(SelectedFiles));
 
             curFiles
-                .ObserveOn(RxApp.MainThreadScheduler)
+                .ObserveOn(RxApp.TaskpoolScheduler)
                 .TakeUntil(destroy)
                 .Select(files =>
                 {
@@ -155,9 +138,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     };
                     Model3DGroup model = importer.Load(files.Value.File.AbsolutePath);
                     model.PlaceAtOrigin();
+                    model.Freeze();
                     return model;
                 })
-                .Subscribe(model => this.ViewportContent = model);
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(model =>
+                {
+                    this.ViewportContent = model;
+                });
 
             var linkFilter = selectedVersionChanges.Select(version =>
                 new Func<FileItemLink, bool>(link => link.Version == version)

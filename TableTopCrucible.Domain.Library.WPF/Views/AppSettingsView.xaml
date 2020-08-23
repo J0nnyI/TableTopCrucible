@@ -27,7 +27,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
-                <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock Text="Threadcount"
                        Grid.Column="0"
@@ -41,12 +40,6 @@
             <TextBox Text="{Binding MaxPatchSize, UpdateSourceTrigger=PropertyChanged}" 
                      Grid.Column="1"
                      Grid.Row="1"/>
-            <TextBlock Text="Load Files Parallel"
-                       Grid.Row="2"
-                      Grid.Column="0"/>
-            <CheckBox IsChecked="{Binding LoadFileParallel, Mode=TwoWay}"
-                      Grid.Row="2"
-                      Grid.Column="1"/>
 
 
         </Grid>

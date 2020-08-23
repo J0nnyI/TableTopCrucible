@@ -126,11 +126,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(SelectedFiles));
 
+
+            DateTime mostRecentRequest = default;
             curFiles
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .TakeUntil(destroy)
                 .Select(files =>
                 {
+                    mostRecentRequest = DateTime.Now;
                     var orderTime = DateTime.Now;
                     if (!files.HasValue || files?.File.AbsolutePath == null)
                         return null;
@@ -141,17 +144,20 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     Model3DGroup model = importer.Load(files.Value.File.AbsolutePath);
                     model.PlaceAtOrigin();
                     model.Freeze();
-                    return model;
+                    return new { timestamp = mostRecentRequest, model };
                 })
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(model =>
+                .Subscribe(x =>
                 {
                     LoadingModel = true;
                     this.ViewportContent = null;
-                    RxApp.MainThreadScheduler.Schedule(model, (_,m) =>
+                    RxApp.MainThreadScheduler.Schedule(x.model, (_, m) =>
                     {
-                        this.ViewportContent = m;
-                        LoadingModel = false;
+                        if (x.timestamp == mostRecentRequest)
+                        {
+                            this.ViewportContent = m;
+                            LoadingModel = false;
+                        }
                         return null;
                     });
                 });

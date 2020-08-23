@@ -76,6 +76,11 @@ namespace TableTopCrucible.Data.SaveFile.Services
             {
                 try
                 {
+                    _directoryDataService.Clear();
+                    _fileDataService.Clear();
+                    fileItemLinkService.Clear();
+                    _itemService.Clear();
+
 
                     proc.Details = $"loading {dto.Directories.Count()} directories";
                     _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()));

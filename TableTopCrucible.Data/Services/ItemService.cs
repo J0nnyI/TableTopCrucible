@@ -44,9 +44,9 @@ namespace TableTopCrucible.Data.Services
             this._getExtended =
                 this.Get()
                 .Connect()
-                .LeftJoinMany<Item, ItemId, VersionedFile, FileInfoHashKey, ItemEx>(
+                .LeftJoinMany<Item, ItemId, VersionedFile, FileItemLinkId, ItemEx>(
                     this.fileItemLinkService
-                        .GetVersionedFilesByHash()
+                        .GetVersionedFiles()
                         .Connect(),
                     (VersionedFile file) => file.Link.ItemId,
                     (item, files) => new ItemEx(item, files.Items))

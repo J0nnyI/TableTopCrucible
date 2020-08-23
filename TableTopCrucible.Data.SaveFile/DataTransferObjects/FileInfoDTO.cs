@@ -13,8 +13,6 @@ namespace TableTopCrucible.Data.SaveFile.DataTransferObjects
     public class FileInfoDTO : EntityDtoBase
     {
         [DataMember]
-        public FileInfoHashKeyDTO HashKey { get; set; }
-        [DataMember]
         public DateTime FileCreationTime { get; set; }
         [DataMember]
         public Uri Path { get; set; }
@@ -30,8 +28,6 @@ namespace TableTopCrucible.Data.SaveFile.DataTransferObjects
         public long FileSize { get; set; }
         public FileInfoDTO(FileInfo source) : base(source)
         {
-            if (source.HashKey.HasValue)
-                HashKey = new FileInfoHashKeyDTO(source.HashKey.Value);
             Path = source.Path;
             FileCreationTime = source.FileCreationTime;
             FileHash = source.FileHash?.Data;

@@ -39,7 +39,6 @@ namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
 
         void compareEntityToDto(FileInfo entity, FileInfoDTO dto)
         {
-            Assert.AreEqual(entity.HashKey, dto.HashKey?.ToEntity(), "faulty HashKey");
             Assert.AreEqual(entity.Path, dto.Path, "faulty Path");
             Assert.AreEqual(entity.FileCreationTime, dto.FileCreationTime, "faulty FileCreationTime");
             Assert.AreEqual(entity.FileHash?.Data, dto.FileHash, "faulty FileHash");

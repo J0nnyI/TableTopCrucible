@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reactive;
 
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes.IDs;
@@ -19,6 +20,7 @@ namespace TableTopCrucible.Data.Services
         public void Post(Tentity entity);
         public void Post(IEnumerable<Tentity> entity);
         void Set(IEnumerable<Tentity> data);
+        IObservable<Unit> SetAsync(IEnumerable<Tentity> data);
         void Delete(Tid key);
         void Delete(IEnumerable<Tid> key);
         void Clear();

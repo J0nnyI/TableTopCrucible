@@ -1,11 +1,15 @@
 ﻿using DynamicData;
 
+using ReactiveUI;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
+
 using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes.IDs;
@@ -96,6 +100,9 @@ namespace TableTopCrucible.Data.Services
             this.Post(data);
         }
 
+        public IObservable<Unit> SetAsync(IEnumerable<Tentity> data)
+            => Observable.Start(() => Set(data), RxApp.TaskpoolScheduler);
+
         #region IDisposable Support
         protected virtual void Dispose(bool disposing)
         {
@@ -118,7 +125,7 @@ namespace TableTopCrucible.Data.Services
 
         #endregion
     }
-    public class DataServiceBase<Tentity, Tid, Tchangeset> :DataServiceBase<Tentity, Tid>, IDataService<Tentity, Tid, Tchangeset>
+    public class DataServiceBase<Tentity, Tid, Tchangeset> : DataServiceBase<Tentity, Tid>, IDataService<Tentity, Tid, Tchangeset>
         where Tentity : struct, IEntity<Tid>
         where Tid : ITypedId
         where Tchangeset : IEntityChangeset<Tentity, Tid>

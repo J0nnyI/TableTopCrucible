@@ -422,8 +422,6 @@ namespace TableTopCrucible.Domain.Library
                     var knownKeys = files
                         .Select(x => x.Key);
 
-                    var s = Enumerable.Range(5, 10).Except(Enumerable.Range(3, 7));
-
                     var freeKeys = knownKeys
                         .Except(takenKeys);
                     process.Details = $"preparing {freeKeys.Count()} items";

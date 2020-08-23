@@ -106,14 +106,37 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .ChangeKey(link => link.Version)
                 .WatchValue(selectedVersionChanges, link => link.Version);
 
-            var curFileFilter = selectedVersionChanges.ToFilter(
-                (VersionedFile vFile, Version? version)
-                => version.HasValue && vFile.Version == version.Value);
+            var curFileFilter =
+                selectedVersionChanges.CombineLatest(SelectedItemChanges, (version, item) => new { version, item })
+                .Select(
+                x =>
+                {
+                    return new Func<VersionedFile, bool>((VersionedFile vFile)
+                        => x.version.HasValue && x.item.HasValue && vFile.Version == x.version.Value && vFile.ItemId == x.item.Value.ItemId);
+                });
 
             var files = this.fileItemLinkService.BuildversionedFiles(newLinks.Connect());
 
             var curFiles = files.Filter(curFileFilter)
                 .Select(x => x.FirstOrDefault(x => x.Reason != ChangeReason.Remove).Current.ToNullable());
+
+            selectedVersionChanges.Subscribe(x =>
+            {
+
+            });
+            curFiles.Subscribe(x =>
+            {
+
+            });
+            files.Subscribe(Y =>
+            {
+
+            });
+            Observable.CombineLatest(selectedVersionChanges, curFiles, files, (selectedVersionChanges, curFiles, files) => new { selectedVersionChanges, curFiles, files })
+                .Subscribe(x =>
+                {
+
+                });
 
             this._selectedFiles = curFiles
                 .TakeUntil(destroy)
@@ -213,7 +236,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 return;
             try
             {
-                if(this.SelectedItem != null)
+                if (this.SelectedItem != null)
                     this._save();
 
                 this.SelectedItem = item;

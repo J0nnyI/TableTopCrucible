@@ -3,6 +3,7 @@ using DynamicData.Kernel;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Text;
 
@@ -16,16 +17,19 @@ namespace TableTopCrucible.Data.Services
 {
     public interface IFileItemLinkService : IDataService<FileItemLink, FileItemLinkId, FileItemLinkChangeset>
     {
-        IObservableCache<VersionedFile, FileInfoHashKey> GetVersionedFilesByHash();
+        IObservableCache<IGroup<VersionedFile, FileItemLinkId, FileInfoHashKey>, FileInfoHashKey> GetVersionedFilesByHash();
+        IObservableCache<VersionedFile, FileItemLinkId> GetVersionedFiles();
         IObservableCache<FileItemLinkEx, FileItemLinkId> GetEx();
-        IObservable<IChangeSet<VersionedFile, FileInfoHashKey>> BuildversionedFiles(IObservable<IChangeSet<FileItemLink, FileItemLinkId>> cache);
-        IObservable<IChangeSet<VersionedFile, FileInfoHashKey>> BuildversionedFiles(IObservable<IChangeSet<FileItemLinkEx, FileItemLinkId>> cache);
+        IObservable<IChangeSet<VersionedFile, FileItemLinkId>> BuildversionedFiles(IObservable<IChangeSet<FileItemLink, FileItemLinkId>> cache);
+        IObservable<IChangeSet<VersionedFile, FileItemLinkId>> BuildversionedFiles(IObservable<IChangeSet<FileItemLinkEx, FileItemLinkId>> cache);
         IObservable<IChangeSet<FileItemLinkEx, FileItemLinkId>> BuildEx(IObservable<IChangeSet<FileItemLink, FileItemLinkId>> cache);
     }
     public class FileItemLinkService : DataServiceBase<FileItemLink, FileItemLinkId, FileItemLinkChangeset>, IFileItemLinkService
     {
-        private IObservableCache<VersionedFile, FileInfoHashKey> _versionedFilesByHash { get; }
-        public IObservableCache<VersionedFile, FileInfoHashKey> GetVersionedFilesByHash() => _versionedFilesByHash;
+        private readonly IObservableCache<VersionedFile, FileItemLinkId> _versionedFiles;
+        public IObservableCache<VersionedFile, FileItemLinkId> GetVersionedFiles() => _versionedFiles;
+        private IObservableCache<IGroup<VersionedFile, FileItemLinkId, FileInfoHashKey>, FileInfoHashKey> _versionedFilesByHash { get; }
+        public IObservableCache<IGroup<VersionedFile, FileItemLinkId, FileInfoHashKey>, FileInfoHashKey> GetVersionedFilesByHash() => _versionedFilesByHash;
         private IObservableCache<FileItemLinkEx, FileItemLinkId> _getEx;
         private readonly IFileDataService fileDataService;
 
@@ -43,19 +47,21 @@ namespace TableTopCrucible.Data.Services
                 .ChangeKey(x => x.Id);
         }
 
-        public IObservable<IChangeSet<VersionedFile, FileInfoHashKey>> BuildversionedFiles(IObservable<IChangeSet<FileItemLink, FileItemLinkId>> cache)
+        public IObservable<IChangeSet<VersionedFile, FileItemLinkId>> BuildversionedFiles(IObservable<IChangeSet<FileItemLink, FileItemLinkId>> cache)
             => BuildversionedFiles(this.BuildEx(cache));
-        public IObservable<IChangeSet<VersionedFile, FileInfoHashKey>> BuildversionedFiles(IObservable<IChangeSet<FileItemLinkEx, FileItemLinkId>> cache)
+        public IObservable<IChangeSet<VersionedFile, FileItemLinkId>> BuildversionedFiles(IObservable<IChangeSet<FileItemLinkEx, FileItemLinkId>> cache)
         {
-            return cache
-           .ChangeKey(link => link.FileKey)
-           .LeftJoinMany(
-               fileDataService
-                   .GetExtended()
-                   .Connect()
-                   .Filter(file => file.HashKey.HasValue),
-               (FileInfoEx file) => file.HashKey.Value,
-               (link, files) => new VersionedFile(link, files.Items));
+            return fileDataService
+                .GetExtended()
+                .Connect()
+                .Filter(file => file.HashKey.HasValue)
+                .GroupWithImmutableState(file => file.HashKey)
+                .ChangeKey(file => file.Key.Value)
+                .LeftJoinMany(
+                     GetEx().Connect(),
+                    (FileItemLinkEx link) => link.FileKey,
+                    (files, links) => new { files, links })
+                .TransformMany(x =>x.links.Items.Select(item=> new VersionedFile(item,x.files.Items)), vFile=>vFile.Link.Id);
         }
 
         public FileItemLinkService(
@@ -66,8 +72,8 @@ namespace TableTopCrucible.Data.Services
             this.fileDataService = fileDataService;
 
             _getEx = BuildEx(this.cache.Connect()).AsObservableCache();
-
-            _versionedFilesByHash = BuildversionedFiles(_getEx.Connect()).AsObservableCache();
+            _versionedFiles = BuildversionedFiles(_getEx.Connect()).AsObservableCache();
+            _versionedFilesByHash = _versionedFiles.Connect().Group(x => x.HashKey).AsObservableCache();            
         }
 
     }

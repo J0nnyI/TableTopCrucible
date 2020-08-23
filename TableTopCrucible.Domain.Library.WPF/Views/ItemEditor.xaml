@@ -149,13 +149,38 @@
                 <Run Text="{Binding SelectedItem.LatestFile.SafeAbsolutePath, Mode=OneWay}"/>
             </TextBlock>
 
-            <hx:HelixViewport3D Grid.Column="0"
+            <hx:HelixViewport3D x:Name="viewport"
+                                Grid.Column="0"
                                 Grid.ColumnSpan="4"
-                                Grid.Row="4" x:Name="viewport">
+                                Grid.Row="4">
                 <hx:DefaultLights/>
 
                 <ModelVisual3D Content="{Binding ViewportContent}"/>
             </hx:HelixViewport3D>
+            <Label Background="#AAAAAAAA"
+               Visibility="{Binding LoadingModel, Converter={StaticResource cv_visibillity}}"
+                   VerticalContentAlignment="Center"
+                   HorizontalContentAlignment="Center"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="4"
+                   Grid.Row="4">
+                <Grid>
+                    <Rectangle 
+                    Width="{Binding ElementName=tb_vpCover, Path=ActualWidth, Mode=OneWay}"
+                    Height="{Binding ElementName=tb_vpCover, Path=ActualHeight, Mode=OneWay}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Fill="#FFFFFF">
+                        <Rectangle.Effect>
+                            <BlurEffect Radius="10"/>
+                        </Rectangle.Effect>
+                    </Rectangle>
+                    <TextBlock Text="Loading"
+                           Padding="40"
+                           FontSize="30"
+                           Name="tb_vpCover"/>
+                </Grid>
+            </Label>
         </Grid>
         <Label Background="#AAAAAAAA"
                Visibility="{Binding SelectedItem, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}"

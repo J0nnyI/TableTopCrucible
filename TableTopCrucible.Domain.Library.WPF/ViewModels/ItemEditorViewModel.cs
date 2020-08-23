@@ -66,6 +66,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         [Reactive] public string Name { get; set; }
         [Reactive] public Version? SelectedVersion { get; set; }
         [Reactive] public Model3D ViewportContent { get; set; }
+        [Reactive] public bool LoadingModel { get; set; } = false;
         public readonly ObservableAsPropertyHelper<VersionedFile?> _selectedFiles;
         public VersionedFile? SelectedFiles => _selectedFiles.Value;
 
@@ -130,6 +131,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .TakeUntil(destroy)
                 .Select(files =>
                 {
+                    var orderTime = DateTime.Now;
                     if (!files.HasValue || files?.File.AbsolutePath == null)
                         return null;
                     ModelImporter importer = new ModelImporter()
@@ -144,7 +146,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(model =>
                 {
-                    this.ViewportContent = model;
+                    LoadingModel = true;
+                    this.ViewportContent = null;
+                    RxApp.MainThreadScheduler.Schedule(model, (_,m) =>
+                    {
+                        this.ViewportContent = m;
+                        LoadingModel = false;
+                        return null;
+                    });
                 });
 
             var linkFilter = selectedVersionChanges.Select(version =>
@@ -226,6 +235,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             {
                 if (this.SelectedItem != null)
                     this._save();
+
+                LoadingModel = true;
+                this.ViewportContent = null;
 
                 this.SelectedItem = item;
 

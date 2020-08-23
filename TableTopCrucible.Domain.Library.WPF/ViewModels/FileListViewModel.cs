@@ -21,13 +21,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public ReadOnlyObservableCollection<FileInfoEx> Files => _files;
         private readonly IFileDataService _fileInfoService;
 
-        public ICommand SynchronizeFiles { get; }
-        public ICommand HashFiles { get; }
         public ICommand GenerateItems { get; }
-        public FileListViewModel(IFileDataService fileInfoService, GenerateItemsFromFilesCommand generateItems, SynchronizeFilesCommand synchronizeFiles, HashFilesCommand hashFiles)
+        public FileListViewModel(IFileDataService fileInfoService, GenerateItemsFromFilesCommand generateItems)
         {
-            this.SynchronizeFiles = synchronizeFiles;
-            this.HashFiles = hashFiles;
             this.GenerateItems = generateItems;
 
             this._fileInfoService = fileInfoService;

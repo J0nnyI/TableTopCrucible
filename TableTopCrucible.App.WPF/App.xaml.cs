@@ -102,11 +102,9 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<CreateItemCommand>();
             services.AddSingleton<DeleteItemCommand>();
             services.AddSingleton<SaveItemCommand>();
-            services.AddSingleton<SynchronizeFilesCommand>();
             services.AddSingleton<CreateDirectorySetupCommand>();
             services.AddSingleton<SaveDirectorySetupCommand>();
             services.AddSingleton<DeleteDirectorySetupCommand>();
-            services.AddSingleton<HashFilesCommand>();
             services.AddSingleton<GenerateItemsFromFilesCommand>();
             services.AddSingleton<SaveFileDialogCommand>();
             services.AddSingleton<OpenFileDialogCommand>();

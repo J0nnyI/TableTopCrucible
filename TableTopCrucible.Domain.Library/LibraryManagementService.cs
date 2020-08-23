@@ -35,10 +35,7 @@ namespace TableTopCrucible.Domain.Library
     {
         public void FullSync();
         public void FullSync(IEnumerable<DirectorySetup> dirSetups);
-        void UpdateHashes();
-        void UpdateHashes(int threadcount);
         void AutoGenerateItems();
-        void SynchronizeFiles();
         FileInfo? UpdateFile(DirectorySetup dirSetup, Uri relativePath);
     }
 
@@ -277,14 +274,7 @@ namespace TableTopCrucible.Domain.Library
 
 
 
-
-
-
-
-
-
-
-        #region file sync
+        #region file sync utils
 
         private IEnumerable<FileInfoEx> getDefinedFiles(IEnumerable<DirectorySetup> dirSetups)
         {
@@ -295,13 +285,7 @@ namespace TableTopCrucible.Domain.Library
                 .Where(file => dirIDs
                 .Contains(file.DirectorySetup.Id));
         }
-        private IEnumerable<FileInfoEx> getDefinedFiles()
-        {
-            return fileDataService
-                .GetExtended()
-                .KeyValues
-                .Select(x => x.Value);
-        }
+
 
         private IEnumerable<LocalFile> getLocalFiles(DirectorySetup directorySetup)
         {
@@ -321,73 +305,53 @@ namespace TableTopCrucible.Domain.Library
 
         private IEnumerable<DirectorySetup> getDirSetups()
             => this.directoryDataService.Get().KeyValues.Select(x => x.Value);
-        private FileInfoChangeset synchronizeFile(LocalFile? localFile, FileInfoEx? definedFile)
+
+
+        #endregion
+
+
+
+        #region hashing utils
+        public FileInfo? UpdateFile(DirectorySetup dirSetup, Uri relativePath)
         {
-            if (localFile.HasValue && definedFile.HasValue)
+            var localPath = new Uri(dirSetup.Path, relativePath).LocalPath;
+            var fileInfo = new SysFileInfo(localPath);
+            return this.fileDataService.Patch(
+            new FileInfoChangeset()
             {
-                if (localFile?.DirectorySetup != definedFile?.DirectorySetup)
-                    throw new Exception($"dir setups do not match up for file '{localFile?.FileInfo?.FullName}' / '{definedFile?.AbsolutePath}'");
-                if (localFile?.FileInfo?.FullName != definedFile?.AbsolutePath)
-                    throw new Exception($"path do not match up for file '{localFile?.FileInfo?.FullName}' / '{definedFile?.AbsolutePath}'");
+                Path = relativePath,
+                CreationTime = fileInfo.CreationTime,
+                FileHash = _hashFile(localPath),
+                DirectorySetupId = dirSetup.Id,
+                FileSize = fileInfo.Length,
+                IsAccessible = File.Exists(localPath),
+                LastWriteTime = fileInfo.LastWriteTime
+            });
+        }
+
+        private FileHash _hashFile(string path)
+        {
+            using (HashAlgorithm hashAlgorithm = SHA512.Create())
+                return _hashFile(hashAlgorithm, path);
+        }
+
+        private FileHash _hashFile(HashAlgorithm hashAlgorithm, string path)
+        {
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"could not find file {path}");
+
+            FileHash result;
+
+            using (FileStream stream = File.OpenRead(path))
+            {
+                byte[] data = hashAlgorithm.ComputeHash(stream);
+                result = new FileHash(data);
             }
 
-
-            var result = new FileInfoChangeset(definedFile?.FileInfo);
-            var dirSetup = (definedFile?.DirectorySetup ?? localFile?.DirectorySetup).Value;
-
-            // no filechange
-            if (localFile.HasValue && definedFile.HasValue && localFile?.FileInfo?.LastWriteTime == definedFile?.LastWriteTime)
-                return null;
-
-            // file was deleted
-            result.IsAccessible = localFile.HasValue;
-
-            var path = definedFile?.AbsolutePath ?? localFile?.FileInfo?.FullName;
-
-            result.SetSysFileInfo(dirSetup, localFile?.FileInfo);
-            result.Path = dirSetup.Path.MakeUnescapedRelativeUri(path);
-            result.DirectorySetupId = localFile?.DirectorySetup.Id ?? definedFile.Value.DirectorySetup.Id;
-            result.Id = definedFile?.FileInfo.Id ?? FileInfoId.New();
 
             return result;
         }
 
-        public void DeleteInaccessibleFiles()
-        {
-
-        }
-
-        public void SynchronizeFiles()
-        {
-            notificationCenter.CreateSingleTaskJob(out var processState, $"working...", "locating files");
-            try
-            {
-                processState.State = AsyncState.InProgress;
-                var dirSetups = getDirSetups();
-                var definedFiles = getDefinedFiles().ToArray();
-                var localFiles = getLocalFiles(dirSetups).ToArray();
-                var paths = getDistinctPaths(localFiles, definedFiles);
-
-                var mergedFiles =
-                    (from file in paths
-                     join localFile in localFiles
-                         on file equals localFile.FileInfo.FullName into mLocalFile
-                     join definedFile in definedFiles
-                         on file equals definedFile.AbsolutePath into mDefinedFile
-                     select synchronizeFile(mLocalFile.Any() ? mLocalFile.First() as LocalFile? : null, mDefinedFile.Any() ? mDefinedFile.First() as FileInfoEx? : null))
-                    .Where(x => x != null);
-
-                processState.Details = $"patching: upodating {mergedFiles} files";
-                fileDataService.Patch(mergedFiles);
-                processState.State = AsyncState.Done;
-                processState.Details = $"done. upodated {mergedFiles} files";
-            }
-            catch (Exception ex)
-            {
-                processState.State = AsyncState.Failed;
-                processState.Details = ex.ToString();
-            }
-        }
         #endregion
 
 
@@ -462,194 +426,6 @@ namespace TableTopCrucible.Domain.Library
 
             }, RxApp.TaskpoolScheduler);
 
-        }
-
-        public FileInfo? UpdateFile(DirectorySetup dirSetup, Uri relativePath)
-        {
-            var localPath = new Uri(dirSetup.Path, relativePath).LocalPath;
-            var fileInfo = new SysFileInfo(localPath);
-            return this.fileDataService.Patch(
-            new FileInfoChangeset()
-            {
-                Path = relativePath,
-                CreationTime = fileInfo.CreationTime,
-                FileHash = _hashFile(localPath),
-                DirectorySetupId = dirSetup.Id,
-                FileSize = fileInfo.Length,
-                IsAccessible = File.Exists(localPath),
-                LastWriteTime = fileInfo.LastWriteTime
-            });
-        }
-
-        public void UpdateHashes() => this.UpdateHashes(settingsService.ThreadCount);
-        public void UpdateHashes(int threadcount)
-        {
-
-
-            var job = new AsyncJobState("hashing the files");
-            var prepProcess = new AsyncProcessState("preparing");
-            var hashing = Enumerable.Range(1, threadcount).Select(x => new AsyncProcessState($"hashing #{x}", "")).ToArray();
-            var finalizer = new AsyncProcessState("finalizing", "");
-
-            finalizer.AddProgress(threadcount);
-
-            var processes = new List<AsyncProcessState>();
-            processes.Insert(0, finalizer);
-            processes.InsertRange(0, hashing.ToList());
-            processes.Insert(0, prepProcess);
-            job.ProcessChanges.OnNext(processes);
-            this.notificationCenter.Register(job);
-
-            prepProcess.State = AsyncState.InProgress;
-
-            try
-            {
-                prepProcess.AddProgress(1, "reading files");
-
-
-
-                CompositeDisposable finalDisposer = new CompositeDisposable();
-
-                var changedFiles = this.fileDataService.GetExtended()
-                    .KeyValues
-                    .Select(file => new { file = file.Value, sysFileInfo = new SysFileInfo(file.Value.AbsolutePath) })
-                    .Where(file =>
-                        file.sysFileInfo.Exists &&
-                        (file.sysFileInfo.LastWriteTime != file.file.LastWriteTime || !file.file.FileHash.HasValue))
-                    .ToArray();
-
-                prepProcess.OnNextStep("grouping files");
-
-                var groups = changedFiles
-                    .SplitEvenly(threadcount)
-                    .ToArray();
-
-                prepProcess.OnNextStep("creating tasks");
-
-
-
-                var tasks = groups
-                    .Select(group =>
-                    {
-                        var result = new Subject<IEnumerable<FileInfoChangeset>>();
-                        var files = group;
-                        return new
-                        {
-                            files = files.ToArray(),
-                            result,
-                            task = new Task(() =>
-                            {
-                                using (HashAlgorithm hashAlgorithm = SHA512.Create())
-                                {
-                                    var proc = hashing[group.Key];
-                                    try
-                                    {
-                                        proc.AddProgress(files.Count(), "hashing...");
-
-                                        var res = files.Select(file =>
-                                        {
-                                            {
-                                                proc.OnNextStep();
-                                                proc.Details = $"[{DateTime.Now}] hashing file '{file.file.AbsolutePath}'";
-                                                try
-                                                {
-                                                    return new FileInfoChangeset(file.file.FileInfo)
-                                                    {
-                                                        FileHash = _hashFile(hashAlgorithm, file.file.AbsolutePath),
-                                                        IsAccessible = File.Exists(file.file.AbsolutePath)
-                                                    };
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    proc.State = AsyncState.Failed;
-                                                    proc.Errors += ex.ToString();
-                                                }
-                                                return default;
-                                            }
-                                        }).ToArray();
-
-                                        result.OnNext(res);
-                                        result.OnCompleted();
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        proc.State = AsyncState.Failed;
-                                        proc.Errors += ex.ToString();
-                                    }
-                                }
-                            })
-                        };
-                    }).ToArray();
-
-                int resCounter = 0;
-
-                prepProcess.OnNextStep("creating finalizer");
-
-                tasks.ToList().ForEach(taskWatcher =>
-                {
-                    taskWatcher.result
-                    .Subscribe(result =>
-                    {
-
-                        try
-                        {
-
-                            this.fileDataService.Patch(result);
-                            finalizer.OnNextStep($"done with thread #{resCounter}");
-                        }
-                        catch (Exception ex)
-                        {
-                            finalizer.Errors += $"error on task #{resCounter}:{Environment.NewLine}{ex}{Environment.NewLine}";
-                        }
-
-                        resCounter++;
-                        if (resCounter != threadcount)
-                            return;
-                        finalDisposer.Dispose();
-                    });
-
-                });
-
-                prepProcess.OnNextStep("launching tasks");
-
-                tasks.ToList().ForEach(task => task.task.Start());
-                prepProcess.OnNextStep("done");
-                prepProcess.State = AsyncState.Done;
-            }
-            catch (Exception ex)
-            {
-                prepProcess.Details += "Task failes" + Environment.NewLine;
-                prepProcess.Errors = ex.ToString();
-                prepProcess.State = AsyncState.Failed;
-            }
-            finally
-            {
-                prepProcess.Complete();
-            }
-
-        }
-
-        private FileHash _hashFile(string path)
-        {
-            using (HashAlgorithm hashAlgorithm = SHA512.Create())
-                return _hashFile(hashAlgorithm, path);
-        }
-
-        private FileHash _hashFile(HashAlgorithm hashAlgorithm, string path)
-        {
-            if (!File.Exists(path))
-                throw new FileNotFoundException($"could not find file {path}");
-
-            FileHash result;
-
-            using (FileStream stream = File.OpenRead(path))
-            {
-                byte[] data = hashAlgorithm.ComputeHash(stream);
-                result = new FileHash(data);
-            }
-
-
-            return result;
         }
     }
 }

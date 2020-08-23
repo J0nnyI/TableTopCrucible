@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" 
              d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type=viewModels:FileDefinitionViewModel}">
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type viewModels:FileDefinitionViewModel}}">
     <UserControl.Resources>
         <ResourceDictionary Source="..\Common.xaml"/>
     </UserControl.Resources>
@@ -22,12 +22,9 @@
                     HorizontalAlignment="Right"
                     Grid.Row="0">
             <Button Command="{Binding GenerateItems}"
-                    Style="{StaticResource MaterialDesignIconButton}">
+                    Style="{StaticResource MaterialDesignIconButton}"
+                    ToolTip="Generate Items">
                 <md:PackIcon Kind="FolderAdd"/>
-            </Button>
-            <Button Command="{Binding HashFiles}"
-                    Style="{StaticResource MaterialDesignIconButton}">
-                <md:PackIcon Kind="FolderHash"/>
             </Button>
         </StackPanel>
         <ListView ItemsSource="{Binding Files}"

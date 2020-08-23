@@ -18,7 +18,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
     public class DirectoryListViewModel : DisposableReactiveObjectBase
     {
-        public SynchronizeFilesCommand SynchronizeFiles { get; }
         public CreateDirectorySetupCommand CreateDirectorySetup { get; }
         public FullSyncCommand FullSync { get; }
 
@@ -30,13 +29,11 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public DirectoryListViewModel(
             IDirectoryDataService directorySetupService,
             IInjectionProviderService injectionProviderService,
-            SynchronizeFilesCommand synchronizeFiles,
             CreateDirectorySetupCommand createDirectorySetup,
             FullSyncCommand fullSync)
         {
             this._directorySetupService = directorySetupService;
             this._injectionProviderService = injectionProviderService;
-            this.SynchronizeFiles = synchronizeFiles;
             this.CreateDirectorySetup = createDirectorySetup;
             FullSync = fullSync;
             this._injectionProviderService

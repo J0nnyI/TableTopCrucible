@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -13,14 +14,12 @@ namespace TableTopCrucible.Core.WPF.Converters
         {
             if (targetType == typeof(ImageSource))
             {
-                if (value is string)
+                if (value is string str && File.Exists(str))
                 {
-                    string str = (string)value;
                     return new BitmapImage(new Uri(str, UriKind.RelativeOrAbsolute));
                 }
-                else if (value is Uri)
+                else if (value is Uri uri && File.Exists(uri.LocalPath))
                 {
-                    Uri uri = (Uri)value;
                     return new BitmapImage(uri);
                 }
             }

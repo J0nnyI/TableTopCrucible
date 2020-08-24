@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -108,168 +109,228 @@ namespace TableTopCrucible.Domain.Library
 
             return new Version(previousVersion.Major, previousVersion.Minor, fallbackPatch);
         }
+        private struct FilePatch
+        {
+            public FilePatch(bool isUpdate, DirectorySetup directorySetup, SysFileInfo fileInfo, FileHash hash)
+            {
+                IsUpdate = isUpdate;
+                DirectorySetup = directorySetup;
+                FileInfo = fileInfo;
+                Hash = hash;
+            }
 
+            public bool IsUpdate { get; }
+            public DirectorySetup DirectorySetup { get; }
+            public SysFileInfo FileInfo { get; }
+            public FileHash Hash { get; }
+        }
         public void FullSync()
             => FullSync(getDirSetups());
-        public async void FullSync(IEnumerable<DirectorySetup> dirSetups)
+        public void FullSync(IEnumerable<DirectorySetup> dirSetups)
         {
-            try
+            Observable.Start(() =>
             {
-
-                var localFiles = getLocalFiles(dirSetups);
-                var definedFiles = getDefinedFiles(dirSetups);
-
-                var paths = getDistinctPaths(localFiles, definedFiles);
-
-
-                var allFiles = (from file in paths
-                                join localFile in localFiles
-                                    on file.ToLower() equals localFile.FileInfo.FullName.ToLower() into mLocalFile
-                                join definedFile in definedFiles
-                                    on file.ToLower() equals definedFile.AbsolutePath.ToLower() into mDefinedFile
-                                select new
-                                {
-                                    localFile = mLocalFile.Any() ? (mLocalFile.First() as LocalFile?) : null,
-                                    definedFile = mDefinedFile.Any() ? mDefinedFile.First() as FileInfoEx? : null,
-                                    isNew = mLocalFile.Any() && !mDefinedFile.Any(),
-                                    isDeleted = !mLocalFile.Any() & mDefinedFile.Any(),
-                                    isUpdated = mLocalFile.Any() && mDefinedFile.Any() && mLocalFile.First().FileInfo.LastWriteTime != mDefinedFile.First().LastWriteTime || !mDefinedFile.FirstOrDefault().HashKey.HasValue,
-                                    unchanged = mLocalFile.Any() && mDefinedFile.Any() && mLocalFile.First().FileInfo.LastWriteTime == mDefinedFile.First().LastWriteTime
-                                }).ToArray();
-
-                // stage 1: hash new Files
-
-                /**
-                 * await does not work
-                 */
-                var FilesToHash = allFiles
-                    .Where(x => x.isNew || x.isUpdated);
-
-                if (FilesToHash.Any())
+                try
                 {
 
-                    var hashedFiles = (await FilesToHash
-                        .SplitEvenly(settingsService.MaxPatchSize)
-                        .Select(chunk =>
-                        {
-                            return Observable.Start(() =>
-                            {
-                                var hasher = SHA512.Create();
+                    var job = new AsyncJobState("Full File Sync");
+                    var mainProc = new AsyncProcessState("preparing data");
+                    mainProc.AddProgress(5);
+                    job.AddProcess(mainProc);
+                    notificationCenter.Register(job);
 
-                                return chunk.Select(file =>
-                                {
-                                    return new
+                    mainProc.State = AsyncState.InProgress;
+
+
+                    var localFiles = getLocalFiles(dirSetups);
+                    var definedFiles = getDefinedFiles(dirSetups);
+
+
+                    var paths = getDistinctPaths(localFiles, definedFiles);
+
+
+                    var allFiles = (from file in paths
+                                    join localFile in localFiles
+                                        on file.ToLower() equals localFile.FileInfo.FullName.ToLower() into mLocalFile
+                                    join definedFile in definedFiles
+                                        on file.ToLower() equals definedFile.AbsolutePath.ToLower() into mDefinedFile
+                                    select new
                                     {
-                                        isUpdate = file.definedFile.HasValue,
-                                        file.localFile.Value.DirectorySetup,
-                                        file.localFile.Value.FileInfo,
-                                        hash = _hashFile(hasher, file.localFile.Value.FileInfo.FullName)
-                                    };
-                                });
-                            }, RxApp.TaskpoolScheduler);
-                        })
-                        .CombineLatest())
-                        .SelectMany(x => x)
-                        .GroupBy(x => x.isUpdate);
+                                        localFile = mLocalFile.Any() ? (mLocalFile.First() as LocalFile?) : null,
+                                        definedFile = mDefinedFile.Any() ? mDefinedFile.First() as FileInfoEx? : null,
+                                        isNew = mLocalFile.Any() && !mDefinedFile.Any(),
+                                        isDeleted = !mLocalFile.Any() & mDefinedFile.Any(),
+                                        isUpdated = mLocalFile.Any() && mDefinedFile.Any() && mLocalFile.First().FileInfo.LastWriteTime != mDefinedFile.First().LastWriteTime || !mDefinedFile.FirstOrDefault().HashKey.HasValue,
+                                        unchanged = mLocalFile.Any() && mDefinedFile.Any() && mLocalFile.First().FileInfo.LastWriteTime == mDefinedFile.First().LastWriteTime
+                                    }).ToArray();
 
-                    var filesToUpdate = hashedFiles
-                        .FirstOrDefault(x => x.Key == true)
-                        ?.Select(x => new { x.DirectorySetup, x.FileInfo, x.hash, x.isUpdate, hashKey = new FileInfoHashKey(x.hash, x.FileInfo.Length) })
-                        ?.Join(
-                            allFiles.Where(x => x.isUpdated),
-                            x => x.FileInfo.FullName,
-                            x => x.localFile?.FileInfo?.FullName,
-                            (localFile, definedFile) => new
-                            {
-                                newHash = localFile.hashKey,
-                                newFileInfo = localFile.FileInfo,
-                                definedFile = definedFile.definedFile.Value
-                            })
-                        ?.GroupBy(x => x.newHash);
+                    // stage 1: hash new Files
+                    mainProc.OnNextStep("handling file updates");
 
-                    var fileUpdateChangesets = new List<FileInfoChangeset>();
-                    var fileItemLinkChangesets = new List<FileItemLinkChangeset>();
-                    if (filesToUpdate != null)
+                    var FilesToHash = allFiles
+                        .Where(x => x.isNew || x.isUpdated);
+
+                    if (FilesToHash.Any())
                     {
-                        foreach (var files in filesToUpdate)
-                        {
-                            // prepare links
-                            var relatedLinks = this.fileItemLinkService
-                                .Get()
-                                .KeyValues
-                                .Where(x => files.Any(y => y.definedFile.HashKey == x.Value.FileKey || y.definedFile.HashKey == x.Value.FileKey));
-                            foreach (var link in relatedLinks)
+
+                        mainProc.OnNextStep("hashing files file updates");
+
+                        var chunks = FilesToHash
+                            .SplitEvenly(settingsService.ThreadCount);
+
+                        var hashProcs = chunks
+                            .Select(chunk =>
                             {
-                                var versions = this.fileItemLinkService.Get().Items.Where(x => x.ItemId == link.Value.ItemId).Select(x => x.Version);
-
-                                var version = GetNextVersion(link.Value.Version, versions);
-
-
-                                var newLink = new FileItemLinkChangeset()
+                                Subject<IEnumerable<FilePatch>> result = new Subject<IEnumerable<FilePatch>>();
+                                RxApp.TaskpoolScheduler.Schedule(() =>
                                 {
-                                    Version = version,
-                                    ThumbnailKey = link.Value.ThumbnailKey,
-                                    ItemId = link.Value.ItemId,
-                                    FileKey = link.Value.FileKey,
-                                };
+                                    var proc = new AsyncProcessState($"hashing #{chunk.Key}");
+                                    proc.AddProgress(chunk.Count());
+                                    lock (job)
+                                        job.AddProcess(proc);
+                                    proc.State = AsyncState.InProgress;
 
-                                if (link.Value.FileKey == files.FirstOrDefault()?.definedFile.HashKey)
+                                    var hasher = SHA512.Create();
+
+                                    var res = chunk.Select(file =>
+                                    {
+                                        var res = new FilePatch(
+                                            file.definedFile.HasValue,
+                                            file.localFile.Value.DirectorySetup,
+                                            file.localFile.Value.FileInfo,
+                                            _hashFile(hasher, file.localFile.Value.FileInfo.FullName)
+                                        );
+                                        proc.OnNextStep();
+                                        return res;
+                                    }).ToArray();
+                                    proc.State = AsyncState.Done;
+                                    result.OnNext(res);
+                                });
+                                return result;
+                            })
+                            .ToArray();
+                        hashProcs
+                        .CombineLatest()
+                        .Take(1)
+                        .Subscribe(procRes =>
+                        {
+
+                            //var procRes = await hashProcs.CombineLatest();
+                            var hashedFiles = procRes
+                            .SelectMany(x => x)
+                            .GroupBy(x => x.IsUpdate)
+                            .ToArray();
+
+                            mainProc.OnNextStep("preparing data");
+
+                            var filesToUpdate = hashedFiles
+                                .FirstOrDefault(x => x.Key == true)
+                                ?.Select(x => new { x.DirectorySetup, x.FileInfo, x.Hash, x.IsUpdate, HashKey = new FileInfoHashKey(x.Hash, x.FileInfo.Length) })
+                                ?.Join(
+                                    allFiles.Where(x => x.isUpdated),
+                                    x => x.FileInfo.FullName,
+                                    x => x.localFile?.FileInfo?.FullName,
+                                    (localFile, definedFile) => new
+                                    {
+                                        newHash = localFile.HashKey,
+                                        newFileInfo = localFile.FileInfo,
+                                        definedFile = definedFile.definedFile.Value
+                                    })
+                                ?.GroupBy(x => x.newHash);
+
+                            var fileUpdateChangesets = new List<FileInfoChangeset>();
+                            var fileItemLinkChangesets = new List<FileItemLinkChangeset>();
+                            if (filesToUpdate != null)
+                            {
+                                mainProc.OnNextStep("creating linkupdates");
+                                foreach (var files in filesToUpdate)
                                 {
-                                    newLink.FileKey = files.FirstOrDefault().newHash;
+                                    // prepare links
+                                    var relatedLinks = this.fileItemLinkService
+                                        .Get()
+                                        .KeyValues
+                                        .Where(x => files.Any(y => y.definedFile.HashKey == x.Value.FileKey || y.definedFile.HashKey == x.Value.FileKey));
+                                    foreach (var link in relatedLinks)
+                                    {
+                                        var versions = this.fileItemLinkService.Get().Items.Where(x => x.ItemId == link.Value.ItemId).Select(x => x.Version);
+
+                                        var version = GetNextVersion(link.Value.Version, versions);
+
+
+                                        var newLink = new FileItemLinkChangeset()
+                                        {
+                                            Version = version,
+                                            ThumbnailKey = link.Value.ThumbnailKey,
+                                            ItemId = link.Value.ItemId,
+                                            FileKey = link.Value.FileKey,
+                                        };
+
+                                        if (link.Value.FileKey == files.FirstOrDefault()?.definedFile.HashKey)
+                                        {
+                                            newLink.FileKey = files.FirstOrDefault().newHash;
+                                        }
+                                        if (link.Value.ThumbnailKey == files.FirstOrDefault()?.definedFile.HashKey)
+                                        {
+                                            newLink.ThumbnailKey = files.FirstOrDefault().newHash;
+                                        }
+
+                                        fileItemLinkChangesets.Add(newLink);
+                                    }
+
+                                    // prepare file
+
+                                    mainProc.OnNextStep("creating fileupdates");
+                                    fileUpdateChangesets.AddRange(
+                                        files.Select(file =>
+                                        {
+                                            var changeset = new FileInfoChangeset(file.definedFile.FileInfo);
+                                            changeset.SetSysFileInfo(file.definedFile.DirectorySetup, file.newFileInfo);
+                                            changeset.FileHash = file.newHash.FileHash;
+                                            changeset.DirectorySetupId = file.definedFile.DirectorySetup.Id;
+                                            changeset.Id = FileInfoId.New();
+                                            return changeset;
+                                        }));
+
                                 }
-                                if (link.Value.ThumbnailKey == files.FirstOrDefault()?.definedFile.HashKey)
-                                {
-                                    newLink.ThumbnailKey = files.FirstOrDefault().newHash;
-                                }
 
-                                fileItemLinkChangesets.Add(newLink);
+                                mainProc.OnNextStep("patching...");
+                                this.fileDataService.Patch(fileUpdateChangesets);
+                                this.fileItemLinkService.Patch(fileItemLinkChangesets);
                             }
 
-                            // prepare file
-
-                            fileUpdateChangesets.AddRange(
-                                files.Select(file =>
+                            mainProc.OnNextStep("handling new files");
+                            var newFiles = hashedFiles
+                                .FirstOrDefault(x => x.Key == false)
+                                ?.Select(file =>
                                 {
-                                    var changeset = new FileInfoChangeset(file.definedFile.FileInfo);
-                                    changeset.SetSysFileInfo(file.definedFile.DirectorySetup, file.newFileInfo);
-                                    changeset.FileHash = file.newHash.FileHash;
-                                    changeset.DirectorySetupId = file.definedFile.DirectorySetup.Id;
+                                    var changeset = new FileInfoChangeset();
+                                    changeset.SetSysFileInfo(file.DirectorySetup, file.FileInfo);
+                                    changeset.FileHash = file.Hash;
+                                    changeset.DirectorySetupId = file.DirectorySetup.Id;
                                     changeset.Id = FileInfoId.New();
                                     return changeset;
-                                }));
+                                })
+                                .ToArray();
 
-                        }
+                            if (newFiles != null)
+                                this.fileDataService.Patch(newFiles);
+                        });
 
-                        this.fileDataService.Patch(fileUpdateChangesets);
-                        this.fileItemLinkService.Patch(fileItemLinkChangesets);
                     }
 
-                    var newFiles = hashedFiles
-                        .FirstOrDefault(x => x.Key == false)
-                        ?.Select(file =>
-                        {
-                            var changeset = new FileInfoChangeset();
-                            changeset.SetSysFileInfo(file.DirectorySetup, file.FileInfo);
-                            changeset.FileHash = file.hash;
-                            changeset.DirectorySetupId = file.DirectorySetup.Id;
-                            changeset.Id = FileInfoId.New();
-                            return changeset;
-                        })
-                        .ToArray();
-                    if (newFiles != null)
-                        this.fileDataService.Patch(newFiles);
 
+                    // stage 3: remove deleted Files
+                    mainProc.OnNextStep("deleting old files");
+
+                    this.fileDataService.Delete(allFiles.Where(x => x.isDeleted).Select(x => x.definedFile.Value.Id));
+
+                    mainProc.State = AsyncState.Done;
                 }
-
-
-                // stage 3: remove deleted Files
-
-                this.fileDataService.Delete(allFiles.Where(x => x.isDeleted).Select(x => x.definedFile.Value.Id));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }, RxApp.TaskpoolScheduler);
         }
 
 

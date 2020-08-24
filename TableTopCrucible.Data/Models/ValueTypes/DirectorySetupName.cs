@@ -6,7 +6,7 @@ using TableTopCrucible.Core.Models.ValueTypes;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes
 {
-    public struct DirectorySetupName
+    public struct DirectorySetupName : IComparable
     {
         private string _name { get; }
         public DirectorySetupName(string name)
@@ -44,6 +44,14 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
                 .Select(x => x.Message)
                 .ToArray();
         }
+
+        public int CompareTo(object obj)
+        {
+            if (obj is DirectorySetupName otherName)
+                return this._name.CompareTo(otherName._name);
+            else return -1;
+        }
+
         public static IEnumerable<Validator<string>> Validators { get; } = new Validator<string>[] {
             new Validator<string>(directoryName=>!string.IsNullOrWhiteSpace(directoryName),"The name must not be empty")
         };

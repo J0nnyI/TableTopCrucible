@@ -14,6 +14,7 @@ namespace TableTopCrucible.Core.Models.Sources
         IEnumerable<IAsyncProcessState> Processes { get; }
         IObservable<AsyncState> StateChanges { get; }
         AsyncState State { get; }
+        void AddProcess(params IAsyncProcessState[] process);
         void Complete();
     }
 }

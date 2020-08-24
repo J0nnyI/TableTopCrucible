@@ -10,6 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -26,6 +27,7 @@
                   SelectedItem="{Binding TagFilterMode, Mode=TwoWay}"
                   Grid.Column="2"
                   Grid.Row="0"/>
+        
         <TextBlock Text="Name"
                    Grid.Column="0"
                    Grid.Row="1"/>
@@ -36,5 +38,17 @@
                   SelectedItem="{Binding NameFilterMode, Mode=TwoWay}"
                   Grid.Column="2"
                   Grid.Row="1"/>
+        
+        <TextBlock Text="Source Directory"
+                   Grid.Column="0"
+                   Grid.Row="2"/>
+        <ComboBox ItemsSource="{Binding DirectorySetups}"
+                  SelectedItem="{Binding DirectorySetupFilter}"
+                  IsTextSearchEnabled="True"
+                  IsEditable="True"
+                  DisplayMemberPath="Name"
+                  Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  Grid.Row="2"/>
     </Grid>
 </UserControl>

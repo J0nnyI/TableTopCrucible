@@ -10,10 +10,12 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
+using System.Windows.Forms;
 
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
+using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
@@ -36,10 +38,18 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public IObservable<Func<ItemEx, bool>> FilterChanges;
 
 
-        public ItemListFilterViewModel(TagEditorViewModel tagEditor, IItemService itemService, IItemTagService tagService)
+        public ItemListFilterViewModel(
+            TagEditorViewModel tagEditor,
+            IDirectoryDataService directoryDataService)
         {
             TagEditor = tagEditor;
             TagEditor.IsEditmode = true;
+            _directorySetups =
+                directoryDataService.Get()
+                .Connect()
+                .RemoveKey()
+                .ToSortedCollection(x => x.Name)
+                .ToProperty(this, nameof(DirectorySetups));
 
 
             this.FilterChanges =
@@ -48,14 +58,20 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     this.WhenAnyValue(x => x.TagFilterMode),
                     this.WhenAnyValue(x => x.NameFilterMode),
                     this.WhenAnyValue(x => x.NameFilter),
-                    (a, b, c, d) => new Unit()
+                    this.WhenAnyValue(x => x.DirectorySetupFilter),
+                    (a, b, c, d, e) => new Unit()
                 )
                 .TakeUntil(destroy)
                 .Select(_ => new Func<ItemEx, bool>(Filter));
+
+
         }
 
         public bool Filter(ItemEx item)
         {
+            if (DirectorySetupFilter.HasValue && !item.DirectorySetups.Contains(DirectorySetupFilter.Value))
+                return false;
+
             if (TagEditor.Tags.Any())
             {
                 switch (TagFilterMode)
@@ -124,5 +140,10 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public TextFilterMode NameFilterMode { get; set; } = TextFilterMode.Contains;
         [Reactive]
         public string NameFilter { get; set; } = string.Empty;
+        [Reactive]
+        public DirectorySetup? DirectorySetupFilter { get; set; }
+
+        private readonly ObservableAsPropertyHelper<IReadOnlyCollection<DirectorySetup>> _directorySetups;
+        public IEnumerable<DirectorySetup> DirectorySetups => _directorySetups?.Value;
     }
 }

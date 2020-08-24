@@ -11,7 +11,7 @@ namespace TableTopCrucible.Core.Services
 {
     public interface INotificationCenterService
     {
-        AsyncJobState CreateSingleTaskJob(out AsyncProcessState processState, string jobName, string processName = "", Dispatcher dispatcher =null);
+        AsyncJobState CreateSingleTaskJob(out AsyncProcessState processState, string jobName, string processName = "");
         public void Register(IAsyncJobState job);
         public IObservableCache<IAsyncJobState, AsyncJobId> GetJobs();
         public void OnError(Exception ex);
@@ -28,10 +28,10 @@ namespace TableTopCrucible.Core.Services
         public void Register(IAsyncJobState job)
             => this._jobs.AddOrUpdate(job);
 
-        public AsyncJobState CreateSingleTaskJob(out AsyncProcessState processState, string jobName, string processName = "untitled process", Dispatcher dispatcher = null)
+        public AsyncJobState CreateSingleTaskJob(out AsyncProcessState processState, string jobName, string processName = "untitled process")
         {
             var job = new AsyncJobState(jobName);
-            processState = new AsyncProcessState(processName,"",dispatcher);
+            processState = new AsyncProcessState(processName,"");
             job.ProcessChanges.OnNext(processState.AsArray());
 
             this.Register(job);

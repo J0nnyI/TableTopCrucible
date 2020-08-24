@@ -149,8 +149,10 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x =>
                 {
-                    LoadingModel = true;
                     this.ViewportContent = null;
+                    if (x == null)
+                        return;
+                    LoadingModel = true;
                     RxApp.MainThreadScheduler.Schedule(x.model, (_, m) =>
                     {
                         if (x.timestamp == mostRecentRequest)

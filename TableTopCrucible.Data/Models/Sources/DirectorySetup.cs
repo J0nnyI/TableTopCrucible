@@ -56,5 +56,6 @@ namespace TableTopCrucible.Domain.Models.Sources
 
         public override bool Equals(object obj) => obj is DirectorySetup dirSetup && this == dirSetup;
         public override int GetHashCode() => HashCode.Combine(this.Identity);
+
     }
 }

@@ -83,14 +83,12 @@
                     <!--#region thumbnail-->
                     <StackPanel Grid.Column="0"
                                 Grid.Row="0"
-                                Grid.RowSpan="2"
-                                 Width="240px"
-                                 Height="240px">
+                                Grid.RowSpan="2">
                         <Image  Source="{Binding Path=SelectedFiles.Thumbnail.AbsolutePath, Converter={StaticResource cv_img}}"
                                 VerticalAlignment="Bottom"/>
                         <md:PackIcon Visibility="{Binding Path=SelectedFiles.Thumbnail.AbsolutePath, Converter={StaticResource cv_visibillity}, ConverterParameter=invert_collapsed_file}" 
-                                     Width="240px"
-                                     Height="240px"
+                                     Width="120px"
+                                     Height="120px"
                                      Kind="Image"
                                      Foreground="LightGray"/>
                     </StackPanel>
@@ -101,16 +99,17 @@
                     <ContentPresenter Content="{Binding TagEdiotr}"
                                   Grid.Column="1"
                                   Grid.Row="1"
+                                  Grid.ColumnSpan="2"
                                   Validation.ErrorTemplate="{x:Null}"/>
                     <!--#endregion-->
 
 
 
-                    <md:ColorPicker Color="{Binding MaterialBrush.Color, Mode=OneWayToSource}"
+                    <!--<md:ColorPicker Color="{Binding MaterialBrush.Color, Mode=OneWayToSource}"
                             Grid.Column="2"
                             Grid.Row="1">
 
-                    </md:ColorPicker>
+                    </md:ColorPicker>-->
                     <Expander Header="Files"
                               IsExpanded="False"
                               Grid.Row="2"

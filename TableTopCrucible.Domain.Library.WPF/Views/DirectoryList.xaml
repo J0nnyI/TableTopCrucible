@@ -37,7 +37,8 @@
         </StackPanel>
         <ListView ItemsSource="{Binding Directories}"
                   Grid.Column="0"
-                  Grid.Row="1">
+                  Grid.Row="1"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Setter Property="HorizontalContentAlignment" 

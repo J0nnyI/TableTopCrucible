@@ -58,6 +58,7 @@
             </Grid.ColumnDefinitions>
             <Image Source="{Binding Path=LatestThumbnail.AbsolutePath}" 
                    Width="200px"
+                   Height="150px"
                    Grid.Column="0"
                    Grid.Row="0"
                    Grid.RowSpan="2">
@@ -67,8 +68,8 @@
                          VerticalAlignment="Center"
                          HorizontalAlignment="Center"
                          Foreground="LightGray"
-                         Width="120px"
-                         Height="120px"
+                         Width="150px"
+                         Height="150px"
                          Grid.Column="0"
                          Grid.Row="0"
                          Grid.RowSpan="2"/>

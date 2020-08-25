@@ -1,5 +1,7 @@
 ﻿using DynamicData.Binding;
 
+using HelixToolkit.Wpf;
+
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Extensions;
@@ -37,6 +39,15 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             }
         }
 
+        public IEnumerable<CameraRotationMode> CameraRotationModes { get; } = new CameraRotationMode[]
+        {
+            CameraRotationMode.Trackball,
+            CameraRotationMode.Turnball,
+            CameraRotationMode.Turntable
+        };
+        [Reactive]
+        public CameraRotationMode CameraRotationMode { get; set; }
+
         private readonly ISettingsService _settingsService;
         public ICommand Save { get; }
 
@@ -47,6 +58,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.ThreadCount = settingsService.ThreadCount.ToString();
 
             this.MaxPatchSize = settingsService.MaxPatchSize.ToString();
+
+            this.CameraRotationMode = (CameraRotationMode)settingsService.CameraRotationMode;
 
             this.Save = new RelayCommand(_ => _save(), _ => !this.HasErrors);
 
@@ -90,6 +103,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         {
             _settingsService.ThreadCount = int.Parse(this.ThreadCount);
             _settingsService.MaxPatchSize = int.Parse(this.MaxPatchSize);
+            _settingsService.CameraRotationMode = (ushort)this.CameraRotationMode;
             _settingsService.Save();
         }
     }

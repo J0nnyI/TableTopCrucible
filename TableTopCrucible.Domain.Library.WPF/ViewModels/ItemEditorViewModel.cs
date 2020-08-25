@@ -65,13 +65,19 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         [Reactive] public ItemEx? SelectedItem { get; set; }
         [Reactive] public string Name { get; set; }
         [Reactive] public Version? SelectedVersion { get; set; }
-        [Reactive] public Model3D ViewportContent { get; set; }
+        [Reactive] public Model3DGroup ViewportContent { get; set; }
         [Reactive] public bool LoadingModel { get; set; } = false;
+        [Reactive]
+        public SolidColorBrush MaterialBrush { get; private set; }
+
         public readonly ObservableAsPropertyHelper<VersionedFile?> _selectedFiles;
         public VersionedFile? SelectedFiles => _selectedFiles.Value;
 
         public ICommand Save { get; }
         public ICommand CreateThumbnail { get; }
+
+        private readonly ObservableAsPropertyHelper<CameraRotationMode> _cameraRotationMode;
+        public CameraRotationMode CameraRotationMode => _cameraRotationMode.Value;
 
         public ItemEditorViewModel(
             TagEditorViewModel tagEdiotr,
@@ -81,7 +87,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             ILibraryManagementService libraryManagement,
             IFileItemLinkService fileItemLinkService,
             OpenFileCommand openFile,
-            FileToClipboardCommand fileToClipboard)
+            FileToClipboardCommand fileToClipboard,
+            ISettingsService settingsService)
         {
             this.TagEdiotr = tagEdiotr;
             this._itemService = itemService;
@@ -126,6 +133,11 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .TakeUntil(destroy)
                 .ToProperty(this, nameof(SelectedFiles));
 
+            this._cameraRotationMode = settingsService
+                .WhenAnyValue(x => x.CameraRotationMode)
+                .Select(x => (CameraRotationMode)x)
+                .ToProperty(this, nameof(CameraRotationMode));
+            _cameraRotationMode.DisposeWith(disposables);
 
             DateTime mostRecentRequest = default;
             curFiles
@@ -137,11 +149,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     var orderTime = DateTime.Now;
                     if (!files.HasValue || files?.File.AbsolutePath == null)
                         return null;
+                    this.MaterialBrush = new SolidColorBrush(Colors.LightGray);
+                    var mat = new DiffuseMaterial(this.MaterialBrush);
                     ModelImporter importer = new ModelImporter()
                     {
-                        DefaultMaterial = Materials.LightGray
+                        DefaultMaterial = mat
                     };
                     Model3DGroup model = importer.Load(files.Value.File.AbsolutePath);
+                    model.SetMaterial(mat);
                     model.PlaceAtOrigin();
                     model.Freeze();
                     return new { timestamp = mostRecentRequest, model };
@@ -153,11 +168,11 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     if (x == null)
                         return;
                     LoadingModel = true;
-                    RxApp.MainThreadScheduler.Schedule(x.model, (_, m) =>
+                    RxApp.MainThreadScheduler.Schedule(x.model, (_, model) =>
                     {
                         if (x.timestamp == mostRecentRequest)
                         {
-                            this.ViewportContent = m;
+                            this.ViewportContent = model;
                             LoadingModel = false;
                         }
                         return null;
@@ -182,7 +197,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         }
 
 
-        private async void createThumbnail()
+        private void createThumbnail()
         {
             try
             {

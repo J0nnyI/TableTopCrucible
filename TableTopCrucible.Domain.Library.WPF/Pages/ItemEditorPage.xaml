@@ -26,8 +26,14 @@
             <ContentPresenter Content="{Binding Path=Filter }"/>
         </Expander>
         <ContentPresenter Content="{Binding Path=ItemList}"
+                          Margin="0 0 12 0"
                           Grid.Row="1"
                           Grid.Column="0"/>
+        <GridSplitter Grid.Row="1"
+                      Grid.Column="0"
+                      Width="4px"
+                      Margin="4px"
+                      Background="Gray"/>
         <ContentPresenter Content="{Binding Path=ItemEditor}"
                           Grid.Row="1"
                           Grid.Column="1"/>

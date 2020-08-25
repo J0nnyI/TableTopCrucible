@@ -35,124 +35,137 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"
                                MinHeight="50"/>
-                <RowDefinition Height="auto"
-                               MinHeight="50"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
+            
+            
+            
+            
+            
             <!--#region name, thumbnail & tag-->
-            <Grid Grid.Row="0"
-                  Grid.Column="0"
-                  Grid.ColumnSpan="4">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="240px"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="auto"
-                                      MinWidth="240px"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <!--#region thumbnail-->
-                <StackPanel Grid.Column="0"
-                            Grid.Row="0"
-                            Grid.RowSpan="2"
-                             Width="240px"
-                             Height="240px">
-                    <Image  Source="{Binding Path=SelectedFiles.Thumbnail.AbsolutePath, Converter={StaticResource cv_img}}"
-                            VerticalAlignment="Bottom"/>
-                    <md:PackIcon Visibility="{Binding Path=SelectedFiles.Thumbnail.AbsolutePath, Converter={StaticResource cv_visibillity}, ConverterParameter=invert_collapsed_file}" 
+            <Expander>
+                <Expander.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"
+                                              MinWidth="120px"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding Name}"
+                                 FontSize="20"
+                                 Margin="4"
+                                 VerticalContentAlignment="Center"
+                                 VerticalAlignment="Bottom"
+                                 HorizontalAlignment="Stretch"
+                                 md:HintAssist.Hint="Name" 
+                                 Grid.Column="0"/>
+                        <ComboBox ItemsSource="{Binding SelectedItem.Versions}"
+                                  SelectedItem="{Binding SelectedVersion}"
+                                  FontSize="20"
+                                  Margin="4"
+                                  VerticalAlignment="Bottom"
+                                  Grid.Column="1"/>
+
+
+                    </Grid>
+                </Expander.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="240px"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <!--#region thumbnail-->
+                    <StackPanel Grid.Column="0"
+                                Grid.Row="0"
+                                Grid.RowSpan="2"
                                  Width="240px"
-                                 Height="240px"
-                                 Kind="Image"
-                                 Foreground="LightGray"/>
-                </StackPanel>
-                <!--#endregion-->
-                <!--#region name / version-->
-                <TextBox Text="{Binding Name}"
-                         FontSize="20"
-                         Margin="4"
-                         VerticalContentAlignment="Center"
-                         VerticalAlignment="Bottom"
-                         HorizontalAlignment="Stretch"
-                         md:HintAssist.Hint="Name" 
-                         Grid.Column="1"/>
-                <ComboBox ItemsSource="{Binding SelectedItem.Versions}"
-                          SelectedItem="{Binding SelectedVersion}"
-                          FontSize="20"
-                          Margin="4"
-                          VerticalAlignment="Bottom"
-                          Grid.Column="2"/>
-                <!--#endregion-->
-                <!--#region tags-->
-                <ContentPresenter Content="{Binding TagEdiotr}"
-                              Grid.Column="1"
-                              Grid.ColumnSpan="3"
-                              Grid.Row="1"
-                              Grid.RowSpan="2"
-                              Validation.ErrorTemplate="{x:Null}"/>
-                <!--#endregion-->
-            </Grid>
+                                 Height="240px">
+                        <Image  Source="{Binding Path=SelectedFiles.Thumbnail.AbsolutePath, Converter={StaticResource cv_img}}"
+                                VerticalAlignment="Bottom"/>
+                        <md:PackIcon Visibility="{Binding Path=SelectedFiles.Thumbnail.AbsolutePath, Converter={StaticResource cv_visibillity}, ConverterParameter=invert_collapsed_file}" 
+                                     Width="240px"
+                                     Height="240px"
+                                     Kind="Image"
+                                     Foreground="LightGray"/>
+                    </StackPanel>
+                    <!--#endregion-->
+                    <!--#region name / version-->
+                    <!--#endregion-->
+                    <!--#region tags-->
+                    <ContentPresenter Content="{Binding TagEdiotr}"
+                                  Grid.Column="1"
+                                  Grid.Row="1"
+                                  Validation.ErrorTemplate="{x:Null}"/>
+                    <!--#endregion-->
 
 
-            <!--#endregion-->
-            <Expander Header="Files"
-                      IsExpanded="False"
-                      Grid.Row="1">
-                <ListView ItemsSource="{Binding SelectedFiles.Files}"
-                      >
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem"
-                           BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                            <Setter Property="HorizontalContentAlignment" 
-                                Value="Stretch" />
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBox Text="{Binding AbsolutePath, Mode=OneWay}" 
-                                         Name="tb_row"
-                                         IsReadOnly="True"
-                                         VerticalAlignment="Center"
-                                         Grid.Column="0"/>
-                                <StackPanel Grid.Column="1"
-                                            Orientation="Horizontal">
-                                    <Button Command="{Binding ElementName=self, Path=DataContext.FileToClipboard}"
-                                            CommandParameter="{Binding AbsolutePath}"
-                                            Style="{StaticResource MaterialDesignIconButton}">
-                                        <md:PackIcon Kind="Clipboard"/>
-                                    </Button>
-                                    <Button Command="{Binding ElementName=self, Path=DataContext.OpenFile}"
-                                            CommandParameter="{Binding AbsolutePath}"
-                                            Style="{StaticResource MaterialDesignIconButton}">
-                                        <md:PackIcon Kind="File"/>
-                                    </Button>
-                                </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+
+                    <md:ColorPicker Color="{Binding MaterialBrush.Color, Mode=OneWayToSource}"
+                            Grid.Column="2"
+                            Grid.Row="1">
+
+                    </md:ColorPicker>
+                    <Expander Header="Files"
+                              IsExpanded="False"
+                              Grid.Row="2"
+                              Grid.ColumnSpan="3">
+                        <ListView ItemsSource="{Binding SelectedFiles.Files}"
+                              >
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem"
+                                   BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                    <Setter Property="HorizontalContentAlignment" 
+                                        Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox Text="{Binding AbsolutePath, Mode=OneWay}" 
+                                                 Name="tb_row"
+                                                 IsReadOnly="True"
+                                                 VerticalAlignment="Center"
+                                                 Grid.Column="0"/>
+                                        <StackPanel Grid.Column="1"
+                                                    Orientation="Horizontal">
+                                            <Button Command="{Binding ElementName=self, Path=DataContext.FileToClipboard}"
+                                                    CommandParameter="{Binding AbsolutePath}"
+                                                    Style="{StaticResource MaterialDesignIconButton}">
+                                                <md:PackIcon Kind="Clipboard"/>
+                                            </Button>
+                                            <Button Command="{Binding ElementName=self, Path=DataContext.OpenFile}"
+                                                    CommandParameter="{Binding AbsolutePath}"
+                                                    Style="{StaticResource MaterialDesignIconButton}">
+                                                <md:PackIcon Kind="File"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Expander>
+                </Grid>
             </Expander>
-            <!--<ContentPresenter Content="{Binding FileVersionList}"
-                              Grid.Column="0"
-                              Grid.Row="1"/>-->
+            <!--#endregion-->
 
-            <TextBlock Grid.Column="0"
-                       Grid.ColumnSpan="4"
-                       Grid.Row="4">
-                <Run>path: </Run>
-                <Run Text="{Binding SelectedItem.LatestFile.SafeAbsolutePath, Mode=OneWay}"/>
-            </TextBlock>
 
             <hx:HelixViewport3D x:Name="viewport"
+                                BorderBrush="LightGray"
+                                BorderThickness="1px"
+                                CameraRotationMode="{Binding CameraRotationMode}"
                                 Grid.Column="0"
                                 Grid.ColumnSpan="4"
-                                Grid.Row="4">
+                                Grid.Row="1">
                 <hx:DefaultLights/>
 
                 <ModelVisual3D Content="{Binding ViewportContent}"/>

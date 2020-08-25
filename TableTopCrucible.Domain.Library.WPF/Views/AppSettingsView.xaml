@@ -6,9 +6,16 @@
              xmlns:local="clr-namespace:TableTopCrucible.Domain.Library.WPF.Views"
              xmlns:views="clr-namespace:TableTopCrucible.Domain.Library.WPF.Views"
              xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
+             xmlns:hx="http://helix-toolkit.org/wpf"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type={x:Type viewModels:AppSettingsViewModel}, IsDesignTimeCreatable=false}">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="8px"/>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -27,6 +34,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock Text="Threadcount"
                        Grid.Column="0"
@@ -40,6 +49,26 @@
             <TextBox Text="{Binding MaxPatchSize, UpdateSourceTrigger=PropertyChanged}" 
                      Grid.Column="1"
                      Grid.Row="1"/>
+            
+            <TextBlock Text="Camera Rotation Mode"
+                       Grid.Column="0"
+                       Grid.Row="2"/>
+            <ComboBox ItemsSource="{Binding CameraRotationModes}"
+                      SelectedItem="{Binding CameraRotationMode}"
+                      x:Name="cb_cameraMode"
+                      Grid.Column="1"
+                      Grid.Row="2"/>
+            <hx:HelixViewport3D Width="200px"
+                                Height="200px"
+                                BorderBrush="LightGray"
+                                BorderThickness="2px"
+                                CameraMode="{Binding Path=SelectedItem, ElementName=cb_cameraMode}"
+                                Grid.Column="2"
+                                Grid.Row="3">
+                <hx:DefaultLights/>
+                <hx:CubeVisual3D/>
+            </hx:HelixViewport3D>
+
 
 
         </Grid>

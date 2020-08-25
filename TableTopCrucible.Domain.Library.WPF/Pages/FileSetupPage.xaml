@@ -40,20 +40,16 @@
                     Grid.Row="1"
                     HorizontalAlignment="Left">
             <Button Command="{Binding OpenFile}"
-                    Style="{StaticResource MaterialDesignToolButton}"
+                    Style="{StaticResource MaterialDesignIconButton}"
+                    ToolTip="Load File"
                     HorizontalAlignment="Left">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Datei Laden"/>
-                    <md:PackIcon Kind="FileDownload"/>
-                </StackPanel>
+                <md:PackIcon Kind="Download"/>
             </Button>
             <Button Command="{Binding SaveFile}"
-                    Style="{StaticResource MaterialDesignToolButton}"
+                    Style="{StaticResource MaterialDesignIconButton}"
+                    ToolTip="Save File"
                     HorizontalAlignment="Left">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Datei Speichern"/>
-                    <md:PackIcon Kind="ContentSave"/>
-                </StackPanel>
+                <md:PackIcon Kind="ContentSave"/>
             </Button>
         </StackPanel>
     </Grid>

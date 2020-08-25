@@ -182,45 +182,54 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         }
 
 
-        private void createThumbnail()
+        private async void createThumbnail()
         {
-            var dirSetup = SelectedItem?.Directories?.FirstOrDefault(dir => Directory.Exists(dir.Path.LocalPath));
-            if (dirSetup == null)
+            try
             {
-                notificationCenter.OnError(new Exception("no thumbnail-directory found"));
-                return;
+                var dirSetup = SelectedItem?.Directories?.FirstOrDefault(dir => Directory.Exists(dir.Path.LocalPath));
+                if (dirSetup == null)
+                {
+                    notificationCenter.OnError(new Exception("no thumbnail-directory found"));
+                    return;
+                }
+                var thumbnailDir = dirSetup?.Path.LocalPath + dirSetup?.ThumbnailPath;
+                var relativeFilename = @$"{thumbnailDir}\{SelectedItem?.Name}_{DateTime.Now:yyyyMMdd_HHmmssss}.png";
+                var relativeUri = new Uri(relativeFilename, UriKind.Relative);
+                var absoluteFilename = new Uri(dirSetup?.Path, relativeUri);
+
+                var rect = VisualTreeHelper.GetDescendantBounds(ViewportControl);
+
+                var source = VisualUtility.CreateBitmap(ViewportControl, ViewportControl.ActualWidth, ViewportControl.ActualHeight);
+
+                if (!Directory.Exists(thumbnailDir))
+                    Directory.CreateDirectory(thumbnailDir);
+
+                using (var fileStream = new FileStream(absoluteFilename.LocalPath, FileMode.Create))
+                {
+                    BitmapEncoder encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(source));
+                    encoder.Save(fileStream);
+                };
+
+                var entity = libraryManagement.UpdateFile(dirSetup.Value, relativeUri);
+
+                var oldLink = this.newLinks.KeyValues
+                    .Select(x => x.Value)
+                    .FirstOrDefault(link => link.Version == SelectedVersion);
+
+                var changeset = new FileItemLinkChangeset(oldLink)
+                {
+                    ThumbnailKey = entity?.HashKey
+                };
+
+                this.newLinks.AddOrUpdate(changeset.Apply());
             }
-            var thumbnailDir = dirSetup?.Path.LocalPath + dirSetup?.ThumbnailPath;
-            var relativeFilename = @$"{thumbnailDir}\{SelectedItem?.Name}_{DateTime.Now:yyyyMMdd_HHmmssss}.png";
-            var relativeUri = new Uri(relativeFilename, UriKind.Relative);
-            var absoluteFilename = new Uri(dirSetup?.Path, relativeUri);
-
-            var rect = VisualTreeHelper.GetDescendantBounds(ViewportControl);
-
-            var source = ViewportControl.CreateBitmap(rect.Width, rect.Height, true);
-
-            if (!Directory.Exists(thumbnailDir))
-                Directory.CreateDirectory(thumbnailDir);
-
-            using (var fileStream = new FileStream(absoluteFilename.LocalPath, FileMode.Create))
+            catch (Exception ex)
             {
-                BitmapEncoder encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(source));
-                encoder.Save(fileStream);
-            };
-
-            var entity = libraryManagement.UpdateFile(dirSetup.Value, relativeUri);
-
-            var oldLink = this.newLinks.KeyValues
-                .Select(x => x.Value)
-                .FirstOrDefault(link => link.Version == SelectedVersion);
-
-            var changeset = new FileItemLinkChangeset(oldLink)
-            {
-                ThumbnailKey = entity?.HashKey
-            };
-
-            this.newLinks.AddOrUpdate(changeset.Apply());
+                notificationCenter.CreateSingleTaskJob(out var proc, "thumbnail creation failed");
+                proc.Title = "exception: ";
+                proc.Details = ex.ToString();
+            }
         }
 
         private void _save()

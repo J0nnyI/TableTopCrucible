@@ -61,7 +61,7 @@ namespace TableTopCrucible.Data.Services
                      GetEx().Connect(),
                     (FileItemLinkEx link) => link.FileKey,
                     (files, links) => new { files, links })
-                .TransformMany(x =>x.links.Items.Select(item=> new VersionedFile(item,x.files.Items)), vFile=>vFile.Link.Id);
+                .TransformMany(x =>x.links.Items.Select(link=> new VersionedFile(link,x.files.Items)), vFile=>vFile.Link.Id);
         }
 
         public FileItemLinkService(

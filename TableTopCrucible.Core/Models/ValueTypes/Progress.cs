@@ -35,6 +35,8 @@ namespace TableTopCrucible.Core.ValueTypes
 
         public Progress OnNextStep()
             => new Progress(Min, Value + 1, Max);
+        public Progress Skip(int steps)
+            => new Progress(Min, Value + steps, Max);
     }
 
 

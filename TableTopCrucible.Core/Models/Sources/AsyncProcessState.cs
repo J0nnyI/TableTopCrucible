@@ -97,11 +97,25 @@ namespace TableTopCrucible.Core.Models.Sources
         }
         public void OnNextStep(string message = null)
         {
-            if (!_progressChanges.Value.HasValue)
-                throw new InvalidOperationException($"progress has not been initialized jet (job {this.Title}, {this.Details})");
-            Progress = _progressChanges.Value.Value.OnNextStep();
-            if (message != null)
-                this.Details = message;
+            Observable.Start(() =>
+            {
+                if (!_progressChanges.Value.HasValue)
+                    throw new InvalidOperationException($"progress has not been initialized jet (job {this.Title}, {this.Details})");
+                Progress = _progressChanges.Value.Value.OnNextStep();
+                if (message != null)
+                    this.Details = message;
+            }, RxApp.MainThreadScheduler);
+        }
+        public void Skip(int count, string message = null)
+        {
+            Observable.Start(() =>
+            {
+                if (!_progressChanges.Value.HasValue)
+                    throw new InvalidOperationException($"progress has not been initialized jet (job {this.Title}, {this.Details})");
+                Progress = _progressChanges.Value.Value.Skip(count);
+                if (message != null)
+                    this.Details = message;
+            }, RxApp.MainThreadScheduler);
         }
     }
 }

@@ -132,10 +132,9 @@ namespace TableTopCrucible.Domain.Library
             {
                 try
                 {
-
                     var job = new AsyncJobState("Full File Sync");
-                    var mainProc = new AsyncProcessState("preparing data");
-                    mainProc.AddProgress(5);
+                    var mainProc = new AsyncProcessState("collecting data");
+                    mainProc.AddProgress(3);
                     job.AddProcess(mainProc);
                     notificationCenter.Register(job);
 
@@ -167,15 +166,17 @@ namespace TableTopCrucible.Domain.Library
                     // stage 1: hash new Files
                     mainProc.OnNextStep("handling file updates");
 
-                    var FilesToHash = allFiles
+                    var filesToHash = allFiles
                         .Where(x => x.isNew || x.isUpdated);
 
-                    if (FilesToHash.Any())
+                    if (filesToHash.Any())
                     {
 
-                        mainProc.OnNextStep("hashing files file updates");
+                        var updateProc = new AsyncProcessState("hashing files file updates");
+                        updateProc.AddProgress(6);
+                        job.AddProcess(updateProc);
 
-                        var chunks = FilesToHash
+                        var chunks = filesToHash
                             .SplitEvenly(settingsService.ThreadCount);
 
                         var hashProcs = chunks
@@ -221,7 +222,7 @@ namespace TableTopCrucible.Domain.Library
                             .GroupBy(x => x.IsUpdate)
                             .ToArray();
 
-                            mainProc.OnNextStep("preparing data");
+                            updateProc.OnNextStep("preparing data");
 
                             var filesToUpdate = hashedFiles
                                 .FirstOrDefault(x => x.Key == true)
@@ -242,7 +243,7 @@ namespace TableTopCrucible.Domain.Library
                             var fileItemLinkChangesets = new List<FileItemLinkChangeset>();
                             if (filesToUpdate != null)
                             {
-                                mainProc.OnNextStep("creating linkupdates");
+                                updateProc.OnNextStep("creating linkupdates");
                                 foreach (var files in filesToUpdate)
                                 {
                                     // prepare links
@@ -279,7 +280,7 @@ namespace TableTopCrucible.Domain.Library
 
                                     // prepare file
 
-                                    mainProc.OnNextStep("creating fileupdates");
+                                    updateProc.OnNextStep("creating fileupdates");
                                     fileUpdateChangesets.AddRange(
                                         files.Select(file =>
                                         {
@@ -293,12 +294,16 @@ namespace TableTopCrucible.Domain.Library
 
                                 }
 
-                                mainProc.OnNextStep("patching...");
+                                updateProc.OnNextStep("patching...");
                                 this.fileDataService.Patch(fileUpdateChangesets);
                                 this.fileItemLinkService.Patch(fileItemLinkChangesets);
                             }
+                            else
+                            {
+                                updateProc.Skip(3,"no merge required");
+                            }
 
-                            mainProc.OnNextStep("handling new files");
+                            updateProc.OnNextStep("handling new files");
                             var newFiles = hashedFiles
                                 .FirstOrDefault(x => x.Key == false)
                                 ?.Select(file =>
@@ -314,8 +319,16 @@ namespace TableTopCrucible.Domain.Library
 
                             if (newFiles != null)
                                 this.fileDataService.Patch(newFiles);
-                        });
 
+                            updateProc.OnNextStep("done");
+                            updateProc.State = AsyncState.Done;
+                        },
+                        (Exception ex)=>
+                        {
+                            updateProc.State = AsyncState.Failed;
+                            updateProc.Title = "failed";
+                            updateProc.Details = ex.ToString();
+                        });
                     }
 
 
@@ -323,7 +336,7 @@ namespace TableTopCrucible.Domain.Library
                     mainProc.OnNextStep("deleting old files");
 
                     this.fileDataService.Delete(allFiles.Where(x => x.isDeleted).Select(x => x.definedFile.Value.Id));
-
+                    mainProc.OnNextStep("done");
                     mainProc.State = AsyncState.Done;
                 }
                 catch (Exception ex)

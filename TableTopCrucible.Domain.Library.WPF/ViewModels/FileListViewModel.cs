@@ -11,6 +11,7 @@ using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.WPF.Commands;
+using TableTopCrucible.Core.Utilities;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
@@ -30,6 +31,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this._fileInfoService
                 .GetExtended()
                 .Connect()
+                .Sort(file => file.AbsolutePath)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(out _files)
                 .TakeUntil(destroy)

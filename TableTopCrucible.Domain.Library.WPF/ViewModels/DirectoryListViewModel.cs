@@ -10,6 +10,7 @@ using System.Reactive.Linq;
 
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Commands;
 using TableTopCrucible.WPF.Commands;
@@ -38,25 +39,24 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             FullSync = fullSync;
             this._injectionProviderService
                 .Provider
-                .TakeUntil(destroy)
-                .Subscribe(provider =>
-                {
-
+                .Select(provider =>
                     this._directorySetupService
                         .Get()
                         .Connect()
+                        .Sort(dir => (string)dir.Name)
                         .Transform(item =>
                         {
                             var vm = provider.GetRequiredService<DirectorySetupCardViewModel>();
                             vm.DirectorySetupChanges.OnNext(item);
                             return vm;
                         })
-                        .TakeUntil(destroy)
-                        .DisposeMany()
-                        .ObserveOn(RxApp.MainThreadScheduler)
-                        .Bind(out _directories)
-                        .Subscribe();
-                });
+                )
+                .Switch()
+                .TakeUntil(destroy)
+                .DisposeMany()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Bind(out _directories)
+                .Subscribe();
         }
     }
 }

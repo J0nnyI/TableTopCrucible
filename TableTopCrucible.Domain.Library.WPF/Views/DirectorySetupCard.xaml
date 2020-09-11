@@ -33,6 +33,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBox Text="{Binding Name}" 
                      IsReadOnly="{Binding EditMode, Converter={StaticResource cv_Invert}}"
@@ -46,6 +47,23 @@
                      md:ValidationAssist.UsePopup="True"
                      Grid.Row="0"
                      Grid.Column="1"/>
+            <Button Command="{Binding OpenFile}"
+                    CommandParameter="{Binding UpdatePath}"
+                    Grid.Column="2"
+                    Grid.Row="0"
+                    Style="{StaticResource MaterialDesignIconButton}">
+                <md:PackIcon Kind="File"/>
+            </Button>
+            <TextBlock VerticalAlignment="Center" 
+                       HorizontalAlignment="Center"
+                       MinWidth="20px"
+                       Grid.Column="3"
+                       Grid.Row="0">
+                <Run Text="{Binding ItemCount, Mode=OneWay}"/>
+                <Run>(</Run>
+                <Run Text="{Binding FileCount, Mode=OneWay}"/>
+                <Run>)</Run>
+            </TextBlock>
             <TextBox Text="{Binding Description}"
                      IsReadOnly="{Binding EditMode, Converter={StaticResource cv_Invert}}"
                      md:TextFieldAssist.DecorationVisibility="{Binding Path=EditMode, Converter={StaticResource cv_visibillity}}"
@@ -54,21 +72,11 @@
                      Margin="8px"
                      Grid.Row="1"
                      Grid.Column="0"
-                     Grid.ColumnSpan="3"/>
+                     Grid.ColumnSpan="4"/>
 
-            <TextBlock VerticalAlignment="Center" 
-                       HorizontalAlignment="Center"
-                       MinWidth="20px"
-                       Grid.Column="2"
-                       Grid.Row="0">
-                <Run Text="{Binding DistinctFileCount, Mode=OneWay}"/>
-                <Run>(</Run>
-                <Run Text="{Binding FileCount, Mode=OneWay}"/>
-                <Run>)</Run>
-            </TextBlock>
             <Grid Grid.Row="0"
                   Grid.RowSpan="3"
-                  Grid.Column="3">
+                  Grid.Column="4">
                 <Grid.Visibility>
                     <MultiBinding Converter="{StaticResource mvc_visibillity}" ConverterParameter="or_hidden">
                         <Binding ElementName="self" 

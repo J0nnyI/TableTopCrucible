@@ -39,11 +39,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
 
         public ItemListFilterViewModel(
-            TagEditorViewModel tagEditor,
-            IDirectoryDataService directoryDataService)
+            TagEditorViewModel tagWhitelist,
+            TagEditorViewModel tagBlacklist,
+            IDirectoryDataService directoryDataService,
+            IItemService itemService)
         {
-            TagEditor = tagEditor;
-            TagEditor.IsEditmode = true;
+            TagWhitelist = tagWhitelist;
+            TagBlacklist = tagBlacklist;
+            TagBlacklist.IsEditmode = TagWhitelist.IsEditmode = true;
             _directorySetups =
                 directoryDataService.Get()
                 .Connect()
@@ -51,11 +54,10 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .ToSortedCollection(x => x.Name)
                 .ToProperty(this, nameof(DirectorySetups));
 
-
             this.FilterChanges =
                 Observable.CombineLatest(
-                    this.TagEditor.TagsChanges,
-                    this.WhenAnyValue(x => x.TagFilterMode),
+                    this.TagWhitelist.TagsChanges.Connect(),
+                    this.TagBlacklist.TagsChanges.Connect(),
                     this.WhenAnyValue(x => x.NameFilterMode),
                     this.WhenAnyValue(x => x.NameFilter),
                     this.WhenAnyValue(x => x.DirectorySetupFilter),
@@ -64,7 +66,11 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .TakeUntil(destroy)
                 .Select(_ => new Func<ItemEx, bool>(Filter));
 
-
+            FilterChanges.Subscribe(filter =>
+            {
+                TagWhitelist.UpdateFilter(filter);
+                TagBlacklist.UpdateFilter(filter);
+            });
         }
 
         public bool Filter(ItemEx item)
@@ -72,27 +78,12 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             if (DirectorySetupFilter.HasValue && !item.DirectorySetups.Contains(DirectorySetupFilter.Value))
                 return false;
 
-            if (TagEditor.Tags.Any())
-            {
-                switch (TagFilterMode)
-                {
-                    case TagFilterMode.HasAll:
-                        if (TagEditor.Tags.Any(itemTag => !item.Tags.Contains(itemTag)))
-                            return false;
-                        break;
-                    case TagFilterMode.HasAny:
-                        if (!item.Tags.Any(itemTag => TagEditor.Tags.Contains(itemTag)))
-                            return false;
-                        break;
-                    case TagFilterMode.HasNone:
-                        if (item.Tags.Any(itemTag => TagEditor.Tags.Contains(itemTag)))
-                            return false;
-                        break;
-                    default:
-                        break;
-                }
+            if (TagWhitelist.Tags.Any(itemTag => !item.Tags.Contains(itemTag)))
+                return false;
+            if (item.Tags.Any(itemTag => TagBlacklist.Tags.Contains(itemTag)))
+                return false;
 
-            }
+
             if (!string.IsNullOrWhiteSpace(NameFilter))
             {
                 switch (NameFilterMode)
@@ -120,15 +111,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             return true;
         }
 
-        public TagEditorViewModel TagEditor { get; }
-        public IEnumerable<TagFilterMode> TagFilterModes { get; } = new TagFilterMode[]
-        {
-            TagFilterMode.HasAll,
-            TagFilterMode.HasAny,
-            TagFilterMode.HasNone
-        };
-        [Reactive]
-        public TagFilterMode TagFilterMode { get; set; } = TagFilterMode.HasAny;
+        public TagEditorViewModel TagWhitelist { get; }
+        public TagEditorViewModel TagBlacklist { get; }
         public IEnumerable<TextFilterMode> TextFilterModes { get; } = new TextFilterMode[]
         {
             TextFilterMode.Contains,

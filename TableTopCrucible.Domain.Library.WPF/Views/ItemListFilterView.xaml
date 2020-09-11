@@ -20,14 +20,15 @@
         <TextBlock Text="Tags"
                    Grid.Column="0"
                    Grid.Row="0"/>
-        <ContentPresenter Content="{Binding TagEditor}" 
+        <ContentPresenter Content="{Binding TagWhitelist}" 
+                          Validation.ErrorTemplate="{x:Null}"
                           Grid.Column="1"
                           Grid.Row="0"/>
-        <ComboBox ItemsSource="{Binding TagFilterModes}" 
-                  SelectedItem="{Binding TagFilterMode, Mode=TwoWay}"
-                  Grid.Column="2"
-                  Grid.Row="0"/>
-        
+        <ContentPresenter Content="{Binding TagBlacklist}" 
+                          Validation.ErrorTemplate="{x:Null}"
+                          Grid.Column="2"
+                          Grid.Row="0"/>
+
         <TextBlock Text="Name"
                    Grid.Column="0"
                    Grid.Row="1"/>

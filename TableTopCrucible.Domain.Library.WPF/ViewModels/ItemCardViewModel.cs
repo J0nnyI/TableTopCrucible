@@ -1,8 +1,11 @@
-﻿using ReactiveUI;
+﻿using DynamicData;
+
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Extensions;
 
 using System;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -12,6 +15,7 @@ using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Core.Utilities;
 using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
@@ -96,14 +100,16 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .Subscribe(item =>
                 {
                     this.ItemName = (string)item?.Name;
-                    this.TagEditor.Tags = item?.Tags;
+                    this.TagEditor.SetTags(item?.Tags);
                 });
             this.ItemNameChanges
                 .TakeUntil(destroy)
                 .Subscribe(name => { if (this.Changeset != null) this.Changeset.Name = name; });
             this.TagEditor.TagsChanges
+                .Connect()
                 .TakeUntil(destroy)
-                .Subscribe(tags => { if (this.Changeset != null) this.Changeset.Tags = tags; });
+                .AsObservable()
+                .Subscribe(tags => { if (this.Changeset != null) this.Changeset.Tags = tags.Select(x=>x.Item.Current); });
             this.EditModeChanges
                 .TakeUntil(destroy)
                 .Subscribe(editMode =>

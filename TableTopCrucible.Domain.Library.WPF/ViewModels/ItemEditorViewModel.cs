@@ -275,7 +275,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
                 this.Name = (string)item?.Name;
                 this.FileVersionList.SetFiles(item?.FileVersions);
-                this.TagEdiotr.Tags = item?.Tags;
+                this.TagEdiotr.SetTags(item?.Tags);
                 this.newLinks.Clear();
                 if (item?.FileVersions != null)
                     this.newLinks.AddOrUpdate(item?.FileVersions?.Select(ver => ver.Link.Link));

@@ -80,6 +80,7 @@
             <ListBox ItemsSource="{Binding Item.Tags}" 
                      Style="{StaticResource MaterialDesignFilterChipListBox}"
                      md:ListBoxAssist.IsToggle="False"
+                     Width="auto"
                      Grid.Column="1"
                      Grid.Row="1">
                 <ListBox.ItemsPanel>
@@ -96,9 +97,9 @@
                 </ListBox.ItemContainerStyle>
             </ListBox>
             <TextBlock VerticalAlignment="Bottom"
-                   HorizontalAlignment="Right"
-                   Grid.Column="1"
-                   Grid.Row="1">
+                       HorizontalAlignment="Right"
+                       Grid.Column="1"
+                       Grid.Row="1">
                 <Run Text="{Binding LatestVersion, Mode=OneWay}"/>
                 <Run>(</Run>
                 <Run Text="{Binding FileCount, Mode=OneWay}"/>

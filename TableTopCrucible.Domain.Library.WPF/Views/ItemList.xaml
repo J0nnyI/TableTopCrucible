@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
-             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"             
+             xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
              mc:Ignorable="d" 
              Name="self"
              d:DesignHeight="450"
@@ -19,14 +20,24 @@
             <RowDefinition/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <ListView ItemsSource="{Binding ItemsDataView.View}"
+        <ListView ItemsSource="{Binding Items}"
                   SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                   SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                   md:RippleAssist.IsDisabled="True"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  
                   SelectionMode="Single"
                   Grid.Row="0" 
                   Grid.Column="1">
+            <!--<ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <wpftk:VirtualizingWrapPanel Orientation="Vertical"
+                                                 SpacingMode="None"
+                                                 StretchItems="true"
+                                                 ItemSize="500,200"/>
+                    --><!--<UniformGrid Columns="2"/>-->
+                    <!--<wpftk--><!--
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>-->
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Setter Property="HorizontalContentAlignment" 

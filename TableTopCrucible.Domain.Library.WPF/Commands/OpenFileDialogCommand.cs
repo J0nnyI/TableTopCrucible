@@ -15,20 +15,14 @@ namespace TableTopCrucible.Domain.Library.WPF.Commands
 {
     public class OpenFileDialogCommand : ICommand
     {
-        private readonly ISaveService _saveService;
-
         public event EventHandler CanExecuteChanged;
-        public OpenFileDialogCommand(ISaveService saveService)
-        {
-            this._saveService = saveService;
-        }
         public bool CanExecute(object parameter) => true;
         public void Execute(object parameter)
         {
             var dialog = new OpenFileDialog();
             dialog.Filter = "Table Top Crucible Library (*.ttcl)|*.*";
-            if (dialog.ShowDialog() == true)
-                _saveService.Load(dialog.FileName);
+            if (dialog.ShowDialog() == true && parameter is Action<string> callback)
+                callback(dialog.FileName);
         }
     }
 }

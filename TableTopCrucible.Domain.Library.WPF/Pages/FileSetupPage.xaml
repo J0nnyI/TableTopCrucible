@@ -40,12 +40,14 @@
                     Grid.Row="1"
                     HorizontalAlignment="Left">
             <Button Command="{Binding OpenFile}"
+                    CommandParameter="{Binding OpenFileAction}"
                     Style="{StaticResource MaterialDesignIconButton}"
                     ToolTip="Load File"
                     HorizontalAlignment="Left">
                 <md:PackIcon Kind="Download"/>
             </Button>
             <Button Command="{Binding SaveFile}"
+                    CommandParameter="{Binding SaveFileAction}"
                     Style="{StaticResource MaterialDesignIconButton}"
                     ToolTip="Save File"
                     HorizontalAlignment="Left">

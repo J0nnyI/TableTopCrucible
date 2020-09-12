@@ -1,14 +1,16 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
-
+using FluentValidation;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ReactiveUI.Validation.Extensions;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 using TableTopCrucible.Core.Helper;
@@ -33,7 +35,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
     public class TagEditorViewModel : DisposableReactiveValidationObject<TagEditorViewModel>, ITagEditor
     {
-
         public TagEditorViewModel()
         {
             this.Selection
@@ -45,8 +46,32 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.NewTagChanges =
                 this.WhenAnyValue(vm => vm.NewTag)
                 .TakeUntil(destroy);
+            this.ValidationRule(
+                vm => vm.NewTag,
+                newTag =>
+                {
+                    ValidationResult = !Tag.Validate(newTag).Any() && (PermitNewTags || this.Tagpool.Items.Contains((Tag)newTag)) && !this.Selection.Items.Contains((Tag)newTag);
+                    return ValidationResult;
+                },
+                newTag =>
+                {
+                    Func<string> tmp = () =>
+                    {
+                        ValidatingCount++;
+                        if (!Tag.Validate(newTag).Any())
+                        {
+                            if (!PermitNewTags && !this.Tagpool.Items.Contains((Tag)newTag))
+                                return "there is no item with this tag";
+                            if (this.Selection.Items.Contains((Tag)newTag))
+                                return "this tag has already been selected";
 
-            
+                        }
+                        return string.Join(Environment.NewLine, Tag.Validate(newTag));
+                    };
+                    ErrorText = tmp();
+                    return ErrorText;
+                }
+            );
         }
 
 

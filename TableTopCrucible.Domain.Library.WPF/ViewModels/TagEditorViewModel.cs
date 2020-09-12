@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Services;
@@ -44,7 +45,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is bool isPrimary)
+            if (value is bool isPrimary)
             {
                 return isPrimary ? Brushes.Black : Brushes.DarkGray;
             }
@@ -159,16 +160,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     this.CompletePoolChanges
                         .DistinctUntilChanged()
                         .Select(completePool =>
-                        {
-                            if (CompletePool)
-                                return this.allTags
-                                      .Except(
+                            completePool
+                                ? this.allTags
+                                    .Except(
                                         this.Tagpool.Connect().Merge(
                                         this.Selection.Connect()))
-                                      .Transform(tag => new TagEx(tag, false));
-                            else
-                                return Observable.Empty<IChangeSet<TagEx>>();
-                        })
+                                    .Transform(tag => new TagEx(tag, false))
+                                : Observable.Empty<IChangeSet<TagEx>>()
+                        )
                         .Switch()
                     )
                 .Sort()

@@ -12,14 +12,16 @@ using System.Reactive.Subjects;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Data.Models.Views;
 using System.Collections.Generic;
+using TableTopCrucible.Core.Helper;
 
 namespace TableTopCrucible.Data.Services
 {
     public interface IItemService : IDataService<Item, ItemId, ItemChangeset>
     {
-        public IObservableCache<ItemEx, ItemId> GetExtended();
-        public IObservable<ItemEx> GetExtended(ItemId item);
-        public IObservable<ItemEx?> GetExtended(IObservable<ItemId?> itemIdChanges);
+        IObservableCache<ItemEx, ItemId> GetExtended();
+        IObservable<ItemEx> GetExtended(ItemId item);
+        IObservable<ItemEx?> GetExtended(IObservable<ItemId?> itemIdChanges);
+        IObservable<IChangeSet<Tag>> GetTags(IObservable<IChangeSet<Item, ItemId>> sourceItems);
     }
     public class ItemService : DataServiceBase<Item, ItemId, ItemChangeset>, IItemService
     {
@@ -71,5 +73,12 @@ namespace TableTopCrucible.Data.Services
         public IObservable<ItemEx> GetExtended(ItemId item)
             => this.GetExtended().WatchValue(item);
 
+        public IObservable<IChangeSet<Tag>> GetTags(IObservable<IChangeSet<Item, ItemId>> sourceItems)
+        {
+            return sourceItems
+                .TransformMany(item => item.Tags, tag => tag)
+                .DistinctValues(tag => tag)
+                .RemoveKey();
+        }
     }
 }

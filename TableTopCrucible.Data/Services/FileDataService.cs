@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
-using TableTopCrucible.Core.Utilities;
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.ValueTypes;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Domain.Models.Sources;

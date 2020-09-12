@@ -1,7 +1,7 @@
 ﻿using System.Windows.Media.Media3D;
 using System.Linq;
 
-namespace TableTopCrucible.Core.Utils
+namespace TableTopCrucible.Core.Helper
 {
     public static class Model3DHelper
     {

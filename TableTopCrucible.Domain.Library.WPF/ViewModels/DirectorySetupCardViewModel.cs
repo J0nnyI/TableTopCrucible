@@ -11,7 +11,7 @@ using System.Reactive.Subjects;
 using System.Windows.Input;
 
 using TableTopCrucible.Core.Models.Sources;
-using TableTopCrucible.Core.Utilities;
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Commands;

@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Threading;
 
 using TableTopCrucible.Core.Models.Sources;
-using TableTopCrucible.Core.Utilities;
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Core.Services

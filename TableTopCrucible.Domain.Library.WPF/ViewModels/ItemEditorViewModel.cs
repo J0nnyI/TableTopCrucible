@@ -38,7 +38,7 @@ using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 using TableTopCrucible.Core.WPF.Commands;
 using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf;
-using TableTopCrucible.Core.Utils;
+using TableTopCrucible.Core.Helper;
 using System.Windows.Threading;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels

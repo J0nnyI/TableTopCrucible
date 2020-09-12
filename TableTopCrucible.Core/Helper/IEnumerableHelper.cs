@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
-namespace TableTopCrucible.WPF.Helper
+namespace TableTopCrucible.Core.Helper
 {
     public static class IEnumerableHelper
     {

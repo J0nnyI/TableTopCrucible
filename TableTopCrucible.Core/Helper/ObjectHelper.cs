@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace TableTopCrucible.Core.Utilities
+namespace TableTopCrucible.Core.Helper
 {
     public static class ObjectHelper
     {

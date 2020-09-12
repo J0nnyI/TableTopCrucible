@@ -12,7 +12,7 @@ using System.Reactive.Subjects;
 
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
-using TableTopCrucible.Core.Utilities;
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 

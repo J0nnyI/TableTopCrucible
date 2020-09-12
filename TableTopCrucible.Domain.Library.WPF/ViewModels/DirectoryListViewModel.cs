@@ -10,7 +10,7 @@ using System.Reactive.Linq;
 
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
-using TableTopCrucible.Core.Utilities;
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Commands;
 using TableTopCrucible.WPF.Commands;

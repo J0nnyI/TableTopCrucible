@@ -9,7 +9,7 @@ using System.Linq;
 using System.Windows.Threading;
 
 using TableTopCrucible.Core.Models.Enums;
-using TableTopCrucible.Core.Utilities;
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.WPF.Helper;
 
 namespace TableTopCrucible.Core.ValueTypes

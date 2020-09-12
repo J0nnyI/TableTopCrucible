@@ -11,7 +11,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Windows.Forms;
-
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
@@ -42,12 +42,12 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             ITagEditor tagWhitelist,
             ITagEditor tagBlacklist,
             IDirectoryDataService directoryDataService,
-            IItemService itemService,
-            IItemTagService itemTagService)
+            IItemService itemService)
         {
             TagWhitelist = tagWhitelist;
             TagBlacklist = tagBlacklist;
             TagBlacklist.Editmode = TagWhitelist.Editmode = true;
+            TagBlacklist.PermitNewTags =  TagWhitelist.PermitNewTags = false;
             _directorySetups =
                 directoryDataService.Get()
                 .Connect()
@@ -66,7 +66,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             .Select(_ => new Func<ItemEx, bool>(Filter));
 
             var tagpoolSource =
-                itemTagService.Build(
+                itemService.GetTags(
                     itemService.GetExtended()
                         .Connect()
                         .Filter(FilterChanges)

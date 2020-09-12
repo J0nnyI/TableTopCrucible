@@ -14,7 +14,7 @@ using System.Windows;
 using System.Windows.Navigation;
 
 using TableTopCrucible.Core.Services;
-using TableTopCrucible.Core.Utilities;
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.WPF.Commands;
 using TableTopCrucible.Core.WPF.Services;
 using TableTopCrucible.Core.WPF.ViewModels;
@@ -68,7 +68,6 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<ISaveService, SaveService>();
             // library domain services
             services.AddSingleton<IItemService, ItemService>();
-            services.AddSingleton<IItemTagService, ItemTagService>();
             services.AddSingleton<IFileItemLinkService, FileItemLinkService>();
             services.AddSingleton<IFileDataService, FileDataService>();
             services.AddSingleton<IDirectoryDataService, DirectoryDataService>();

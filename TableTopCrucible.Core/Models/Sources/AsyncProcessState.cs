@@ -7,7 +7,7 @@ using System.Reactive.Subjects;
 using System.Windows.Threading;
 
 using TableTopCrucible.Core.Models.Enums;
-using TableTopCrucible.Core.Utilities;
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.ValueTypes;
 
 namespace TableTopCrucible.Core.Models.Sources

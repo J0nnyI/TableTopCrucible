@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Text;
 
-namespace TableTopCrucible.Core.Utilities
+namespace TableTopCrucible.Core.Helper
 {
     public static class CompositeDisposableHelper
     {

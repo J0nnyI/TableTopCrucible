@@ -45,6 +45,7 @@
                    Grid.Row="2"/>
         <ComboBox ItemsSource="{Binding DirectorySetups}"
                   SelectedItem="{Binding DirectorySetupFilter}"
+                  Text="{Binding DirSetupFilter}"
                   IsTextSearchEnabled="True"
                   IsEditable="True"
                   DisplayMemberPath="Name"

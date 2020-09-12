@@ -47,11 +47,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             TagWhitelist = tagWhitelist;
             TagBlacklist = tagBlacklist;
             TagBlacklist.Editmode = TagWhitelist.Editmode = true;
-            TagBlacklist.PermitNewTags =  TagWhitelist.PermitNewTags = false;
+            TagBlacklist.PermitNewTags = TagWhitelist.PermitNewTags = false;
             _directorySetups =
                 directoryDataService.Get()
                 .Connect()
                 .RemoveKey()
+                .Filter(
+                    this.WhenAnyValue(vm=>vm.DirSetupFilter)
+                    .Select<string,Func<DirectorySetup,bool>>(input=>dir=>((string)dir.Name).ToLower().Contains(input.ToLower())))
                 .ToSortedCollection(x => x.Name)
                 .ToProperty(this, nameof(DirectorySetups));
 
@@ -122,7 +125,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             }
             return true;
         }
-
+        [Reactive] public string DirSetupFilter { get; set; } = string.Empty;
         public ITagEditor TagWhitelist { get; }
         public ITagEditor TagBlacklist { get; }
         public IEnumerable<TextFilterMode> TextFilterModes { get; } = new TextFilterMode[]

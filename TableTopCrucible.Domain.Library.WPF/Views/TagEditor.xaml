@@ -43,7 +43,7 @@
                  Grid.Row="0">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="SelectionChanged">
-                    <i:InvokeCommandAction Command="{Binding SelectedTagsChanged}"
+                    <i:InvokeCommandAction Command="{Binding MarkingChanged}"
                                            CommandParameter="{Binding SelectedItems, ElementName=tagList}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
@@ -67,9 +67,14 @@
                   md:ValidationAssist.UsePopup="True"
                   IsEditable="True"
                   StaysOpenOnEdit="True"
-                  KeyDown="_addTag"
                   Margin="16px 2px 16px 0px"
                   Grid.Row="1">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="KeyDown">
+                    <i:InvokeCommandAction Command="{Binding AddTag}"
+                                           PassEventArgsToCommand="True"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <ComboBox.Resources>
                 <Style TargetType="Popup">
                     <Setter Property="Height" Value="300px"/>

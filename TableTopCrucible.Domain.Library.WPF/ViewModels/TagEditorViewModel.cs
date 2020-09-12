@@ -8,6 +8,7 @@ using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Extensions;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -76,8 +77,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     return -1;
                 if (!this.IsPrimary && tag.IsPrimary)
                     return 1;
+                return Tag.CompareTo(tag.Tag);
             }
-            return Tag.CompareTo(obj);
+            throw new InvalidOperationException("must compare to TagEx");
         }
         public override string ToString() => Tag.ToString();
     }
@@ -91,12 +93,27 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.Selection
                 .Connect()
                 .Bind(SelectionBinding)
+                .TakeUntil(destroy)
                 .Subscribe();
-
-            this.AddTag = new RelayCommand(_ => this.Select((Tag)NewTag), _ => Tag.Validate(NewTag).Any());
             this.NewTagChanges =
                 this.WhenAnyValue(vm => vm.NewTag)
                 .TakeUntil(destroy);
+
+            this.AddTag = new RelayCommand(e =>
+            {
+                if (e is KeyEventArgs args && args.Key != Key.Enter)
+                    return;
+                this.Select((Tag)NewTag);
+                this.NewTag = string.Empty;
+            }, _ => !this.HasErrors);
+            this.RemoveTags = new RelayCommand(_ => this.Deselect(this.MarkedTags), _ => this.MarkedTags.Any());
+            this.MarkingChanged = new RelayCommand(
+                par =>
+                {
+                    if (par is IEnumerable lst)
+                        this.MarkedTags = lst.OfType<Tag>().ToArray();
+                }
+            );
 
             this.allTags = this.itemService.GetTags().Connect();
 
@@ -119,10 +136,10 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 }
             );
         }
-
-
         public ICommand RemoveTags { get; }
         public ICommand AddTag { get; }
+        public ICommand MarkingChanged { get; }
+        private IEnumerable<Tag> MarkedTags { get; set; } = new Tag[0];
         [Reactive]
         public string NewTag { get; set; } = string.Empty;
         [Reactive]
@@ -190,9 +207,13 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         }
         public void Select(string tag)
         {
-            if (Tag.Validate(tag).Any())
+            if (this.HasErrors)
                 return;
             this.Select((Tag)tag);
+        }
+        public void Deselect(IEnumerable<Tag> tags)
+        {
+            this.Selection.RemoveMany(tags);
         }
     }
 }

@@ -15,12 +15,5 @@ namespace TableTopCrucible.Domain.Library.WPF.Views
         {
             InitializeComponent();
         }
-        private void _addTag(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter && this.DataContext is TagEditorViewModel viewModel)
-            {
-                viewModel.Select(viewModel.NewTag);
-            }
-        }
     }
 }

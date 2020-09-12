@@ -1,22 +1,14 @@
 ﻿using DynamicData;
 
-using Microsoft.Win32.SafeHandles;
-
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -32,13 +24,10 @@ using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.Core.Helper;
-
-using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
 using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 using TableTopCrucible.Core.WPF.Commands;
 using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf;
-using System.Windows.Threading;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
@@ -100,6 +89,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             FileToClipboard = fileToClipboard;
             this.TagEdiotr.Editmode = true;
             this.TagEdiotr.CompletePool = true;
+            this.TagEdiotr.PermitNewTags = true;
             this.disposables.Add(_selectedItemIdChanges);
 
             this.SelectedItemChanges =

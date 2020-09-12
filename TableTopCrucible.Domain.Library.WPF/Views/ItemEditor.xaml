@@ -37,11 +37,7 @@
                                MinHeight="50"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            
-            
-            
-            
-            
+
             <!--#region name, thumbnail & tag-->
             <Expander>
                 <Expander.Header>

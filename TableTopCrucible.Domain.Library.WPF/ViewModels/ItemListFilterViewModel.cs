@@ -65,7 +65,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             .TakeUntil(destroy)
             .Select(_ => new Func<ItemEx, bool>(Filter));
 
-            var tagpoolSource =
+            this.Tagpool =
                 itemService.GetTags(
                     itemService.GetExtended()
                         .Connect()
@@ -73,18 +73,18 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                         .Transform(itemEx => itemEx.SourceItem)
                     );
             TagWhitelist.SetTagpool(
-                tagpoolSource
+                Tagpool
                     .Except(tagBlacklist.Selection.Connect())
                     .AsObservableList()
                 );
             TagBlacklist.SetTagpool(
-                tagpoolSource
+                Tagpool
                     .Except(tagWhitelist.Selection.Connect())
                     .AsObservableList()
                 );
 
         }
-
+        public IObservable<IChangeSet<Tag>> Tagpool { get; private set; }
         public bool Filter(ItemEx item)
         {
             if (DirectorySetupFilter.HasValue && !item.DirectorySetups.Contains(DirectorySetupFilter.Value))

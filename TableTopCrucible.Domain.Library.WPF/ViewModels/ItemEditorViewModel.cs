@@ -38,7 +38,6 @@ using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 using TableTopCrucible.Core.WPF.Commands;
 using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf;
-using TableTopCrucible.Core.Helper;
 using System.Windows.Threading;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
@@ -67,8 +66,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         [Reactive] public Version? SelectedVersion { get; set; }
         [Reactive] public Model3DGroup ViewportContent { get; set; }
         [Reactive] public bool LoadingModel { get; set; } = false;
-        [Reactive]
-        public SolidColorBrush MaterialBrush { get; private set; }
+        [Reactive] public SolidColorBrush MaterialBrush { get; private set; }
+
+
 
         public readonly ObservableAsPropertyHelper<VersionedFile?> _selectedFiles;
         public VersionedFile? SelectedFiles => _selectedFiles.Value;
@@ -99,6 +99,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             OpenFile = openFile;
             FileToClipboard = fileToClipboard;
             this.TagEdiotr.Editmode = true;
+            this.TagEdiotr.CompletePool = true;
             this.disposables.Add(_selectedItemIdChanges);
 
             this.SelectedItemChanges =
@@ -286,8 +287,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 this.notificationCenter.OnError(ex);
             }
         }
+
+        public void SetTagpool(IObservableList<Tag> tagpool)
+            => this.TagEdiotr.SetTagpool(tagpool);
     }
-
-
-
 }

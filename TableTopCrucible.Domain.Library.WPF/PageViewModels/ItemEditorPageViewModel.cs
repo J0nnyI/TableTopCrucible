@@ -1,4 +1,6 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using DynamicData;
+
+using MaterialDesignThemes.Wpf;
 
 using System;
 using System.Collections.Generic;
@@ -29,6 +31,7 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
                 .Subscribe(itemList.FilterChanges.OnNext, ex => MessageBox.Show(ex.ToString()));
             Filter = filter;
             this.ItemList.SelectedItemChanges.Subscribe(x => itemEditor.SelectItem(x?.SourceItem.Id));
+            itemEditor.SetTagpool(Filter.Tagpool.AsObservableList());
         }
 
     }

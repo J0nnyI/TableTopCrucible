@@ -22,6 +22,7 @@ namespace TableTopCrucible.Data.Services
         IObservable<ItemEx> GetExtended(ItemId item);
         IObservable<ItemEx?> GetExtended(IObservable<ItemId?> itemIdChanges);
         IObservable<IChangeSet<Tag>> GetTags(IObservable<IChangeSet<Item, ItemId>> sourceItems);
+        IObservableList<Tag> GetTags();
     }
     public class ItemService : DataServiceBase<Item, ItemId, ItemChangeset>, IItemService
     {
@@ -36,14 +37,14 @@ namespace TableTopCrucible.Data.Services
             IFileItemLinkService fileItemLinkService,
             INotificationCenterService notificationCenterService,
             ISettingsService settingsService)
-            :base(settingsService, notificationCenterService)
+            : base(settingsService, notificationCenterService)
         {
             this._fileService = fileInfoService;
             this.fileItemLinkService = fileItemLinkService;
             this._notificationCenterService = notificationCenterService;
             this._settingsService = settingsService;
 
-            this._getExtended =
+            this._extended =
                 this.Get()
                 .Connect()
                 .LeftJoinMany<Item, ItemId, VersionedFile, FileItemLinkId, ItemEx>(
@@ -54,11 +55,13 @@ namespace TableTopCrucible.Data.Services
                     (item, files) => new ItemEx(item, files.Items))
                 .ChangeKey(item => item.SourceItem.Id)
                 .AsObservableCache();
+
+            this._tags = GetTags(Get().Connect()).AsObservableList();
         }
 
-        private readonly IObservableCache<ItemEx, ItemId> _getExtended;
+        private readonly IObservableCache<ItemEx, ItemId> _extended;
         public IObservableCache<ItemEx, ItemId> GetExtended()
-            => _getExtended;
+            => _extended;
 
         public IObservable<ItemEx?> GetExtended(IObservable<ItemId?> itemIdChanges)
         {
@@ -73,6 +76,9 @@ namespace TableTopCrucible.Data.Services
         public IObservable<ItemEx> GetExtended(ItemId item)
             => this.GetExtended().WatchValue(item);
 
+        private IObservableList<Tag> _tags;
+        public IObservableList<Tag> GetTags()
+            => _tags;
         public IObservable<IChangeSet<Tag>> GetTags(IObservable<IChangeSet<Item, ItemId>> sourceItems)
         {
             return sourceItems

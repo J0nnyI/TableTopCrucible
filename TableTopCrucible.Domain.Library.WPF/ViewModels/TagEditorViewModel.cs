@@ -1,69 +1,70 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
-using DynamicData.ReactiveUI;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using ReactiveUI.Validation.Extensions;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Windows.Data;
-using System.Windows.Input;
 
 using TableTopCrucible.Core.Models.Sources;
-using TableTopCrucible.Core.Models.ValueTypes;
-using TableTopCrucible.Core.Utilities;
-using TableTopCrucible.Data.Models.Views;
-using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.ValueTypes;
-using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
-    public class TagEditorViewModel : DisposableReactiveValidationObject<TagEditorViewModel>
+    public interface ITagEditor
     {
-        [Reactive]
-        public string NewTag { get; set; }
+        bool IsEditmode { get; set; }
+        bool IsReadOnly { get; set; }
 
-        [Reactive]
-        public bool IsEditmode { get; set; }
+        ISourceList<Tag> Selection { get; }
+        IObservableList<Tag> Tagpool { get; }
 
-        [Reactive]
-        public bool IsReadOnly { get; set; }
+        void SetTagpool(IObservableList<Tag> tagpool);
+        void SetSelection(IEnumerable<Tag> tags);
+        void Select(Tag tag);
+    }
 
-
-
-
-
-
-
-
-        // AvailableTags        //all available tags
-        SourceList<Tag> availableTagsChanges = new SourceList<Tag>();
-        private readonly ReadOnlyObservableCollection<Tag> _availableTags;
-        ObservableCollection<Tag> AvailableTags;
-
-        // SelectedTags         //the tags of the item
-        SourceList<Tag> selectedTagsChanges = new SourceList<Tag>();
-
-
-
-        // Marked Tags          //marked for delete
-        SourceList<Tag> markedTagsChanges = new SourceList<Tag>();
-
-
-
+    public class TagEditorViewModel : DisposableReactiveValidationObject<TagEditorViewModel>, ITagEditor
+    {
 
         public TagEditorViewModel()
         {
-            availableTagsChanges.Connect().Bind(out _availableTags);
+            this.Selection
+                .Connect()
+                .Bind(SelectionBinding)
+                .Subscribe();
+        }
+
+        [Reactive]
+        public string NewTag { get; set; }
+
+        public bool IsEditmode { get; set; }
+        public bool IsReadOnly { get; set; }
+        public ISourceList<Tag> Selection { get; } = new SourceList<Tag>();
+        public IObservableList<Tag> Tagpool { get; set; }
+        public ObservableCollectionExtended<Tag> TagpoolBinding { get; } = new ObservableCollectionExtended<Tag>();
+        public ObservableCollectionExtended<Tag> SelectionBinding { get; } = new ObservableCollectionExtended<Tag>();
+        public void SetTagpool(IObservableList<Tag> tagpool)
+        {
+            this.Tagpool = tagpool;
+            this.Tagpool
+                .Connect()
+                .Except(Selection.Connect())
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Bind(TagpoolBinding)
+                .Subscribe();
+        }
+        public void SetSelection(IEnumerable<Tag> tags)
+        {
+            this.Selection.Clear();
+            this.Selection.AddRange(tags);
+        }
+        public void Select(Tag tag)
+        {
+            this.Selection.Add(tag);
         }
     }
 }

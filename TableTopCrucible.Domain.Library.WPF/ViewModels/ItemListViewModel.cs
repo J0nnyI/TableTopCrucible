@@ -22,7 +22,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     {
         private readonly IItemService _itemService;
         private readonly IInjectionProviderService _injectionProviderService;
-        public CreateItemCommand CreateItemCommand { get; }
 
         public BehaviorSubject<Func<ItemEx, bool>> FilterChanges { get; } = new BehaviorSubject<Func<ItemEx, bool>>(_ => true);
         ReadOnlyObservableCollection<ItemEx> _items;
@@ -51,12 +50,10 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
         public ItemListViewModel(
             IItemService itemService,
-            IInjectionProviderService injectionProviderService,
-            CreateItemCommand CreateItemCommand)
+            IInjectionProviderService injectionProviderService)
         {
             this._itemService = itemService ?? throw new NullReferenceException("got no itemService");
             this._injectionProviderService = injectionProviderService ?? throw new NullReferenceException("got no itemservice");
-            this.CreateItemCommand = CreateItemCommand;
 
             this._injectionProviderService.Provider.Subscribe(
                 (provider) =>

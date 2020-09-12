@@ -2,6 +2,7 @@
 using System.Windows.Input;
 
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
+using TableTopCrucible.Domain.Models.ValueTypes;
 
 namespace TableTopCrucible.Domain.Library.WPF.Views
 {
@@ -18,8 +19,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Views
         {
             if (e.Key == Key.Enter && this.DataContext is TagEditorViewModel viewModel)
             {
-                if (viewModel.AddTag.CanExecute(viewModel.NewTag))
-                    viewModel.AddTag.Execute(viewModel.NewTag);
+                viewModel.Select((Tag)viewModel.NewTag);
             }
         }
     }

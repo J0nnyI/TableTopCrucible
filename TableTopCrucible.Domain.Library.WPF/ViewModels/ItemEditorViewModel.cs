@@ -54,7 +54,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private readonly ILibraryManagementService libraryManagement;
         private readonly IFileItemLinkService fileItemLinkService;
 
-        public TagEditorViewModel TagEdiotr { get; }
+        public ITagEditor TagEdiotr { get; }
         public FileVersionListViewModel FileVersionList { get; }
         public ICommand OpenFile { get; }
         public FileToClipboardCommand FileToClipboard { get; }
@@ -80,7 +80,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public CameraRotationMode CameraRotationMode => _cameraRotationMode.Value;
 
         public ItemEditorViewModel(
-            TagEditorViewModel tagEdiotr,
+            ITagEditor tagEdiotr,
             IItemService itemService,
             FileVersionListViewModel fileVersionList,
             INotificationCenterService notificationCenter,
@@ -251,7 +251,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         {
             var ics = new ItemChangeset(SelectedItem.Value.SourceItem);
             ics.Name = this.Name;
-            ics.Tags = this.TagEdiotr.Tags;
+            ics.Tags = this.TagEdiotr.Selection.Items;
             this._itemService.Patch(ics);
 
             this.fileItemLinkService.Post(this.newLinks.KeyValues.Select(x => x.Value));
@@ -275,7 +275,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
                 this.Name = (string)item?.Name;
                 this.FileVersionList.SetFiles(item?.FileVersions);
-                this.TagEdiotr.SetTags(item?.Tags);
+                this.TagEdiotr.SetSelection(item?.Tags);
                 this.newLinks.Clear();
                 if (item?.FileVersions != null)
                     this.newLinks.AddOrUpdate(item?.FileVersions?.Select(ver => ver.Link.Link));

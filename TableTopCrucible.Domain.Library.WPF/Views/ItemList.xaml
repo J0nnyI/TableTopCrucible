@@ -34,8 +34,10 @@
                                                  SpacingMode="None"
                                                  StretchItems="true"
                                                  ItemSize="500,200"/>
-                    --><!--<UniformGrid Columns="2"/>-->
-                    <!--<wpftk--><!--
+                    -->
+            <!--<UniformGrid Columns="2"/>-->
+            <!--<wpftk-->
+            <!--
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>-->
             <ListView.ItemContainerStyle>
@@ -60,9 +62,5 @@
             <ListView.Resources>
             </ListView.Resources>
         </ListView>
-        <Button Command="{Binding CreateItemCommand}" 
-                Grid.Row="1">
-            <md:PackIcon Kind="Add"/>
-        </Button>
     </Grid>
 </UserControl>

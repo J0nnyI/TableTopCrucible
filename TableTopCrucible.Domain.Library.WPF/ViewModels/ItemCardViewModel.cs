@@ -100,12 +100,12 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .Subscribe(item =>
                 {
                     this.ItemName = (string)item?.Name;
-                    this.TagEditor.SetTags(item?.Tags);
+                    this.TagEditor.SetSelection(item?.Tags);
                 });
             this.ItemNameChanges
                 .TakeUntil(destroy)
                 .Subscribe(name => { if (this.Changeset != null) this.Changeset.Name = name; });
-            this.TagEditor.TagsChanges
+            this.TagEditor.Selection
                 .Connect()
                 .TakeUntil(destroy)
                 .AsObservable()

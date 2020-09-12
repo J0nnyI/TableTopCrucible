@@ -81,7 +81,7 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<MainViewModel>();
             services.AddTransient<ItemListViewModel>();
             services.AddTransient<ItemCardViewModel>();
-            services.AddTransient<TagEditorViewModel>();
+            services.AddTransient<ITagEditor, TagEditorViewModel>();
             services.AddTransient<ItemEditorViewModel>();
             services.AddTransient<FileListViewModel>();
             services.AddTransient<DirectoryListViewModel>();

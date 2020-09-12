@@ -24,14 +24,13 @@
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
         <ListBox x:Name="tagList"
-                 ItemsSource="{Binding Path=Tags}" 
-                 SelectionMode="Extended"
+                 ItemsSource="{Binding Path=SelectionBinding}" 
                  VerticalAlignment="Stretch"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Visible"
                  SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"
                  Style="{StaticResource MaterialDesignFilterChipListBox}"
-                 md:ListBoxAssist.IsToggle="{Binding IsEditmode}"
+                 md:ListBoxAssist.IsToggle="false"
                  Grid.Column="0"
                  Grid.Row="0">
             <i:Interaction.Triggers>
@@ -54,7 +53,7 @@
             </ListBox.ItemContainerStyle>
         </ListBox>
 
-        <ComboBox ItemsSource="{Binding Path=AvailableTags}"
+        <ComboBox ItemsSource="{Binding Path=TagpoolBinding}"
                   Text="{Binding Path=NewTag}"
                   Visibility="{Binding IsEditmode, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}"
                   md:ValidationAssist.OnlyShowOnFocus="True"

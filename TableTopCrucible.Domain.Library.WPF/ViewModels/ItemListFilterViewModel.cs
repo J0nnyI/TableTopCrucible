@@ -39,10 +39,11 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
 
         public ItemListFilterViewModel(
-            TagEditorViewModel tagWhitelist,
-            TagEditorViewModel tagBlacklist,
+            ITagEditor tagWhitelist,
+            ITagEditor tagBlacklist,
             IDirectoryDataService directoryDataService,
-            IItemService itemService)
+            IItemService itemService,
+            IItemTagService itemTagService)
         {
             TagWhitelist = tagWhitelist;
             TagBlacklist = tagBlacklist;
@@ -54,23 +55,34 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .ToSortedCollection(x => x.Name)
                 .ToProperty(this, nameof(DirectorySetups));
 
-            this.FilterChanges =
-                Observable.CombineLatest(
-                    this.TagWhitelist.TagsChanges.Connect(),
-                    this.TagBlacklist.TagsChanges.Connect(),
-                    this.WhenAnyValue(x => x.NameFilterMode),
-                    this.WhenAnyValue(x => x.NameFilter),
-                    this.WhenAnyValue(x => x.DirectorySetupFilter),
-                    (a, b, c, d, e) => new Unit()
+            this.FilterChanges = Observable.Merge(
+                this.TagWhitelist.Selection.Connect(),
+                this.TagBlacklist.Selection.Connect(),
+                this.WhenAnyValue(x => x.NameFilterMode).Select(_ => new object()),
+                this.WhenAnyValue(x => x.NameFilter),
+                this.WhenAnyValue(x => x.DirectorySetupFilter).Select(_ => new object())
                 )
-                .TakeUntil(destroy)
-                .Select(_ => new Func<ItemEx, bool>(Filter));
+            .TakeUntil(destroy)
+            .Select(_ => new Func<ItemEx, bool>(Filter));
 
-            FilterChanges.Subscribe(filter =>
-            {
-                TagWhitelist.UpdateFilter(filter);
-                TagBlacklist.UpdateFilter(filter);
-            });
+            var tagpoolSource =
+                itemTagService.Build(
+                    itemService.GetExtended()
+                        .Connect()
+                        .Filter(FilterChanges)
+                        .Transform(itemEx => itemEx.SourceItem)
+                    );
+            TagWhitelist.SetTagpool(
+                tagpoolSource
+                    .Except(tagBlacklist.Selection.Connect())
+                    .AsObservableList()
+                );
+            TagBlacklist.SetTagpool(
+                tagpoolSource
+                    .Except(tagWhitelist.Selection.Connect())
+                    .AsObservableList()
+                );
+
         }
 
         public bool Filter(ItemEx item)
@@ -78,9 +90,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             if (DirectorySetupFilter.HasValue && !item.DirectorySetups.Contains(DirectorySetupFilter.Value))
                 return false;
 
-            if (TagWhitelist.Tags.Any(itemTag => !item.Tags.Contains(itemTag)))
+            if (TagWhitelist.Selection.Items.Any(itemTag => !item.Tags.Contains(itemTag)))
                 return false;
-            if (item.Tags.Any(itemTag => TagBlacklist.Tags.Contains(itemTag)))
+            if (item.Tags.Any(itemTag => TagBlacklist.Selection.Items.Contains(itemTag)))
                 return false;
 
 
@@ -111,8 +123,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             return true;
         }
 
-        public TagEditorViewModel TagWhitelist { get; }
-        public TagEditorViewModel TagBlacklist { get; }
+        public ITagEditor TagWhitelist { get; }
+        public ITagEditor TagBlacklist { get; }
         public IEnumerable<TextFilterMode> TextFilterModes { get; } = new TextFilterMode[]
         {
             TextFilterMode.Contains,

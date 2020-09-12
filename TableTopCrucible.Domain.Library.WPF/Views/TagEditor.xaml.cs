@@ -19,7 +19,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Views
         {
             if (e.Key == Key.Enter && this.DataContext is TagEditorViewModel viewModel)
             {
-                viewModel.Select((Tag)viewModel.NewTag);
+                viewModel.Select(viewModel.NewTag);
             }
         }
     }

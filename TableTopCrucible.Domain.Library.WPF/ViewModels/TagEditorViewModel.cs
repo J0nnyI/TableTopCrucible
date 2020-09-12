@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Input;
 
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.WPF.Commands;
@@ -44,6 +45,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.NewTagChanges =
                 this.WhenAnyValue(vm => vm.NewTag)
                 .TakeUntil(destroy);
+
+            
         }
 
 
@@ -72,6 +75,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                         newTag => tag => ((string)tag).Contains((string)newTag)
                     )
                 )
+                .Sort()
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(TagpoolBinding)
                 .Subscribe();
@@ -83,7 +87,15 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         }
         public void Select(Tag tag)
         {
+            if (!PermitNewTags && !Tagpool.Items.Contains(tag))
+                return;
             this.Selection.Add(tag);
+        }
+        public void Select(string tag)
+        {
+            if (Tag.Validate(tag).Any())
+                return;
+            this.Select((Tag)tag);
         }
     }
 }

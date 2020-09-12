@@ -118,7 +118,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                         this.Changeset = new ItemChangeset(this.Item);
                     else
                         this.Changeset = null;
-                    this.TagEditor.IsEditmode = this.EditMode;
+                    this.TagEditor.Editmode = this.EditMode;
                     this.ItemName = (string)Item?.Name;
 
                 });

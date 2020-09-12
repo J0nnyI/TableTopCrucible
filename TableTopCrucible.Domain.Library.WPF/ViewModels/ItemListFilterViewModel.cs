@@ -47,7 +47,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         {
             TagWhitelist = tagWhitelist;
             TagBlacklist = tagBlacklist;
-            TagBlacklist.IsEditmode = TagWhitelist.IsEditmode = true;
+            TagBlacklist.Editmode = TagWhitelist.Editmode = true;
             _directorySetups =
                 directoryDataService.Get()
                 .Connect()

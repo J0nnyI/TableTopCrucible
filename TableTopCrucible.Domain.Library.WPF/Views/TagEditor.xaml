@@ -25,12 +25,13 @@
         </Grid.ColumnDefinitions>
         <ListBox x:Name="tagList"
                  ItemsSource="{Binding Path=SelectionBinding}" 
+                 SelectionMode="Extended"
                  VerticalAlignment="Stretch"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Visible"
                  SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"
                  Style="{StaticResource MaterialDesignFilterChipListBox}"
-                 md:ListBoxAssist.IsToggle="false"
+                 md:ListBoxAssist.IsToggle="{Binding Editmode}"
                  Grid.Column="0"
                  Grid.Row="0">
             <i:Interaction.Triggers>
@@ -54,7 +55,7 @@
         </ListBox>
 
         <ComboBox ItemsSource="{Binding Path=TagpoolBinding}"
-                  Text="{Binding Path=NewTag}"
+                  Text="{Binding Path=NewTag, UpdateSourceTrigger=PropertyChanged}"
                   Visibility="{Binding IsEditmode, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}"
                   md:ValidationAssist.OnlyShowOnFocus="True"
                   md:ValidationAssist.UsePopup="True"
@@ -85,7 +86,7 @@
             <Button Style="{StaticResource MaterialDesignIconButton}"
                     Validation.ErrorTemplate="{x:Null}"
                     Command="{Binding RemoveTags}"
-                    CommandParameter="{Binding SelectedTags}">
+                    CommandParameter="{Binding Selection}">
                 <md:PackIcon Kind="TagOff"/>
             </Button>
         </StackPanel>

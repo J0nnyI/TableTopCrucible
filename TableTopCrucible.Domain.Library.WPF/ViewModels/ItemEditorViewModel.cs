@@ -98,7 +98,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.fileItemLinkService = fileItemLinkService;
             OpenFile = openFile;
             FileToClipboard = fileToClipboard;
-            this.TagEdiotr.IsEditmode = true;
+            this.TagEdiotr.Editmode = true;
             this.disposables.Add(_selectedItemIdChanges);
 
             this.SelectedItemChanges =

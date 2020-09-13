@@ -65,9 +65,11 @@
                   Visibility="{Binding IsEditmode, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}"
                   md:ValidationAssist.OnlyShowOnFocus="True"
                   md:ValidationAssist.UsePopup="True"
+                  md:HintAssist.Hint="Tags"
+                  md:HintAssist.IsFloating="True"
+                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                   IsEditable="True"
                   StaysOpenOnEdit="True"
-                  Margin="16px 2px 16px 0px"
                   Grid.Row="1">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="KeyDown">

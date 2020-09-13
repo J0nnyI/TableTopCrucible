@@ -25,7 +25,7 @@
                   SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                   md:RippleAssist.IsDisabled="True"
                   
-                  SelectionMode="Single"
+                  SelectionMode="Extended"
                   Grid.Row="0" 
                   Grid.Column="1">
             <!--<ListView.ItemsPanel>

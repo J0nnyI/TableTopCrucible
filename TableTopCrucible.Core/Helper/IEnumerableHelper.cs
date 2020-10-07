@@ -40,5 +40,34 @@ namespace TableTopCrucible.Core.Helper
                 yield return list.Skip(i).Take(Math.Min(maxSize, list.Count() - i));
             }
         }
+
+        private class WhereInComparator<T,Tcmp>
+        {
+            public WhereInComparator(T item, Tcmp key)
+            {
+                Item = item;
+                this.Key = key;
+            }
+
+            public T Item { get; }
+            public Tcmp Key { get; }
+
+            public override bool Equals(object obj)
+            {
+                return Key.Equals(obj);
+            }
+            public override int GetHashCode()
+            {
+                return Key.GetHashCode();
+            }
+        }
+
+        public static IEnumerable<T> WhereIn<T, Tcmp>(this IEnumerable<T> list, IEnumerable<Tcmp> sublist, Func<T, Tcmp> selector)
+        {
+            var mainList = list.Select(item => new WhereInComparator<T,Tcmp>(item, selector(item)));
+            var cSubList = sublist.Select(item => new WhereInComparator<T,Tcmp>(default, item));
+
+            return mainList.Intersect(cSubList).Select(item => item.Item);
+        }
     }
 }

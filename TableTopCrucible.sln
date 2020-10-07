@@ -31,9 +31,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopCrucible.Data.SaveFile.Tests", "TableTopCrucible.Data.SaveFile.Tests\TableTopCrucible.Data.SaveFile.Tests.csproj", "{E65C1D1C-8D83-43F9-B5CC-A509A4E5CA3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Data.SaveFile.Tests", "TableTopCrucible.Data.SaveFile.Tests\TableTopCrucible.Data.SaveFile.Tests.csproj", "{E65C1D1C-8D83-43F9-B5CC-A509A4E5CA3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopCrucible.Data.SaveFile", "TableTopCrucible.Data.SaveFile\TableTopCrucible.Data.SaveFile.csproj", "{A0A33BC9-2722-42E1-9922-0ACF17211278}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Data.SaveFile", "TableTopCrucible.Data.SaveFile\TableTopCrucible.Data.SaveFile.csproj", "{A0A33BC9-2722-42E1-9922-0ACF17211278}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopCrucible.Core.Tests", "TableTopCrucible.Core.Tests\TableTopCrucible.Core.Tests.csproj", "{BDF26D7D-A41D-47D1-B868-4B23058A8250}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{A0A33BC9-2722-42E1-9922-0ACF17211278}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0A33BC9-2722-42E1-9922-0ACF17211278}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0A33BC9-2722-42E1-9922-0ACF17211278}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDF26D7D-A41D-47D1-B868-4B23058A8250}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDF26D7D-A41D-47D1-B868-4B23058A8250}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDF26D7D-A41D-47D1-B868-4B23058A8250}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDF26D7D-A41D-47D1-B868-4B23058A8250}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

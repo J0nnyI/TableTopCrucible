@@ -30,7 +30,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     public class ItemSelectionInfo : ReactiveObject
     {
         [Reactive]
-        public bool IsSelected { get; set; } = true;
+        public bool IsSelected { get; set; } = false;
         public ItemId ItemId { get; }
         public ItemSelectionInfo(ItemId itemId)
         {

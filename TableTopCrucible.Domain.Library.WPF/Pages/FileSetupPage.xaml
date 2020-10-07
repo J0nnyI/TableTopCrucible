@@ -13,31 +13,17 @@
         <ResourceDictionary Source="../Common.xaml"/>
     </Page.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition MaxWidth="600"/>
             <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
         <ContentPresenter Content="{Binding NotificationCenter}"
-                          Grid.Column="0"
-                          Grid.Row="0"
-                          Grid.RowSpan="2"/>
+                          Grid.Column="0"/>
         <ContentPresenter Content="{Binding DirList}"
-                          Grid.Column="1"
-                          Grid.Row="0"/>
-        <ContentPresenter Content="{Binding FileList}"
-                          Grid.Column="1"
-                          Grid.Row="1"/>
-        <ContentPresenter Content="{Binding ItemList}"
-                          Grid.Column="2"
-                          Grid.Row="0"
-                          Grid.RowSpan="2"/>
+                          Grid.Column="1"/>
         <StackPanel VerticalAlignment="Bottom"
-                    Grid.Row="1"
+                    Grid.Column="2"
                     HorizontalAlignment="Left">
             <Button Command="{Binding OpenFile}"
                     CommandParameter="{Binding OpenFileAction}"

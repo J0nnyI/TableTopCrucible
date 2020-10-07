@@ -105,6 +105,7 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<CreateDirectorySetupCommand>();
             services.AddSingleton<SaveDirectorySetupCommand>();
             services.AddSingleton<DeleteDirectorySetupCommand>();
+            services.AddSingleton<RemoveDirectorySetupRecursivelyCommand>();
             services.AddSingleton<GenerateItemsFromFilesCommand>();
             services.AddSingleton<SaveFileDialogCommand>();
             services.AddSingleton<OpenFileDialogCommand>();

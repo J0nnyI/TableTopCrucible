@@ -25,11 +25,11 @@ using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
-using TableTopCrucible.WPF.Helper;
 
 using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
 using SysFileInfo = System.IO.FileInfo;
 using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
+
 namespace TableTopCrucible.Domain.Library
 
 {
@@ -39,6 +39,8 @@ namespace TableTopCrucible.Domain.Library
         public void FullSync(IEnumerable<DirectorySetup> dirSetups);
         void AutoGenerateItems();
         FileInfo? UpdateFile(DirectorySetup dirSetup, Uri relativePath);
+        void RemoveDirectorySetupRecursively(DirectorySetupId dirSetupId);
+
     }
 
     public class LibraryManagementService : ILibraryManagementService
@@ -301,7 +303,7 @@ namespace TableTopCrucible.Domain.Library
                             }
                             else
                             {
-                                updateProc.Skip(3,"no merge required");
+                                updateProc.Skip(3, "no merge required");
                             }
 
                             updateProc.OnNextStep("handling new files");
@@ -324,7 +326,7 @@ namespace TableTopCrucible.Domain.Library
                             updateProc.OnNextStep("done");
                             updateProc.State = AsyncState.Done;
                         },
-                        (Exception ex)=>
+                        (Exception ex) =>
                         {
                             updateProc.State = AsyncState.Failed;
                             updateProc.Title = "failed";
@@ -501,6 +503,76 @@ namespace TableTopCrucible.Domain.Library
 
             }, RxApp.TaskpoolScheduler);
 
+        }
+
+
+        public void RemoveDirectorySetupRecursively(DirectorySetupId dirSetupId)
+        {
+            Observable.Start(() =>
+            {
+                var job = notificationCenter.CreateSingleTaskJob(out var process, "removing directory setup");
+                try
+                {
+                    process.AddProgress(7, "removing setup");
+                    this.directoryDataService.Delete(dirSetupId);
+
+                    process.OnNextStep("looking for files");
+                    var files =
+                        fileDataService
+                        .Get()
+                        .Items
+                        .Where(file => file.DirectorySetupId == dirSetupId)
+                        .ToList();
+
+                    process.OnNextStep("removing files");
+                    fileDataService
+                        .Delete(
+                            files
+                            .Select(file => file.Id)
+                        );
+
+                    process.OnNextStep("looking for links");
+                    var hashes = files.Select(x => x.HashKey);
+                    files = null;
+
+                    var removedLinks =
+                        fileItemLinkService
+                        .Get()
+                        .Items
+                        .WhereIn(hashes, link => link.FileKey)
+                        .ToArray();
+
+                    process.OnNextStep("removing links");
+                    fileItemLinkService
+                        .Delete(
+                            removedLinks
+                            .Select(link => link.Id)
+                        );
+
+                    process.OnNextStep("looking for items");
+                    var remainingFileKeys =
+                        fileItemLinkService
+                        .Get()
+                        .Items
+                        .Select(x => x.FileKey);
+
+                    var completelyRemovedItemIDs =
+                        removedLinks
+                        .WhereNotIn(remainingFileKeys, link => link.FileKey)
+                        .Select(link => link.ItemId)
+                        .ToArray();
+                        
+                    removedLinks = null;
+
+                    process.OnNextStep("removing items");
+                    this.itemService.Delete(completelyRemovedItemIDs);
+                    process.OnNextStep("done");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }, RxApp.TaskpoolScheduler);
         }
     }
 }

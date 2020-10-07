@@ -30,6 +30,8 @@
 
 
         </Button>
-
+        <Button Command="{Binding ThrowExCmd}">
+            Crash it baby
+        </Button>
     </Grid>
 </Page>

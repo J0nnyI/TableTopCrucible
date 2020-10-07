@@ -19,6 +19,8 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 {
     public class DevTestPageViewModel : PageViewModelBase
     {
+        public ICommand ThrowExCmd { get; } = new RelayCommand(_ => throw new Exception("crash it baby"));
+
 
         public DevTestPageViewModel(
             CreateAllThumbnailsCommand createAllThumbnails

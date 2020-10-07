@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Windows;
 using System.Windows.Input;
 
 using TableTopCrucible.Core.Helper;
@@ -127,7 +128,10 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .Bind(TagpoolBinding)
                 .TakeUntil(tagpoolReset)
                 .TakeUntil(destroy)
-                .Subscribe();
+                .Subscribe(_ => { }, ex =>
+                {
+                    MessageBox.Show($"tag-editor pool exception: {nameof(TagEditorViewModel)}: tagpool"+Environment.NewLine+ex.ToString());
+                });
         }
 
         public abstract void Select(Tag tag);

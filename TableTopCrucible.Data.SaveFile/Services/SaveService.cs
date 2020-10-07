@@ -83,19 +83,19 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     _itemService.Clear();
 
 
-                    proc.Details = $"loading {dto.Directories.Count()} directories";
+                    proc.AddProgress(4, $"loading {dto.Directories.Count()} directories");
                     _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()));
 
-                    proc.Details = $"loading {dto.Files.Count()} files";
+                    proc.OnNextStep($"loading {dto.Files.Count()} files");
                     _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()));
 
-                    proc.Details = $"loading {dto.Items.Count()} file-item links";
+                    proc.OnNextStep($"loading {dto.Items.Count()} file-item links");
                     fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity()));
 
-                    proc.Details = $"loading {dto.Items.Count()} items";
+                    proc.OnNextStep($"loading {dto.Items.Count()} items");
                     _itemService.Set(dto.Items.Select(dto => dto.ToEntity()));
 
-                    proc.Details = "done";
+                    proc.OnNextStep("done");
                     proc.State = AsyncState.Done;
                 }
                 catch (Exception ex)
@@ -121,7 +121,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                 Directories = _directoryDataService.Get().KeyValues.Select(dir => new DirectorySetupDTO(dir.Value))
             };
             using FileStream fs = File.Create(file);
-                return JsonSerializer.SerializeAsync(fs, masterDTO).ToObservable();
+            return JsonSerializer.SerializeAsync(fs, masterDTO).ToObservable();
         }
     }
 }

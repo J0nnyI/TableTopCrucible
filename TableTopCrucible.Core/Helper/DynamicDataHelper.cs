@@ -4,13 +4,14 @@ using DynamicData.Binding;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
 
 namespace TableTopCrucible.Core.Helper
 {
     public static class DynamicDataHelper
     {
+        #region sort
         private class Sorter<T> : IComparer<T>
         {
             private readonly Func<T, T, int> comparer;
@@ -57,5 +58,14 @@ namespace TableTopCrucible.Core.Helper
         public static IObservable<IChangeSet<TObject>> Sort<TObject>(this IObservable<IChangeSet<TObject>> source, Func<TObject, IComparable> textRetriever, SortDirection sortDirection = SortDirection.Ascending)
         => source.Sort((a, b) => textRetriever(a).CompareTo(textRetriever(b)) *
             (sortDirection == SortDirection.Descending ? -1 : 1));
+        #endregion
+
+
+        #region filter
+
+        public static IObservable<IChangeSet<TObject, TKey>> Filter<TObject, TKey>(this IObservable<IChangeSet<TObject, TKey>> source, Func<TObject, bool> filter, IObservable<Unit> reapplyFilter) =>
+            source.Filter(reapplyFilter.Select(_ => filter));
+
+        #endregion
     }
 }

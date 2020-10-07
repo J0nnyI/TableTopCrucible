@@ -9,6 +9,9 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.InteropServices.ComTypes;
+using System.Windows;
+
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Core.Models.Sources;
@@ -38,9 +41,41 @@ namespace TableTopCrucible.Data.Services
         public void Delete(Tid key)
             => cache.Remove(key);
         public void Delete(IEnumerable<Tid> keys)
-            => keys.ChunkBy(settingsService.MaxPatchSize)
-                .ToList()
-                .ForEach(x => this.cache.Remove(x));
+        {
+            var job = this.notificationCenter.CreateSingleTaskJob(out var process, $"deleting {keys.Count()} entities of type {typeof(Tentity).Name}");
+            var chunks = keys.ChunkBy(settingsService.MaxPatchSize)
+                  .ToList();
+            process.AddProgress(chunks.Count);
+            process.State = AsyncState.InProgress;
+            try
+            {
+                process.State = AsyncState.InProgress;
+                chunks.ForEach(x =>
+                {
+                    process.OnNextStep("removing ...");
+                    this.cache.Remove(x);
+                });
+                process.State = AsyncState.Done;
+                process.Details = "done";
+            }
+            catch (Exception ex)
+            {
+                process.State = AsyncState.Failed;
+                process.Details = ex.ToString();
+            }
+            finally
+            {
+                job.Dispose();
+            }
+        }
+        public void Delete(Func<Tentity, bool> selector)
+                    => this.Delete(this.cache.Items.Where(selector).Select(x => x.Id));
+        public void Delete(Func<Tentity, bool> selector, out IEnumerable<Tentity> deletedItems)
+        {
+            deletedItems = this.cache.Items.Where(selector).ToArray();
+            this.Delete(deletedItems.Select(x => x.Id));
+        }
+
         public virtual bool CanDelete(Tid key)
             => cache.Keys.Contains(key);
         // get

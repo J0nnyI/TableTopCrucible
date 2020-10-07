@@ -1,8 +1,11 @@
-﻿namespace TableTopCrucible.Core.Services
+﻿using System;
+using System.Reactive;
+
+namespace TableTopCrucible.Core.Services
 {
     public interface ISaveService
     {
         void Load(string file);
-        void Save(string file);
+        IObservable<Unit> Save(string file);
     }
 }

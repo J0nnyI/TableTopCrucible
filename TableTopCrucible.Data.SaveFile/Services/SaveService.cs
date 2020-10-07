@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -107,7 +108,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
             }, RxApp.TaskpoolScheduler);
         }
 
-        public async void Save(string file)
+        public IObservable<Unit> Save(string file)
         {
             if (Path.GetExtension(file) != ".ttcl")
                 file = Path.ChangeExtension(file, ".ttcl");
@@ -120,7 +121,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                 Directories = _directoryDataService.Get().KeyValues.Select(dir => new DirectorySetupDTO(dir.Value))
             };
             using FileStream fs = File.Create(file);
-            await JsonSerializer.SerializeAsync(fs, masterDTO);
+            return JsonSerializer.SerializeAsync(fs, masterDTO).ToObservable();
         }
     }
 }

@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
+             xmlns:models="clr-namespace:TableTopCrucible.Domain.Library.WPF.Models"
+             xmlns:dataModels="clr-namespace:TableTopCrucible.Data.Models.ValueTypes;assembly=TableTopCrucible.Data"
              xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
@@ -16,6 +18,7 @@
                 <ResourceDictionary Source="../Common.xaml"/>
                 <ResourceDictionary>
                     <viewModels:TagBackgroundConverter x:Key="cv_tagColor"/>
+
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -57,12 +60,34 @@
                         BasedOn="{StaticResource MaterialDesignFilterChipListBoxItem}">
                     <Setter Property="Focusable"
                             Value="False"/>
+                    <!--<Setter Property="Background"
+                            Value="Red"/>-->
                 </Style>
             </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Foreground="{Binding IsPrimary, Converter={StaticResource cv_tagColor}}">
+                            <Run>
+                                <Run.Text>
+                                    <PriorityBinding>
+                                        <Binding Mode="OneWay" Path="Tag"/>
+                                        <Binding Mode="OneWay" Path=""/>
+                                    </PriorityBinding>
+                                </Run.Text>
+                            </Run>
+                            <Run Text=": "/>
+                            <Run Text="{Binding Count, Mode=OneWay}"/>
+                            <Run Text="/"/>
+                            <Run Text="{Binding Total, Mode=OneWay}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
         <ComboBox ItemsSource="{Binding Path=TagpoolBinding}"
                   Text="{Binding Path=NewTag, UpdateSourceTrigger=PropertyChanged}"
-                  Visibility="{Binding IsEditmode, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}"
+                  Visibility="{Binding Editmode, Converter={StaticResource cv_visibillity}, ConverterParameter=collapsed}"
                   md:ValidationAssist.OnlyShowOnFocus="True"
                   md:ValidationAssist.UsePopup="True"
                   md:HintAssist.Hint="Tags"
@@ -84,15 +109,12 @@
             </ComboBox.Resources>
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Tag}"
-                                   Foreground="{Binding IsPrimary, Converter={StaticResource cv_tagColor}}"/>
-                    </StackPanel>
+                    <ContentPresenter Content="{Binding}"/>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
         <StackPanel Orientation="Horizontal"
-                    Visibility="{Binding IsEditmode, Converter={StaticResource cv_visibillity}, ConverterParameter=hidden}"
+                    Visibility="{Binding Editmode, Converter={StaticResource cv_visibillity}, ConverterParameter=hidden}"
                     Grid.Column="1"
                     Grid.Row="0"
                     Grid.RowSpan="2"

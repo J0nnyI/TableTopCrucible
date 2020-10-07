@@ -2,13 +2,17 @@
 
 using MaterialDesignThemes.Wpf;
 
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Forms.VisualStyles;
-
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.WPF.PageViewModels;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.Domain.Library.WPF.Views;
@@ -18,19 +22,45 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
     public class ItemEditorPageViewModel : PageViewModelBase
     {
         public ItemListViewModel ItemList { get; }
-        public ItemEditorViewModel ItemEditor { get; }
+        private ItemEditorViewModel _itemEditor { get; }
+        private IMultiItemEditor _multiItemEditor { get; }
+        [Reactive]
+        public object ItemEditor { get; set; }
         public ItemListFilterViewModel Filter { get; }
 
-        public ItemEditorPageViewModel(ItemListViewModel itemList, ItemEditorViewModel itemEditor,
+        public ItemEditorPageViewModel(
+            ItemListViewModel itemList,
+            ItemEditorViewModel itemEditor,
+            IMultiItemEditor multiItemEditor,
             ItemListFilterViewModel filter) : base("item Editor", PackIconKind.Edit)
         {
             this.ItemList = itemList;
-            this.ItemEditor = itemEditor;
+            this.ItemEditor = this._itemEditor = itemEditor;
+            this._multiItemEditor = multiItemEditor;
+            this.Filter = filter;
+
+            multiItemEditor.BindSelection(itemList.Selection);
+
+            this.disposables.Add(ItemList, (IDisposable)ItemEditor, _multiItemEditor, Filter);
+
             filter.FilterChanges
                 .TakeUntil(destroy)
                 .Subscribe(itemList.FilterChanges.OnNext, ex => MessageBox.Show(ex.ToString()));
-            Filter = filter;
-            this.ItemList.SelectedItemChanges.Subscribe(x => itemEditor.SelectItem(x?.SourceItem.Id));
+
+            this.ItemList.Selection.Connect()
+                .ToCollection()
+                .Subscribe(x =>
+                {
+                    if (x.Count <= 1)
+                    {
+                        ItemEditor = _itemEditor;
+                        itemEditor.SelectItem(x.FirstOrDefault().SourceItem.Id);
+                    }
+                    else
+                    {
+                        ItemEditor = _multiItemEditor;
+                    }
+                });
             itemEditor.SetTagpool(Filter.Tagpool.AsObservableList());
         }
 

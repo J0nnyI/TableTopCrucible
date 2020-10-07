@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reactive.Linq;
 
 using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using DynamicData.Alias;
 using System.Reactive.Subjects;
@@ -13,6 +12,7 @@ using TableTopCrucible.Core.Services;
 using TableTopCrucible.Data.Models.Views;
 using System.Collections.Generic;
 using TableTopCrucible.Core.Helper;
+using TableTopCrucible.Data.Models.ValueTypes;
 
 namespace TableTopCrucible.Data.Services
 {

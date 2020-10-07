@@ -15,6 +15,7 @@ using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
+using TableTopCrucible.Data.Models.ValueTypes;
 
 namespace TableTopCrucible.Domain.Models.Sources
 {

@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Windows.Media.Animation;
 
+using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;

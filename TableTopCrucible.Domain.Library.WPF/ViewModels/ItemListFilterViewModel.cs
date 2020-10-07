@@ -11,12 +11,13 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Windows.Forms;
+
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.Models.ValueTypes;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
@@ -39,8 +40,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
 
         public ItemListFilterViewModel(
-            ITagEditor tagWhitelist,
-            ITagEditor tagBlacklist,
+            IManualTagEditor tagWhitelist,
+            IManualTagEditor tagBlacklist,
             IDirectoryDataService directoryDataService,
             IItemService itemService)
         {
@@ -126,8 +127,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             return true;
         }
         [Reactive] public string DirSetupFilter { get; set; } = string.Empty;
-        public ITagEditor TagWhitelist { get; }
-        public ITagEditor TagBlacklist { get; }
+        public IManualTagEditor TagWhitelist { get; }
+        public IManualTagEditor TagBlacklist { get; }
         public IEnumerable<TextFilterMode> TextFilterModes { get; } = new TextFilterMode[]
         {
             TextFilterMode.Contains,

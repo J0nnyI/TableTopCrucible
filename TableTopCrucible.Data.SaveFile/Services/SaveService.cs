@@ -121,7 +121,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                 Directories = _directoryDataService.Get().KeyValues.Select(dir => new DirectorySetupDTO(dir.Value))
             };
             using FileStream fs = File.Create(file);
-            return JsonSerializer.SerializeAsync(fs, masterDTO).ToObservable();
+                return JsonSerializer.SerializeAsync(fs, masterDTO).ToObservable();
         }
     }
 }

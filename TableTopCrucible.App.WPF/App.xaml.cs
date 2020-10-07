@@ -26,7 +26,6 @@ using TableTopCrucible.Domain.Library.WPF.Pages;
 using TableTopCrucible.Domain.Library.WPF.PageViewModels;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.WPF.Commands;
-
 namespace TableTopCrucible.App.WPF
 {
 
@@ -34,7 +33,6 @@ namespace TableTopCrucible.App.WPF
     public partial class App : Application
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
-
         protected override void OnStartup(StartupEventArgs e)
         {
             var serviceProvider = this._createServiceProvider();
@@ -80,8 +78,10 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<MainViewModel>();
             services.AddTransient<ItemListViewModel>();
             services.AddTransient<ItemCardViewModel>();
-            services.AddTransient<ITagEditor, TagEditorViewModel>();
+            services.AddTransient<IManualTagEditor, TagEditorViewModel>();
+            services.AddTransient<IDrivenTagEditor, DrivenTagEditorViewModel>();
             services.AddTransient<ItemEditorViewModel>();
+            services.AddTransient<IMultiItemEditor, MultiItemEditorViewModel>();
             services.AddTransient<FileListViewModel>();
             services.AddTransient<DirectoryListViewModel>();
             services.AddTransient<DirectorySetupCardViewModel>();
@@ -121,6 +121,17 @@ namespace TableTopCrucible.App.WPF
         {
             this._disposables.Dispose();
         }
-    }
 
+        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                File.WriteAllText(@"crashlog.txt", e.Exception.ToString());
+            }
+            catch
+            {
+            }
+
+        }
+    }
 }

@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="TableTopCrucible.Domain.Library.WPF.Views.MultiItemEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
+             xmlns:hx="http://helix-toolkit.org/wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary Source="../Common.xaml">
+        </ResourceDictionary>
+        
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ListView ItemsSource="{Binding SelectionBinding}"
+                  md:RippleAssist.IsDisabled="True"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  md:ScrollViewerAssist.CornerRectangleVisibility="Collapsed"
+                  x:Name="primaryList">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                    <Setter Property="Focusable" Value="false"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+        <ContentPresenter Content="{Binding TagEditor}"
+                          Grid.Column="1"/>
+    </Grid>
+</UserControl>

@@ -20,7 +20,6 @@ using TableTopCrucible.Core.WPF.Helper;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.Sources;
-using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.Core.Helper;
@@ -28,6 +27,7 @@ using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 using TableTopCrucible.Core.WPF.Commands;
 using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf;
+using TableTopCrucible.Data.Models.ValueTypes;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
@@ -42,7 +42,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private readonly ILibraryManagementService libraryManagement;
         private readonly IFileItemLinkService fileItemLinkService;
 
-        public ITagEditor TagEdiotr { get; }
+        public IManualTagEditor TagEdiotr { get; }
         public FileVersionListViewModel FileVersionList { get; }
         public ICommand OpenFile { get; }
         public FileToClipboardCommand FileToClipboard { get; }
@@ -69,7 +69,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public CameraRotationMode CameraRotationMode => _cameraRotationMode.Value;
 
         public ItemEditorViewModel(
-            ITagEditor tagEdiotr,
+            IManualTagEditor tagEdiotr,
             IItemService itemService,
             FileVersionListViewModel fileVersionList,
             INotificationCenterService notificationCenter,

@@ -43,6 +43,13 @@
     <DataTemplate DataType="{x:Type viewModels:ItemListFilterViewModel}">
         <views:ItemListFilterView/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:MultiItemEditorViewModel}">
+        <views:MultiItemEditorView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:DrivenTagEditorViewModel}">
+        <views:TagEditor/>
+    </DataTemplate>
+
 
 
 

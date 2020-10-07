@@ -39,9 +39,10 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
             OpenFile = openFile;
             SaveFile = saveFile;
             this.saveService = saveService;
+            this.SaveFileAction = (path) => saveService.Save(path);
         }
 
         public Action<string> OpenFileAction => saveService.Load;
-        public Action<string> SaveFileAction => saveService.Save;
+        public Action<string> SaveFileAction;
     }
 }

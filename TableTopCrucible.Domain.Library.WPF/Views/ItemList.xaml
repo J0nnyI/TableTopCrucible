@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
              xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"             
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:wpftk="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
              mc:Ignorable="d" 
              Name="self"
@@ -21,29 +22,33 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <ListView ItemsSource="{Binding Items}"
-                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-                  SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                  x:Name="items"
                   md:RippleAssist.IsDisabled="True"
                   
                   SelectionMode="Extended"
                   Grid.Row="0" 
                   Grid.Column="1">
-            <!--<ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <wpftk:VirtualizingWrapPanel Orientation="Vertical"
-                                                 SpacingMode="None"
-                                                 StretchItems="true"
-                                                 ItemSize="500,200"/>
-                    -->
-            <!--<UniformGrid Columns="2"/>-->
-            <!--<wpftk-->
-            <!--
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>-->
+            <ListView.Resources>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Margin" 
+                            Value="10"/>
+                    <Setter Property="Opacity" Value=".5"/>
+                </Style>
+            </ListView.Resources>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding SelectionChangesCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Setter Property="HorizontalContentAlignment" 
                             Value="Stretch" />
+                    <Setter Property="VerticalContentAlignment" 
+                            Value="Stretch" />
+                    <Setter Property="IsSelected" 
+                            Value="{Binding SelectionInfo.IsSelected, Mode=TwoWay}"/>
+                    <EventSetter Event="PreviewMouseDown" Handler="ListViewItem_PreviewMouseDown"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected"
                                  Value="True">
@@ -53,14 +58,44 @@
                     </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <wpftk:VirtualizingWrapPanel Orientation="Vertical"
+                                                 SpacingMode="None"
+                                                 StretchItems="False"
+                                                 ItemSize="216,216"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <ContentPresenter Content="{Binding}"/>
+                    <Grid VerticalAlignment="Stretch">
+                        <Image Source="{Binding Path=Item.LatestThumbnail.AbsolutePath}" 
+                               Width="200px"
+                               Height="180px">
+                        </Image>
+                        <md:PackIcon Visibility="{Binding Path=Item.LatestThumbnail.AbsolutePath, Converter={StaticResource cv_visibillity}, ConverterParameter=invert}" 
+                                     Kind="Image"
+                                     VerticalAlignment="Center"
+                                     HorizontalAlignment="Center"
+                                     Foreground="LightGray"
+                                     Width="150px"
+                                     Height="150px"/>
+
+                        <TextBlock Text="{Binding Item.Name}"
+                                   VerticalAlignment="Bottom"
+                                   HorizontalAlignment="Stretch"
+                                   MaxWidth="208"
+                                   Margin="-4 0 -4 -4"
+                                   FontSize="18"
+                                   TextAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"
+                                   TextWrapping="WrapWithOverflow"
+                                   Padding="8px"
+                                   Background="#77000000"
+                                   Foreground="white"/>
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
-
-            <ListView.Resources>
-            </ListView.Resources>
         </ListView>
     </Grid>
 </UserControl>

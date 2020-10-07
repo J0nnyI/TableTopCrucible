@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 

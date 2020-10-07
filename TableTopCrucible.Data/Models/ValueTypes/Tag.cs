@@ -4,7 +4,7 @@ using System.Linq;
 
 using TableTopCrucible.Core.Models.ValueTypes;
 
-namespace TableTopCrucible.Domain.Models.ValueTypes
+namespace TableTopCrucible.Data.Models.ValueTypes
 {
     public struct Tag : IComparable
     {
@@ -14,19 +14,19 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
             var errors = Validate(tag);
             if (errors.Any())
                 throw new Exception($"could not create tag {Environment.NewLine}{string.Join(Environment.NewLine, errors)}");
-            this._tag = tag.Trim();
+            _tag = tag.Trim();
         }
-        public override string ToString() => this._tag;
+        public override string ToString() => _tag;
         public override bool Equals(object obj)
         {
             return obj switch
             {
-                Tag tag => this._tag == tag._tag,
-                string tag => this._tag == tag,
+                Tag tag => _tag == tag._tag,
+                string tag => _tag == tag,
                 _ => false,
             };
         }
-        public override int GetHashCode() => this._tag.GetHashCode();
+        public override int GetHashCode() => _tag.GetHashCode();
         public static explicit operator Tag(string tag) => new Tag(tag);
         public static explicit operator string(Tag tag) => tag._tag;
         public static bool operator ==(Tag tag1, Tag tag2)
@@ -46,7 +46,7 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
         }
 
         public int CompareTo(object obj)
-            => obj is Tag otherTag ? this._tag.CompareTo(otherTag._tag) : 1;
+            => obj is Tag otherTag ? _tag.CompareTo(otherTag._tag) : 1;
 
         public static IEnumerable<Validator<string>> Validators { get; } = new Validator<string>[] {
             new Validator<string>(tag=>!string.IsNullOrWhiteSpace(tag),"The tag must not be empty")

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using TableTopCrucible.Core.Helper;
+using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;

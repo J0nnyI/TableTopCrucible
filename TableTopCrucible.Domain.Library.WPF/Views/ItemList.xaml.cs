@@ -11,5 +11,10 @@ namespace TableTopCrucible.Domain.Library.WPF.Views
         {
             InitializeComponent();
         }
+
+        private void ListViewItem_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

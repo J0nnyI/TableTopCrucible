@@ -74,7 +74,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             IItemService itemService,
             OpenFileDialogCommand openFile,
             SaveDirectorySetupCommand save,
-            DeleteDirectorySetupCommand delete)
+            RemoveDirectorySetupRecursivelyCommand delete)
         {
             this._fileInfoService = fileService;
             OpenFile = openFile;

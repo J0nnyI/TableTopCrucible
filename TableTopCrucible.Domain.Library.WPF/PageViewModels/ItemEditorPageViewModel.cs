@@ -62,6 +62,7 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
                     }
                 });
             itemEditor.SetTagpool(Filter.Tagpool.AsObservableList());
+            multiItemEditor.SetTagpool(Filter.Tagpool.AsObservableList());
         }
 
     }

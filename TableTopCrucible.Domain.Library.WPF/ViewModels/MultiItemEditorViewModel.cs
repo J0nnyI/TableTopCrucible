@@ -24,6 +24,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     public interface IMultiItemEditor : IDisposable
     {
         void BindSelection(IObservableList<ItemEx> selection);
+        void SetTagpool(IObservableList<Tag> tagpool);
 
     }
     public partial class MultiItemEditorViewModel : DisposableReactiveValidationObject<MultiItemEditorViewModel>, IMultiItemEditor
@@ -89,5 +90,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
             this.TagEditor.BindSelection(selectedTags);
         }
+        public void SetTagpool(IObservableList<Tag> tagpool)
+            => this.TagEditor.SetTagpool(tagpool);
     }
 }

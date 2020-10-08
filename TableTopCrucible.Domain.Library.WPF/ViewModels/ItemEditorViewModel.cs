@@ -42,7 +42,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private readonly ILibraryManagementService libraryManagement;
         private readonly IFileItemLinkService fileItemLinkService;
 
-        public IManualTagEditor TagEdiotr { get; }
+        public IManualTagEditor TagEditor { get; }
         public FileVersionListViewModel FileVersionList { get; }
         public ICommand OpenFile { get; }
         public FileToClipboardCommand FileToClipboard { get; }
@@ -79,7 +79,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             FileToClipboardCommand fileToClipboard,
             ISettingsService settingsService)
         {
-            this.TagEdiotr = tagEdiotr;
+            this.TagEditor = tagEdiotr;
             this._itemService = itemService;
             FileVersionList = fileVersionList;
             this.notificationCenter = notificationCenter;
@@ -87,9 +87,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.fileItemLinkService = fileItemLinkService;
             OpenFile = openFile;
             FileToClipboard = fileToClipboard;
-            this.TagEdiotr.Editmode = true;
-            this.TagEdiotr.CompletePool = true;
-            this.TagEdiotr.PermitNewTags = true;
+            this.TagEditor.Editmode = true;
+            this.TagEditor.CompletePool = true;
+            this.TagEditor.PermitNewTags = true;
             this.disposables.Add(_selectedItemIdChanges);
 
             this.SelectedItemChanges =
@@ -242,7 +242,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         {
             var ics = new ItemChangeset(SelectedItem.Value.SourceItem);
             ics.Name = this.Name;
-            ics.Tags = this.TagEdiotr.Selection.Items;
+            ics.Tags = this.TagEditor.Selection.Items;
             this._itemService.Patch(ics);
 
             this.fileItemLinkService.Post(this.newLinks.KeyValues.Select(x => x.Value));
@@ -266,7 +266,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
                 this.Name = (string)item?.Name;
                 this.FileVersionList.SetFiles(item?.FileVersions);
-                this.TagEdiotr.SetSelection(item?.Tags);
+                this.TagEditor.SetSelection(item?.Tags);
                 this.newLinks.Clear();
                 if (item?.FileVersions != null)
                     this.newLinks.AddOrUpdate(item?.FileVersions?.Select(ver => ver.Link.Link));
@@ -279,6 +279,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         }
 
         public void SetTagpool(IObservableList<Tag> tagpool)
-            => this.TagEdiotr.SetTagpool(tagpool);
+            => this.TagEditor.SetTagpool(tagpool);
     }
 }

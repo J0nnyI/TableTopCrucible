@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Data.SaveF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Data.SaveFile", "TableTopCrucible.Data.SaveFile\TableTopCrucible.Data.SaveFile.csproj", "{A0A33BC9-2722-42E1-9922-0ACF17211278}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopCrucible.Core.Tests", "TableTopCrucible.Core.Tests\TableTopCrucible.Core.Tests.csproj", "{BDF26D7D-A41D-47D1-B868-4B23058A8250}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Core.Tests", "TableTopCrucible.Core.Tests\TableTopCrucible.Core.Tests.csproj", "{BDF26D7D-A41D-47D1-B868-4B23058A8250}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,6 +92,7 @@ Global
 		{A0954B71-81C3-4239-897F-C6E445425933} = {E7F1703B-F7F4-43C9-AA6B-9A6D0726D987}
 		{E65C1D1C-8D83-43F9-B5CC-A509A4E5CA3A} = {1F2AE50D-863D-42A0-8906-888F77E2CFF6}
 		{A0A33BC9-2722-42E1-9922-0ACF17211278} = {1F2AE50D-863D-42A0-8906-888F77E2CFF6}
+		{BDF26D7D-A41D-47D1-B868-4B23058A8250} = {6560DA97-EB3D-4212-A829-439A852A45DF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5FA1A29D-7A36-494A-9156-8A7C94F97FA2}

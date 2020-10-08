@@ -19,6 +19,7 @@ using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Services;
+using TableTopCrucible.Domain.Library.WPF.Models;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
@@ -27,6 +28,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     {
         private readonly IItemService itemService;
         public abstract IObservableList<Tag> Selection { get; }
+        public abstract IObservable<IChangeSet<Tag>> TagpoolExceptions { get; }
         public TagEditorViewModelBase(IItemService itemService)
         {
             this.itemService = itemService;
@@ -46,7 +48,11 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 par =>
                 {
                     if (par is IEnumerable lst)
+                    {
                         this.MarkedTags = lst.OfType<Tag>().ToArray();
+                        if (!MarkedTags.Any())
+                            this.MarkedTags = lst.OfType<CountedTag>().Select(tag => tag.Tag).ToArray();
+                    }
                 }
             );
 
@@ -66,14 +72,15 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     {
                         if (!PermitNewTags && !this.Tagpool.Items.Contains((Tag)newTag))
                             return "there is no item with this tag";
-                        if (this.Selection.Items.Contains((Tag)newTag))
-                            return "this tag has already been selected";
-
+                        var additionals = AdditionalValidation((Tag)newTag);
+                        if (additionals != null)
+                            return additionals;
                     }
                     return string.Join(Environment.NewLine, Tag.Validate(newTag));
                 }
             );
         }
+        public virtual string AdditionalValidation(Tag newTag) => null;
         public ICommand RemoveTags { get; }
         public ICommand AddTag { get; }
         public ICommand MarkingChanged { get; }
@@ -107,7 +114,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                         newTag => tag => ((string)tag).ToLower().Contains(newTag.ToLower())
                     )
                 )
-                .Except(Selection.Connect())
+                .Except(TagpoolExceptions)
                 .Transform(tag => new TagEx(tag, true))
                 .Merge(
                     this.CompletePoolChanges
@@ -116,7 +123,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                             completePool
                                 ? this.allTags
                                     .Except(
-                                        this.Tagpool.Connect().Merge(
+                                        TagpoolExceptions.Merge(
                                         this.Selection.Connect()))
                                     .Transform(tag => new TagEx(tag, false))
                                 : Observable.Empty<IChangeSet<TagEx>>()

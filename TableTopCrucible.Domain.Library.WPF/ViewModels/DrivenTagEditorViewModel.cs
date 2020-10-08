@@ -6,6 +6,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using System.Linq;
 
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Services;
@@ -38,11 +39,16 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         {
             if (this.Selection != null)
                 throw new InvalidOperationException("Selection has already been set");
+
             tags.Bind(SelectionBinding).TakeUntil(destroy).Subscribe();
             this._selection = tags.Transform(tag => tag.Tag).AsObservableList();
+            _tagpoolExceptions =
+                tags
+                .Filter(cTag => cTag.Total == cTag.Count)
+                .Transform(cTag => cTag.Tag)
+                .TakeUntil(destroy);
             this.OnSelectionUpdate();
         }
-
         public override void Deselect(IEnumerable<Tag> tags)
         {
             this.OnDeselection?.Invoke(this, tags);
@@ -52,6 +58,13 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         {
             this.OnSelection?.Invoke(this, tag);
         }
-
+        public override string AdditionalValidation(Tag newTag)
+        {
+            if (this.SelectionBinding.Any(cTag=>cTag.Tag == newTag && cTag.Total == cTag.Count))
+                return "this tag has already been selected for each item";
+            return base.AdditionalValidation(newTag);
+        }
+        private IObservable<IChangeSet<Tag>> _tagpoolExceptions;
+        public override IObservable<IChangeSet<Tag>> TagpoolExceptions => _tagpoolExceptions;
     }
 }

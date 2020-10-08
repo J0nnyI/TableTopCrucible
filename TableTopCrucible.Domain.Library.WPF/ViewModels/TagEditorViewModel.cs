@@ -68,6 +68,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .Bind(SelectionBinding)
                 .TakeUntil(destroy)
                 .Subscribe();
+            this.TagpoolExceptions = Selection.Connect();
         }
         public void SetSelection(IEnumerable<Tag> tags)
         {
@@ -93,5 +94,12 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         {
             this.selection.RemoveMany(tags);
         }
+        public override string AdditionalValidation(Tag newTag)
+        {
+            if (this.Selection.Items.Contains(newTag))
+                return "this tag has already been selected";
+            return base.AdditionalValidation(newTag);
+        }
+        public override IObservable<IChangeSet<Tag>> TagpoolExceptions { get; }
     }
 }

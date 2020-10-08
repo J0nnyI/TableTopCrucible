@@ -85,7 +85,7 @@
                     <!--#region name / version-->
                     <!--#endregion-->
                     <!--#region tags-->
-                    <ContentPresenter Content="{Binding TagEdiotr}"
+                    <ContentPresenter Content="{Binding TagEditor}"
                                   Grid.Column="1"
                                   Grid.Row="1"
                                   Grid.ColumnSpan="2"

@@ -135,7 +135,7 @@
             <Button Style="{StaticResource MaterialDesignIconButton}"
                     Validation.ErrorTemplate="{x:Null}"
                     Command="{Binding RemoveTags}"
-                    CommandParameter="{Binding Selection}">
+                    CommandParameter="{Binding MarkedTags}">
                 <md:PackIcon Kind="TagOff"/>
             </Button>
         </StackPanel>

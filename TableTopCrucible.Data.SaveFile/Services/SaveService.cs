@@ -1,4 +1,6 @@
-﻿using ReactiveUI;
+﻿using DynamicData;
+
+using ReactiveUI;
 
 using System;
 using System.Collections.Generic;
@@ -120,8 +122,19 @@ namespace TableTopCrucible.Data.SaveFile.Services
                 FileItemLinks = fileItemLinkService.Get().KeyValues.Select(file => new FileItemLinkDTO(file.Value)).ToArray(),
                 Directories = _directoryDataService.Get().KeyValues.Select(dir => new DirectorySetupDTO(dir.Value))
             };
-            using FileStream fs = File.Create(file);
-            return JsonSerializer.SerializeAsync(fs, masterDTO).ToObservable();
+            FileStream fs = File.Create(file);
+            var res = JsonSerializer
+                .SerializeAsync(fs, masterDTO)
+                .ToObservable()
+                .Take(1)
+                .Catch((Exception ex) =>
+                {
+                    MessageBox.Show(ex.ToString(), "saving failed");
+                    return Observable.Return(new Unit());
+                })
+               .Finally(() => fs.Dispose());
+            res.Subscribe();
+            return res;
         }
     }
 }

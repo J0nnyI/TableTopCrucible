@@ -130,7 +130,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .TakeUntil(destroy)
                 .Subscribe(_ => { }, ex =>
                 {
-                    MessageBox.Show($"tag-editor pool exception: {nameof(TagEditorViewModel)}: tagpool"+Environment.NewLine+ex.ToString());
+                    MessageBox.Show($"({this.GetType().FullName}) tagpool exception: " + Environment.NewLine + ex.ToString());
                 });
         }
 

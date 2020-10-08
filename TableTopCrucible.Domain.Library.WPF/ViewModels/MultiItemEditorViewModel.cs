@@ -6,14 +6,18 @@ using ReactiveUI;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Security.Principal;
 using System.Text;
 
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Models.Views;
+using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Models;
+using TableTopCrucible.Domain.Models.Sources;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
@@ -24,10 +28,38 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     }
     public partial class MultiItemEditorViewModel : DisposableReactiveValidationObject<MultiItemEditorViewModel>, IMultiItemEditor
     {
-        public MultiItemEditorViewModel(IDrivenTagEditor tagEditor)
+        private readonly IItemService itemService;
+
+        public MultiItemEditorViewModel(IDrivenTagEditor tagEditor, IItemService itemService)
         {
             TagEditor = tagEditor;
+            this.itemService = itemService;
+            this.TagEditor.Editmode = true;
+            this.TagEditor.PermitNewTags = true;
+            this.TagEditor.OnSelection += TagEditor_OnSelection;
+            this.TagEditor.OnDeselection += TagEditor_OnDeselection;
         }
+
+        private void TagEditor_OnDeselection(object sender, IEnumerable<Tag> e)
+        {
+            this.itemService.Patch(this.Selection.Items.Select(itemEx => {
+                var changeset = new ItemChangeset(itemEx.SourceItem);
+                changeset.Tags = changeset.Tags.Except(e);
+                return changeset;
+            }));
+        }
+
+        private void TagEditor_OnSelection(object sender, Tag e)
+        {
+            this.itemService.Patch(this.Selection.Items.Select(itemEx => {
+                var changeset = new ItemChangeset(itemEx.SourceItem);
+                var tags = changeset.Tags.ToList();
+                tags.Add(e);
+                changeset.Tags = tags;
+                return changeset;
+            }));
+        }
+
         public IObservableList<ItemEx> Selection { get; private set; }
         public ObservableCollectionExtended<CountedTag> CountedTags { get; } = new ObservableCollectionExtended<CountedTag>();
         public ObservableCollectionExtended<ItemEx> SelectionBinding { get; } = new ObservableCollectionExtended<ItemEx>();

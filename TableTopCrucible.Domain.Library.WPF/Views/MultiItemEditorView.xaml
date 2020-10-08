@@ -33,7 +33,13 @@
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
-        <ContentPresenter Content="{Binding TagEditor}"
-                          Grid.Column="1"/>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ContentPresenter Content="{Binding TagEditor}"
+                              />
+        </Grid>
     </Grid>
 </UserControl>

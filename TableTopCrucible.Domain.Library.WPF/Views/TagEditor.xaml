@@ -60,26 +60,32 @@
                         BasedOn="{StaticResource MaterialDesignFilterChipListBoxItem}">
                     <Setter Property="Focusable"
                             Value="False"/>
-                    <!--<Setter Property="Background"
-                            Value="Red"/>-->
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <LinearGradientBrush StartPoint="0,0"
+                                                 EndPoint="1,0">
+                                <GradientStop Color="{StaticResource Primary100}" 
+                                              Offset="{Binding PortionPercent, FallbackValue='0'}"/>
+                                <GradientStop Color="#12000000" Offset="{Binding PortionPercent}"/>
+                            </LinearGradientBrush>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="BorderBrush"
+                            Value="Orange"/>
+                    <Setter Property="BorderThickness" 
+                            Value="4px"/>
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
-                        <TextBlock Foreground="{Binding IsPrimary, Converter={StaticResource cv_tagColor}}">
-                            <Run>
-                                <Run.Text>
-                                    <PriorityBinding>
-                                        <Binding Mode="OneWay" Path="Tag"/>
-                                        <Binding Mode="OneWay" Path=""/>
-                                    </PriorityBinding>
-                                </Run.Text>
-                            </Run>
-                            <Run Text=": "/>
-                            <Run Text="{Binding Count, Mode=OneWay}"/>
-                            <Run Text="/"/>
-                            <Run Text="{Binding Total, Mode=OneWay}"/>
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <PriorityBinding>
+                                    <Binding Mode="OneWay" Path="Tag"/>
+                                    <Binding Mode="OneWay" Path=""/>
+                                </PriorityBinding>
+                            </TextBlock.Text>
                         </TextBlock>
                     </StackPanel>
                 </DataTemplate>

@@ -9,7 +9,7 @@ using TableTopCrucible.Data.Models.ValueTypes;
 
 namespace TableTopCrucible.Domain.Library.WPF.Models
 {
-    public class CountedTag :DisposableReactiveObjectBase
+    public class CountedTag : DisposableReactiveObjectBase
     {
         public CountedTag(IObservable<int> totalChanges, IObservable<int> countChanges, Tag tag)
         {
@@ -24,8 +24,17 @@ namespace TableTopCrucible.Domain.Library.WPF.Models
 
             this._total = totalChanges
                 .TakeUntil(destroy)
-                .ToProperty(this, m=>m.Total);
+                .ToProperty(this, m => m.Total);
+
+            _portionPercent = Observable.CombineLatest(countChanges, totalChanges)
+                .TakeUntil(destroy)
+                .Select((values) => (double)values[0] / (double)values[1])
+                .ToProperty(this, nameof(PortionPercent));
         }
+
+        private readonly ObservableAsPropertyHelper<double> _portionPercent;
+        public double PortionPercent => _portionPercent.Value;
+
         /**
          * the length of the source list
          */

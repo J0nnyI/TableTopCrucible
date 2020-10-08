@@ -15,12 +15,17 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
     public interface IDrivenTagEditor : ITagEditor
     {
+        event EventHandler<IEnumerable<Tag>> OnDeselection;
+        event EventHandler<Tag> OnSelection;
         void BindSelection(IObservable<IChangeSet<CountedTag>> tags);
 
     }
 
     public class DrivenTagEditorViewModel : TagEditorViewModelBase, IDrivenTagEditor
     {
+        public event EventHandler<IEnumerable<Tag>> OnDeselection;
+        public event EventHandler<Tag> OnSelection;
+
         public DrivenTagEditorViewModel(IItemService itemService) : base(itemService)
         {
         }
@@ -37,20 +42,15 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this._selection = tags.Transform(tag => tag.Tag).AsObservableList();
             this.OnSelectionUpdate();
         }
-        protected override void OnSelectionUpdate()
-        {
-
-            base.OnSelectionUpdate();
-        }
 
         public override void Deselect(IEnumerable<Tag> tags)
         {
-            throw new NotImplementedException();
+            this.OnDeselection?.Invoke(this, tags);
         }
 
         public override void Select(Tag tag)
         {
-            throw new NotImplementedException();
+            this.OnSelection?.Invoke(this, tag);
         }
 
     }

@@ -34,6 +34,11 @@
                     ToolTip="Add Directory">
                 <md:PackIcon Kind="Add"/>
             </Button>
+            <Button Command="{Binding GenerateItems}"
+                    Style="{StaticResource MaterialDesignIconButton}"
+                    ToolTip="Generate Items">
+                <md:PackIcon Kind="SyncCircle"/>
+            </Button>
         </StackPanel>
         <ListView ItemsSource="{Binding Directories}"
                   Grid.Column="0"

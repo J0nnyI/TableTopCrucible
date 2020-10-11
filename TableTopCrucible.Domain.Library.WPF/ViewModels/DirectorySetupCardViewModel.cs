@@ -32,6 +32,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public ICommand Save { get; }
         public ICommand Undo { get; }
         public ICommand Delete { get; }
+        public ICommand DeleteRecursively { get; }
 
         public IObservable<int> FileCountChanges;
         private readonly ObservableAsPropertyHelper<int> _fileCount;
@@ -74,7 +75,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             IItemService itemService,
             OpenFileDialogCommand openFile,
             SaveDirectorySetupCommand save,
-            RemoveDirectorySetupRecursivelyCommand delete)
+            DeleteDirectorySetupCommand delete,
+            RemoveDirectorySetupRecursivelyCommand deleteRecursively
+            )
         {
             this._fileInfoService = fileService;
             OpenFile = openFile;
@@ -112,6 +115,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
             this.Save = save;
             this.Delete = delete;
+            this.DeleteRecursively = deleteRecursively;
             this.EnterEditmode = new RelayCommand(
                 _ => this.EditMode = true,
                 _ => !this.EditMode);

@@ -8,10 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Security.Principal;
-using System.Text;
+using System.Windows;
 
-using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Models.Views;
@@ -43,7 +41,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
         private void TagEditor_OnDeselection(object sender, IEnumerable<Tag> e)
         {
-            this.itemService.Patch(this.Selection.Items.Select(itemEx => {
+            this.itemService.Patch(this.Selection.Items.Select(itemEx =>
+            {
                 var changeset = new ItemChangeset(itemEx.SourceItem);
                 changeset.Tags = changeset.Tags.Except(e);
                 return changeset;
@@ -52,7 +51,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
         private void TagEditor_OnSelection(object sender, Tag e)
         {
-            this.itemService.Patch(this.Selection.Items.Select(itemEx => {
+            this.itemService.Patch(this.Selection.Items.Select(itemEx =>
+            {
                 var changeset = new ItemChangeset(itemEx.SourceItem);
                 var tags = changeset.Tags.ToList();
                 tags.Add(e);
@@ -76,7 +76,10 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .TakeUntil(destroy)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(SelectionBinding)
-                .Subscribe();
+                .Subscribe(_ => { }, ex =>
+                {
+                    MessageBox.Show(ex.ToString(),$"{nameof(MultiItemEditorViewModel)}.{nameof(BindSelection)}: selection subscription threw exception");
+                });
 
             var count = this.Selection.Connect().Count();
 
@@ -86,7 +89,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .Transform(group =>
                     new CountedTag(count, group.List.Connect().Count(), group.GroupKey)
                 )
-                .DisposeMany();
+                .DisposeMany()
+                //.Sort()
+                ;
 
             this.TagEditor.BindSelection(selectedTags);
         }

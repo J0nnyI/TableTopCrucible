@@ -35,11 +35,6 @@
                     <Setter Property="Opacity" Value=".5"/>
                 </Style>
             </ListView.Resources>
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="SelectionChanged">
-                    <i:InvokeCommandAction Command="{Binding SelectionChangesCommand}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Setter Property="HorizontalContentAlignment" 
@@ -47,7 +42,7 @@
                     <Setter Property="VerticalContentAlignment" 
                             Value="Stretch" />
                     <Setter Property="IsSelected" 
-                            Value="{Binding SelectionInfo.IsSelected, Mode=TwoWay}"/>
+                            Value="{Binding IsSelected, Mode=TwoWay}"/>
                     <EventSetter Event="PreviewMouseDown" Handler="ListViewItem_PreviewMouseDown"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected"

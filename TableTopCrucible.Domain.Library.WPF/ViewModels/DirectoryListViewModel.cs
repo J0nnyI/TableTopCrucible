@@ -14,6 +14,7 @@ using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Commands;
 using TableTopCrucible.WPF.Commands;
+using System.Windows.Input;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
@@ -21,6 +22,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     {
         public CreateDirectorySetupCommand CreateDirectorySetup { get; }
         public FullSyncCommand FullSync { get; }
+        public ICommand GenerateItems { get; }
 
         private ReadOnlyObservableCollection<DirectorySetupCardViewModel> _directories;
         public ReadOnlyObservableCollection<DirectorySetupCardViewModel> Directories => _directories;
@@ -31,12 +33,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             IDirectoryDataService directorySetupService,
             IInjectionProviderService injectionProviderService,
             CreateDirectorySetupCommand createDirectorySetup,
-            FullSyncCommand fullSync)
+            FullSyncCommand fullSync,
+            GenerateItemsFromFilesCommand generateItems)
         {
             this._directorySetupService = directorySetupService;
             this._injectionProviderService = injectionProviderService;
             this.CreateDirectorySetup = createDirectorySetup;
             FullSync = fullSync;
+            GenerateItems = generateItems;
             this._injectionProviderService
                 .Provider
                 .Select(provider =>

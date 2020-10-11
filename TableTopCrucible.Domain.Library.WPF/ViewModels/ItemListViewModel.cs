@@ -8,66 +8,85 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Collections.Generic;
+using System.Windows;
 
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
-using TableTopCrucible.WPF.Commands;
-using System.Windows.Input;
-using System.Windows.Controls;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
-using System.Collections;
-using System.Collections.Generic;
-using System.Windows;
-using ReactiveUI.Fody.Helpers;
-using System.Reactive;
-using System.Reactive.Disposables;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
-    public class ItemSelectionInfo : ReactiveObject
+    public interface ISelectionProvider
     {
-        [Reactive]
-        public bool IsSelected { get; set; } = false;
-        public ItemId ItemId { get; }
-        public ItemSelectionInfo(ItemId itemId)
-        {
-            this.ItemId = itemId;
-        }
+        ISourceList<ItemId> SelectedItemIDs { get; }
+        bool Disconnected { get; }
     }
-
-    public class SelectedItemView
+    public class ItemSelectionInfo : DisposableReactiveObjectBase
     {
-        public SelectedItemView(ItemEx Item, ItemSelectionInfo selectionInfo)
-        {
-            this.Item = Item;
-            SelectionInfo = selectionInfo;
-            if (selectionInfo != null && Item.ItemId != selectionInfo?.ItemId)
-                throw new InvalidOperationException("the item-ids do not match");
-        }
+        private readonly ISelectionProvider selectionProvider;
 
+        private ObservableAsPropertyHelper<bool> _isSelected;
+        public bool IsSelected
+        {
+            get => _isSelected.Value;
+            set
+            {
+                try
+                {
+                    if (selectionProvider.Disconnected)
+                        return;
+
+                    if (value)
+                    {
+                        if (value != _isSelected.Value && !selectionProvider.SelectedItemIDs.Items.Contains(Item.ItemId))
+                            selectionProvider.SelectedItemIDs.Add(Item.ItemId);
+                    }
+                    else
+                    {
+                        if (value != _isSelected.Value && selectionProvider.SelectedItemIDs.Items.Contains(Item.ItemId))
+                            selectionProvider.SelectedItemIDs.Remove(Item.ItemId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), $"{nameof(ItemSelectionInfo)}.{nameof(IsSelected)}.set");
+                }
+            }
+        }
         public ItemEx Item { get; }
-        public ItemSelectionInfo SelectionInfo { get; }
+        public ItemSelectionInfo(ItemEx item, ISelectionProvider selectionProvider)
+        {
+            this.selectionProvider = selectionProvider;
+            this.Item = item;
+            this._isSelected =
+                selectionProvider
+                .SelectedItemIDs
+                .Connect()
+                .Filter(id => id == item.ItemId)
+                .ToCollection()
+                .Select(lst => lst.Any())
+                .TakeUntil(destroy)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .ToProperty(this, nameof(IsSelected));
+        }
     }
 
-
-    public class ItemListViewModel : DisposableReactiveObjectBase
+    public class ItemListViewModel : DisposableReactiveObjectBase, ISelectionProvider
     {
         private readonly IItemService _itemService;
         private readonly IInjectionProviderService _injectionProviderService;
 
-        public SourceCache<SelectedItemView, ItemId> Selections { get; } = new SourceCache<SelectedItemView, ItemId>(item => item.SelectionInfo.ItemId);
 
         public BehaviorSubject<Func<ItemEx, bool>> FilterChanges { get; } = new BehaviorSubject<Func<ItemEx, bool>>(_ => true);
-        ReadOnlyObservableCollection<SelectedItemView> _items;
-        public ReadOnlyObservableCollection<SelectedItemView> Items => _items;
+        ReadOnlyObservableCollection<ItemSelectionInfo> _items;
+        public ReadOnlyObservableCollection<ItemSelectionInfo> Items => _items;
         public IObservableList<ItemEx> Selection { get; private set; }
-        public ICommand SelectionChangesCommand { get; }
-        private bool disconnected = false;
-
-        public event EventHandler<IEnumerable<ItemEx>> OnSelectionRestore;
+        public ISourceList<ItemId> SelectedItemIDs { get; } = new SourceList<ItemId>();
+        public bool Disconnected { get; private set; }
 
         public ItemListViewModel(
             IItemService itemService,
@@ -75,12 +94,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         {
             this._itemService = itemService ?? throw new NullReferenceException("got no itemService");
             this._injectionProviderService = injectionProviderService ?? throw new NullReferenceException("got no itemservice");
-
-
-            var selectionChanges = new Subject<Unit>();
-            selectionChanges.DisposeWith(disposables);
-            this.SelectionChangesCommand = new RelayCommand(_ => selectionChanges.OnNext(new Unit()));
-
 
             this._injectionProviderService.Provider.Subscribe(
                 (provider) =>
@@ -91,58 +104,46 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 var itemList = this._itemService
                     .GetExtended()
                     .Connect()
-                    .DisposeMany()
                     .Filter(FilterChanges)
                     .TakeUntil(destroy)
                     .Sort(item => item.Name);
 
-                var selectionList = itemList.RemoveKey()
-                    .DistinctValues(item => item.ItemId)
-                    .Transform(id => new ItemSelectionInfo(id), false)
-                    .AddKey(selItem => selItem.ItemId);
-                selectionList.Subscribe(_ =>
-                {
+                var selectionList =
+                    itemList.Transform(item => new ItemSelectionInfo(item, this))
+                    .DisposeMany();
 
-                });
-                var selection = itemList
+                var _selection = 
+                    SelectedItemIDs
+                    .Connect()
+                    .AddKey(id => id)
                     .LeftJoin(
-                        selectionList,
-                        sel => sel.ItemId,
-                        (item, selection) => new SelectedItemView(item, selection.HasValue ? selection.Value : null))
-                    .AsObservableCache();
-                selection.Connect().Subscribe(_ =>
-                {
+                        itemList,
+                        item => item.ItemId,
+                        (id, item) => new { id, item })
+                    .RemoveKey();
 
-                });
 
-                Selection = selection.Connect()
-                    .Filter(selItem => selItem?.SelectionInfo?.IsSelected == true, selectionChanges.Where(_ => !this.disconnected))
-                    .Transform(selItem => selItem.Item)
-                    .RemoveKey()
+                Selection = 
+                    _selection
+                    .Filter(x => x.item.HasValue)
+                    .Transform(x => x.item.Value)
                     .AsObservableList();
 
-                IEnumerable<ItemId> selectionRestore = null;
 
-                selection.Connect()
+                _selection
+                     .Filter(x => !x.item.HasValue)
+                     .ToCollection()
+                     .Subscribe(col =>
+                     {
+                         if (col.Any())
+                             SelectedItemIDs.RemoveMany(col.Select(x => x.id));
+                     });
+
+                selectionList
                     .ObserveOn(RxApp.MainThreadScheduler)
-                    .Do(_ =>
-                    {
-                        disconnected = true;
-                        selectionRestore = Selection.Items.Select(item => item.ItemId);
-                    })
+                    .Do(_ => this.Disconnected = true)
                     .Bind(out _items)
-                    .Do(_ =>
-                    {
-                        var x = selection.KeyValues.WhereIn(selectionRestore, item => item.Key)
-                            .ToList();
-                        selection.KeyValues.WhereIn(selectionRestore, item => item.Key)
-                            .ToList()
-                            .ForEach(item =>
-                            {
-                                item.Value.SelectionInfo.IsSelected = true;
-                            });
-                        disconnected = false;
-                    })
+                    .Do(_ => this.Disconnected = false)
                     .Subscribe();
 
             });

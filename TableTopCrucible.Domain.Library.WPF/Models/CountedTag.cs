@@ -9,7 +9,7 @@ using TableTopCrucible.Data.Models.ValueTypes;
 
 namespace TableTopCrucible.Domain.Library.WPF.Models
 {
-    public class CountedTag : DisposableReactiveObjectBase
+    public class CountedTag : DisposableReactiveObjectBase, IComparable
     {
         public CountedTag(IObservable<int> totalChanges, IObservable<int> countChanges, Tag tag)
         {
@@ -47,5 +47,17 @@ namespace TableTopCrucible.Domain.Library.WPF.Models
         private readonly ObservableAsPropertyHelper<int> _count;
         public Tag Tag { get; }
 
+        public int CompareTo(object obj)
+        {
+            if (obj is CountedTag tagB)
+            {
+                var countCmp = this.Count.CompareTo(tagB.Count);
+                if (countCmp != 0)
+                    return countCmp;
+                else
+                    return this.Tag.CompareTo(tagB.Tag);
+            }
+            return -1;
+        }
     }
 }

@@ -122,7 +122,7 @@ namespace TableTopCrucible.Domain.Library
                 Hash = hash;
             }
 
-            public bool IsUpdate { get; }
+            public bool IsUpdate { get; } 
             public DirectorySetup DirectorySetup { get; }
             public SysFileInfo FileInfo { get; }
             public FileHash Hash { get; }

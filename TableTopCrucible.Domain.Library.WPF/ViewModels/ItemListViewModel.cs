@@ -113,8 +113,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     .DisposeMany();
 
                 var _selection = 
-                    SelectedItemIDs
-                    .Connect()
+                    SelectedItemIDs.Connect()
                     .AddKey(id => id)
                     .LeftJoin(
                         itemList,

@@ -130,7 +130,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                         )
                         .Switch()
                     )
-                .Sort()
+                //.Sort()
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(TagpoolBinding)
                 .TakeUntil(tagpoolReset)

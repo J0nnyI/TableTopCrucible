@@ -1,5 +1,7 @@
 ﻿using DynamicData;
 
+using System.Collections;
+using System.Collections.Generic;
 using TableTopCrucible.Data.Models.ValueTypes;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
@@ -14,6 +16,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         IObservableList<Tag> Tagpool { get; }
 
         void SetTagpool(IObservableList<Tag> tagpool);
-        void Select(Tag tag);
+        void Select(IEnumerable<Tag> tag);
     }
 }

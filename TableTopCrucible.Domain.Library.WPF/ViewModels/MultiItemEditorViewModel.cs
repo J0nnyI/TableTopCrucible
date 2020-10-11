@@ -49,7 +49,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             }));
         }
 
-        private void TagEditor_OnSelection(object sender, Tag e)
+        private void TagEditor_OnSelection(object sender, IEnumerable<Tag> e)
         {
             this.itemService.Patch(this.Selection.Items.Select(itemEx =>
             {

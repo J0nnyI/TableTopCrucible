@@ -11,13 +11,15 @@ using System.Linq;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Models;
+using TableTopCrucible.WPF.Commands;
+using TableTopCrucible.Core.Helper;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
     public interface IDrivenTagEditor : ITagEditor
     {
         event EventHandler<IEnumerable<Tag>> OnDeselection;
-        event EventHandler<Tag> OnSelection;
+        event EventHandler<IEnumerable<Tag>> OnSelection;
         void BindSelection(IObservable<IChangeSet<CountedTag>> tags);
 
     }
@@ -25,10 +27,22 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     public class DrivenTagEditorViewModel : TagEditorViewModelBase, IDrivenTagEditor
     {
         public event EventHandler<IEnumerable<Tag>> OnDeselection;
-        public event EventHandler<Tag> OnSelection;
+        public event EventHandler<IEnumerable<Tag>> OnSelection;
 
         public DrivenTagEditorViewModel(IItemService itemService) : base(itemService)
         {
+            this.AddTagButtonCommand = new RelayCommand(
+                e =>
+                {
+                    var tags = this.markedTags.ToList();
+                    if (!HasErrors)
+                        tags.Add((Tag)NewTag);
+
+                    this.Select(tags);
+                    this.NewTag = string.Empty;
+                    this.UnmarkAll();
+                },
+                _ => !HasErrors || markedTags.Any());
         }
         public ObservableCollectionExtended<CountedTag> SelectionBinding { get; } = new ObservableCollectionExtended<CountedTag>();
 
@@ -50,19 +64,20 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.OnSelectionUpdate();
         }
         public override void Deselect(IEnumerable<Tag> tags)
-        {
-            this.OnDeselection?.Invoke(this, tags);
-        }
+            => this.OnDeselection?.Invoke(this, tags);
 
-        public override void Select(Tag tag)
+        public override void Select(IEnumerable<Tag> tags)
+            => this.OnSelection?.Invoke(this, tags);
+        public override string Validate(string newTag)
         {
-            this.OnSelection?.Invoke(this, tag);
-        }
-        public override string AdditionalValidation(Tag newTag)
-        {
-            if (this.SelectionBinding.Any(cTag=>cTag.Tag == newTag && cTag.Total == cTag.Count))
+
+            var basics = base.Validate(newTag);
+            if (!string.IsNullOrWhiteSpace(basics))
+                return basics;
+
+            if (this.SelectionBinding.Any(cTag => cTag.Tag == (Tag)newTag && cTag.Total == cTag.Count))
                 return "this tag has already been selected for each item";
-            return base.AdditionalValidation(newTag);
+            return null;
         }
         private IObservable<IChangeSet<Tag>> _tagpoolExceptions;
         public override IObservable<IChangeSet<Tag>> TagpoolExceptions => _tagpoolExceptions;

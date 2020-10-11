@@ -29,6 +29,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private readonly IItemService itemService;
         public abstract IObservableList<Tag> Selection { get; }
         public abstract IObservable<IChangeSet<Tag>> TagpoolExceptions { get; }
+        [Reactive]
+        public int MarkedIndex { get; set; } = -1;
         public TagEditorViewModelBase(IItemService itemService)
         {
             this.itemService = itemService;
@@ -36,22 +38,33 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 this.WhenAnyValue(vm => vm.NewTag)
                 .TakeUntil(destroy);
 
-            this.AddTag = new RelayCommand(e =>
-            {
-                if (e is KeyEventArgs args && args.Key != Key.Enter)
-                    return;
-                this.Select((Tag)NewTag);
-                this.NewTag = string.Empty;
-            }, _ => !this.HasErrors);
-            this.RemoveTags = new RelayCommand(_ => this.Deselect(this.MarkedTags), _ => this.MarkedTags.Any());
+            this.AddTagButtonCommand = new RelayCommand(
+                e =>
+                {
+                    this.Select(((Tag)NewTag).AsArray());
+                    this.NewTag = string.Empty;
+                },
+                _ => !HasErrors);
+
+            this.AddTagTextboxCommand = new RelayCommand(
+                e =>
+                {
+                    if (e is KeyEventArgs args && args.Key != Key.Enter)
+                        return;
+                    this.Select(((Tag)NewTag).AsArray());
+                    this.NewTag = string.Empty;
+                },
+                _ => !HasErrors);
+
+            this.RemoveTags = new RelayCommand(_ => this.Deselect(this.markedTags), _ => this.markedTags.Any());
             this.MarkingChanged = new RelayCommand(
                 par =>
                 {
                     if (par is IEnumerable lst)
                     {
-                        this.MarkedTags = lst.OfType<Tag>().ToArray();
-                        if (!MarkedTags.Any())
-                            this.MarkedTags = lst.OfType<CountedTag>().Select(tag => tag.Tag).ToArray();
+                        this.markedTags = lst.OfType<Tag>().ToArray();
+                        if (!markedTags.Any())
+                            this.markedTags = lst.OfType<CountedTag>().Select(tag => tag.Tag).ToArray();
                     }
                 }
             );
@@ -61,30 +74,32 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.CompletePoolChanges = this.WhenAnyValue(vm => vm.CompletePool).TakeUntil(destroy);
 
         }
+        protected void UnmarkAll()
+        {
+            this.MarkedIndex = -1;
+        }
         protected virtual void OnSelectionUpdate()
         {
             this.ValidationRule(
                 vm => vm.NewTag,
-                newTag => !Tag.Validate(newTag).Any() && (PermitNewTags || this.Tagpool.Items.Contains((Tag)newTag)) && !this.Selection.Items.Contains((Tag)newTag),
-                newTag =>
-                {
-                    if (!Tag.Validate(newTag).Any())
-                    {
-                        if (!PermitNewTags && !this.Tagpool.Items.Contains((Tag)newTag))
-                            return "there is no item with this tag";
-                        var additionals = AdditionalValidation((Tag)newTag);
-                        if (additionals != null)
-                            return additionals;
-                    }
-                    return string.Join(Environment.NewLine, Tag.Validate(newTag));
-                }
+                newTag => Validate(newTag) == null,
+                Validate
             );
         }
-        public virtual string AdditionalValidation(Tag newTag) => null;
+        public virtual string Validate(string newTag)
+        {
+            if (!Tag.Validate(newTag).Any())
+            {
+                if (!PermitNewTags && !this.Tagpool.Items.Contains((Tag)newTag))
+                    return "there is no item with this tag";
+            }
+            return string.Join(Environment.NewLine, Tag.Validate(newTag));
+        }
         public ICommand RemoveTags { get; }
-        public ICommand AddTag { get; }
+        public ICommand AddTagTextboxCommand { get; }
+        public ICommand AddTagButtonCommand { get; protected set; }
         public ICommand MarkingChanged { get; }
-        private IEnumerable<Tag> MarkedTags { get; set; } = new Tag[0];
+        protected IEnumerable<Tag> markedTags { get; private set; } = new Tag[0];
         [Reactive]
         public string NewTag { get; set; } = string.Empty;
         [Reactive]
@@ -141,7 +156,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 });
         }
 
-        public abstract void Select(Tag tag);
+        public abstract void Select(IEnumerable<Tag> tags);
         public abstract void Deselect(IEnumerable<Tag> tags);
     }
 }

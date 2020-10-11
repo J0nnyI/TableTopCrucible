@@ -78,27 +78,30 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 eList.AddRange(tags);
             });
         }
-        public override void Select(Tag tag)
+        public override void Select(IEnumerable<Tag> tags)
         {
-            if (!PermitNewTags && !Tagpool.Items.Contains(tag))
-                return;
-            this.selection.Add(tag);
+            if (!PermitNewTags)
+                tags = tags.Intersect(Tagpool.Items);
+            this.selection.AddRange(tags);
         }
         public void Select(string tag)
         {
             if (this.HasErrors)
                 return;
-            this.Select((Tag)tag);
+            this.Select(((Tag)tag).AsArray());
         }
         public override void Deselect(IEnumerable<Tag> tags)
+            => this.selection.RemoveMany(tags);
+        public override string Validate(string newTag)
         {
-            this.selection.RemoveMany(tags);
-        }
-        public override string AdditionalValidation(Tag newTag)
-        {
-            if (this.Selection.Items.Contains(newTag))
+            var basics = base.Validate(newTag);
+            if (!string.IsNullOrWhiteSpace(basics))
+                return basics;
+
+            if (this.Selection.Items.Contains((Tag)newTag))
                 return "this tag has already been selected";
-            return base.AdditionalValidation(newTag);
+
+            return null;
         }
         public override IObservable<IChangeSet<Tag>> TagpoolExceptions { get; }
     }

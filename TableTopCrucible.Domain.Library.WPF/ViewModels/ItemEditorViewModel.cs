@@ -112,7 +112,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 x =>
                 {
                     return new Func<VersionedFile, bool>((VersionedFile vFile)
-                        => x.version.HasValue && x.item.HasValue && vFile.Version == x.version.Value && vFile.ItemId == x.item.Value.ItemId);
+                        => x.version.HasValue && x.item.HasValue && (vFile.Version == x.version.Value) && (vFile.ItemId == x.item.Value.ItemId));
                 });
 
             var files = this.fileItemLinkService.BuildversionedFiles(newLinks.Connect());

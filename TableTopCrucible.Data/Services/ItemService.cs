@@ -65,11 +65,15 @@ namespace TableTopCrucible.Data.Services
 
         public IObservable<ItemEx?> GetExtended(IObservable<ItemId?> itemIdChanges)
         {
-            return itemIdChanges.Select(id => id != null ?
+            return itemIdChanges.Select(id =>
+                id != null
+                ?
                 this.GetExtended()
-                .WatchValue(id.Value)
-                .Select(x => x as ItemEx?) :
-                new BehaviorSubject<ItemEx?>(null))
+                    .WatchValue(id.Value)
+                    .Select(x => x as ItemEx?)
+                :
+                Observable.Return<ItemEx?>(null)
+                )
                 .Switch()
                 .TakeUntil(destroy);
         }

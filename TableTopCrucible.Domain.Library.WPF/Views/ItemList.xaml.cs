@@ -1,4 +1,8 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+
+using TableTopCrucible.Domain.Library.WPF.ViewModels;
 
 namespace TableTopCrucible.Domain.Library.WPF.Views
 {
@@ -12,9 +16,12 @@ namespace TableTopCrucible.Domain.Library.WPF.Views
             InitializeComponent();
         }
 
-        private void ListViewItem_PreviewMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void ListViewItem_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-
+            if (this.DataContext is ItemListViewModel vm &&
+                sender is ListViewItem rawItem &&
+                rawItem.DataContext is ItemSelectionInfo itemVm)
+                vm.ItemClickedCommand.Execute(new ItemClickedEventArgs(itemVm, e));
         }
     }
 }

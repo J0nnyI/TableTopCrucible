@@ -9,13 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
-
+using System.Windows.Input;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Models;
 using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
@@ -56,7 +57,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 var changeset = new ItemChangeset(itemEx.SourceItem);
                 var tags = changeset.Tags.ToList();
                 tags.Add(e);
-                changeset.Tags = tags;
+                changeset.Tags = tags.Distinct();
                 return changeset;
             }));
         }

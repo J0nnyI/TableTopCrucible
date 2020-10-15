@@ -16,7 +16,8 @@
     <UserControl.Resources>
         <ResourceDictionary Source="../Common.xaml"/>
     </UserControl.Resources>
-    <Grid>
+    <Grid
+        >
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="auto"/>
@@ -24,10 +25,14 @@
         <ListView ItemsSource="{Binding Items}"
                   x:Name="items"
                   md:RippleAssist.IsDisabled="True"
-                  
-                  SelectionMode="Extended"
                   Grid.Row="0" 
                   Grid.Column="1">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewKeyUp">
+                    <i:InvokeCommandAction Command="{Binding ListKeyUpCommand}"
+                                           PassEventArgsToCommand="true"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <ListView.Resources>
                 <Style TargetType="ContentPresenter">
                     <Setter Property="Margin" 
@@ -43,7 +48,10 @@
                             Value="Stretch" />
                     <Setter Property="IsSelected" 
                             Value="{Binding IsSelected, Mode=TwoWay}"/>
-                    <EventSetter Event="PreviewMouseDown" Handler="ListViewItem_PreviewMouseDown"/>
+                    <EventSetter Event="PreviewMouseDown"
+                                 Handler="ListViewItem_PreviewMouseDown"/>
+                    <Setter Property="Focusable" 
+                            Value="false"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected"
                                  Value="True">
@@ -64,6 +72,12 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid VerticalAlignment="Stretch">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewKeyUp">
+                                <i:InvokeCommandAction Command="{Binding ListKeyUpCommand}"
+                                           PassEventArgsToCommand="true"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <Image Source="{Binding Path=Item.LatestThumbnail.AbsolutePath}" 
                                Width="200px"
                                Height="180px">
@@ -92,5 +106,12 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <Button  Command="{Binding DeselectAllCommand}"
+                 ToolTip="Deselect All"
+                 Style="{StaticResource MaterialDesignIconButton}"
+                 VerticalAlignment="Top"
+                 HorizontalAlignment="right">
+            <md:PackIcon Kind="Clear"/>
+        </Button>
     </Grid>
 </UserControl>

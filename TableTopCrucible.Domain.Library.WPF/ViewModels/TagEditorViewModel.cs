@@ -72,6 +72,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         }
         public void SetSelection(IEnumerable<Tag> tags)
         {
+            if (tags == null)
+                return;
+
             this.selection.Edit(eList =>
             {
                 eList.Clear();

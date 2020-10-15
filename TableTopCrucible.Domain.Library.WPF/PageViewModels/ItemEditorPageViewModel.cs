@@ -12,10 +12,12 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Forms.VisualStyles;
+
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.WPF.PageViewModels;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.Domain.Library.WPF.Views;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 {
@@ -54,7 +56,7 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
                     if (x.Count <= 1)
                     {
                         ItemEditor = _itemEditor;
-                        itemEditor.SelectItem(x.FirstOrDefault().SourceItem.Id);
+                        itemEditor.SelectItem(x.Any() ? (ItemId?)x.FirstOrDefault().SourceItem.Id : null);
                     }
                     else
                     {

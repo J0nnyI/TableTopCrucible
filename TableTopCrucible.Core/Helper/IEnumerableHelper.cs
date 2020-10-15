@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DynamicData;
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -44,16 +46,31 @@ namespace TableTopCrucible.Core.Helper
         {
             public Tcmp Key { get; protected set; }
         }
+        /**
+         * { 1,2,3 }, {2,3,4} ==> {2,3}
+         */
         public static IEnumerable<T> WhereIn<T, Tcmp>(this IEnumerable<T> list, IEnumerable<Tcmp> sublist, Func<T, Tcmp> selector)
         {
-            return list.Where(x=>sublist.Contains(selector(x)));
+            return list.Where(x => sublist.Contains(selector(x)));
         }
         /**
          * { 1,2,3 }, {2,3,4} ==> {1}
          */
         public static IEnumerable<T> WhereNotIn<T, Tcmp>(this IEnumerable<T> list, IEnumerable<Tcmp> sublist, Func<T, Tcmp> selector)
         {
-            return list.Where(x=>!sublist.Contains(selector(x)));
+            return list.Where(x => !sublist.Contains(selector(x)));
+        }
+        /**
+         * {1,2,3,4,5} + (2,4) ==> {2,3,4}
+         * {1,2,3,4,5} + (4,2) ==> {2,3,4}
+         */
+        public static IEnumerable<T> Subsection<T>(this IEnumerable<T> list, T elementA, T elementB)
+        {
+            var indexA = list.IndexOf(elementA);
+            var indexB = list.IndexOf(elementB);
+            var first = indexA < indexB ? indexA : indexB;
+            var last = indexA > indexB ? indexA : indexB;
+            return list.Skip(first).Take(last - first + 1);
         }
     }
 }

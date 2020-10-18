@@ -24,10 +24,12 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
     public class ItemEditorPageViewModel : PageViewModelBase
     {
         public ItemListViewModel ItemList { get; }
-        private ItemEditorViewModel _itemEditor { get; }
-        private IMultiItemEditor _multiItemEditor { get; }
+        public ItemEditorViewModel ItemEditor { get; }
+        public IMultiItemEditor MultiItemEditor { get; }
         [Reactive]
-        public object ItemEditor { get; set; }
+        public object Editor { get; private set; }
+        [Reactive]
+        public bool IsSingle { get; private set; }
         public ItemListFilterViewModel Filter { get; }
 
         public ItemEditorPageViewModel(
@@ -37,13 +39,13 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
             ItemListFilterViewModel filter) : base("item Editor", PackIconKind.Edit)
         {
             this.ItemList = itemList;
-            this.ItemEditor = this._itemEditor = itemEditor;
-            this._multiItemEditor = multiItemEditor;
+            this.MultiItemEditor = multiItemEditor;
+            Editor = this.ItemEditor = itemEditor;
             this.Filter = filter;
 
             multiItemEditor.BindSelection(itemList.Selection);
 
-            this.disposables.Add(ItemList, (IDisposable)ItemEditor, _multiItemEditor, Filter);
+            this.disposables.Add(ItemList, ItemEditor, MultiItemEditor, Filter);
 
             filter.FilterChanges
                 .TakeUntil(destroy)
@@ -53,15 +55,17 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
                 .ToCollection()
                 .Subscribe(x =>
                 {
-                    if (x.Count <= 1)
-                    {
-                        ItemEditor = _itemEditor;
-                        itemEditor.SelectItem(x.Any() ? (ItemId?)x.FirstOrDefault().SourceItem.Id : null);
-                    }
+
+                    this.IsSingle = x.Count <= 1;
+                    if (x.Count == 1)
+                        itemEditor.SelectItem(x.FirstOrDefault().SourceItem.Id);
                     else
-                    {
-                        ItemEditor = _multiItemEditor;
-                    }
+                        itemEditor.SelectItem(null);
+
+                    if (x.Count <= 1)
+                        this.Editor = ItemEditor;
+                    else
+                        this.Editor = MultiItemEditor;
                 });
             itemEditor.SetTagpool(Filter.Tagpool.AsObservableList());
             multiItemEditor.SetTagpool(Filter.Tagpool.AsObservableList());

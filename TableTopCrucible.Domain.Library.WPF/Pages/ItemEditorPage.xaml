@@ -34,8 +34,16 @@
                       Width="4px"
                       Margin="4px"
                       Background="Gray"/>
-        <ContentPresenter Content="{Binding Path=ItemEditor}"
+        <ContentPresenter Content="{Binding Path=Editor}"
                           Grid.Row="1"
                           Grid.Column="1"/>
+        <!--<ContentPresenter Content="{Binding Path=ItemEditor}"
+                          Visibility="{Binding Path=IsSingle, Converter={StaticResource cv_visibillity}}"
+                          Grid.Row="1"
+                          Grid.Column="1"/>
+        <ContentPresenter Content="{Binding Path=MultiItemEditor}"
+                          Visibility="{Binding Path=IsSingle, Converter={StaticResource cv_visibillity}, ConverterParameter='invert'}"
+                          Grid.Row="1"
+                          Grid.Column="1"/>-->
     </Grid>
 </Page>

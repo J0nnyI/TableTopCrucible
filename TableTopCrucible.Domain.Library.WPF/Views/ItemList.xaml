@@ -71,11 +71,16 @@
             </ListBox.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid VerticalAlignment="Stretch">
+                    <Grid VerticalAlignment="Stretch"
+                          x:Name="grd_item">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="PreviewKeyUp">
                                 <i:InvokeCommandAction Command="{Binding ListKeyUpCommand}"
-                                           PassEventArgsToCommand="true"/>
+                                                       PassEventArgsToCommand="true"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                                <i:InvokeCommandAction Command="{Binding ItemLeftMouseButtonDownCommand}"
+                                                       CommandParameter="{Binding ElementName=grd_item}"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <Image Source="{Binding Path=Item.LatestThumbnail.AbsolutePath}" 

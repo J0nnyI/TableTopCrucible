@@ -19,6 +19,9 @@ using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using System.Windows.Input;
 using TableTopCrucible.WPF.Commands;
+using TableTopCrucible.Core.WPF.Helper;
+using System.Collections.Specialized;
+using TableTopCrucible.Domain.Library.WPF.Views;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
@@ -41,38 +44,39 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     public class ItemSelectionInfo : DisposableReactiveObjectBase
     {
         private readonly ISelectionProvider selectionProvider;
-
+        public ICommand ItemLeftMouseButtonDownCommand { get; }
         private ObservableAsPropertyHelper<bool> _isSelected;
         public bool IsSelected
         {
             get => _isSelected.Value;
             set
             {
-                try
-                {
-                    if (selectionProvider.Disconnected)
-                        return;
+                //    try
+                //    {
+                //        if (selectionProvider.Disconnected)
+                //            return;
 
-                    if (value)
-                    {
-                        if (value != _isSelected.Value && !selectionProvider.SelectedItemIDs.Items.Contains(Item.ItemId))
-                            selectionProvider.SelectedItemIDs.Add(Item.ItemId);
-                    }
-                    else
-                    {
-                        if (value != _isSelected.Value && selectionProvider.SelectedItemIDs.Items.Contains(Item.ItemId))
-                            selectionProvider.SelectedItemIDs.Remove(Item.ItemId);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString(), $"{nameof(ItemSelectionInfo)}.{nameof(IsSelected)}.set");
-                }
+                //        if (value)
+                //        {
+                //            if (value != _isSelected.Value && !selectionProvider.SelectedItemIDs.Items.Contains(Item.ItemId))
+                //                selectionProvider.SelectedItemIDs.Add(Item.ItemId);
+                //        }
+                //        else
+                //        {
+                //            if (value != _isSelected.Value && selectionProvider.SelectedItemIDs.Items.Contains(Item.ItemId))
+                //                selectionProvider.SelectedItemIDs.Remove(Item.ItemId);
+                //        }
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        MessageBox.Show(ex.ToString(), $"{nameof(ItemSelectionInfo)}.{nameof(IsSelected)}.set");
+                //    }
             }
         }
         public ItemEx Item { get; }
-        public ItemSelectionInfo(ItemEx item, ISelectionProvider selectionProvider)
+        public ItemSelectionInfo(ItemEx item, ISelectionProvider selectionProvider, ICommand DragCommand)
         {
+            this.ItemLeftMouseButtonDownCommand = DragCommand;
             this.selectionProvider = selectionProvider;
             this.Item = item;
             this._isSelected =
@@ -103,6 +107,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public bool Disconnected { get; private set; }
         public ICommand DeselectAllCommand { get; }
         public ICommand ListKeyUpCommand { get; }
+        public ICommand DragCommand { get; }
+
+
         public ItemListViewModel(
             IItemService itemService,
             IInjectionProviderService injectionProviderService)
@@ -118,6 +125,22 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
             this.ListKeyUpCommand = new RelayCommand(onListKeyUp);
 
+            DragCommand = new RelayCommand(sender =>
+            {
+                if (KeyboardHelper.IsKeyPressed(ModifierKeys.Alt))
+                {
+                    var files = this.Selection.Items
+                        .Select(item => item.LatestFile?.AbsolutePath)
+                        .Where(x => x != null)
+                        .ToStringCollection();
+
+
+                    DataObject dragData = new DataObject();
+                    dragData.SetFileDropList(files);
+                    DragDrop.DoDragDrop(sender as DependencyObject, dragData, DragDropEffects.Move);
+                }
+            });
+
             this._injectionProviderService.Provider.Subscribe(
                 (provider) =>
             {
@@ -131,7 +154,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     .TakeUntil(destroy);
 
                 var selectionList =
-                    itemList.Transform(item => new ItemSelectionInfo(item, this))
+                    itemList.Transform(item => new ItemSelectionInfo(item, this, DragCommand))
                     .DisposeMany();
 
                 var _selection =
@@ -182,37 +205,38 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 throw new InvalidOperationException($"{nameof(ItemListViewModel)}.{nameof(onItemClicked)} invalid args {e}");
         }
 
-        private bool isKeyPressed(ModifierKeys key)
-         => isKeyPressed(Keyboard.Modifiers, key);
-        private bool isKeyPressed( ModifierKeys pressedMods, ModifierKeys key)
-         => ((pressedMods & key) == key);
         private ItemSelectionInfo previouslyClickedItem = null;
         void onItemClicked(ItemClickedEventArgs args)
         {
             var curItem = args.Item;
             var prevItem = previouslyClickedItem;
-            var isStrgPressed = isKeyPressed(ModifierKeys.Control);
-            var isShiftPressed = isKeyPressed(ModifierKeys.Shift);
-            var isAltPressed = isKeyPressed(ModifierKeys.Alt);
+            var isStrgPressed = KeyboardHelper.IsKeyPressed(ModifierKeys.Control);
+            var isShiftPressed = KeyboardHelper.IsKeyPressed(ModifierKeys.Shift);
+            var isAltPressed = KeyboardHelper.IsKeyPressed(ModifierKeys.Alt);
 
 
             if (isStrgPressed)
             {
-                curItem.IsSelected = !curItem.IsSelected;
+                if (curItem.IsSelected)
+                    SelectedItemIDs.Remove(curItem.Item.ItemId);
+                else
+                    SelectedItemIDs.Add(curItem.Item.ItemId);
             }
             else if (isShiftPressed)
             {
-                var section = this.Items.Subsection(curItem, prevItem)
-                    .ToList();
-                var allSelected = section.All(item => item.IsSelected);
-                foreach (var item in section)
-                    item.IsSelected = !allSelected;
+                var section = this.Items.Subsection(curItem, prevItem);
+
+                if (section.All(item => item.IsSelected))
+                    SelectedItemIDs.RemoveMany(section.Select(item => item.Item.ItemId));
+                else
+                    SelectedItemIDs.AddRange(section.Select(item => item.Item.ItemId).Except(this.SelectedItemIDs.Items));
             }
             else
             {
-                foreach(var item in Items.Except(curItem.AsArray()))
-                    item.IsSelected = false;
-                curItem.IsSelected = true;
+                if (SelectedItemIDs.Count == 1 && SelectedItemIDs.Items.Contains(curItem.Item.ItemId))
+                    return;
+                this.SelectedItemIDs.Clear();
+                SelectedItemIDs.Add(curItem.Item.ItemId);
             }
             previouslyClickedItem = curItem;
         }
@@ -226,11 +250,12 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         }
         void onListKeyUp(KeyEventArgs args)
         {
-            if(isKeyPressed(ModifierKeys.Control) && args.Key == Key.A)
+            if (KeyboardHelper.IsKeyPressed(ModifierKeys.Control) && args.Key == Key.A)
             {
-                var areAllSelected = Items.All(item => item.IsSelected);
-                foreach (var item in Items)
-                    item.IsSelected = !areAllSelected;
+                if (Selection.Items.Count() == Items.Count())
+                    SelectedItemIDs.Clear();
+                else
+                    SelectedItemIDs.AddRange(Items.Select(Items => Items.Item.ItemId));
             }
         }
     }

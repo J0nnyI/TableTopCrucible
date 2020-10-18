@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -71,6 +72,13 @@ namespace TableTopCrucible.Core.Helper
             var first = indexA < indexB ? indexA : indexB;
             var last = indexA > indexB ? indexA : indexB;
             return list.Skip(first).Take(last - first + 1);
+        }
+
+        public static StringCollection ToStringCollection(this IEnumerable<string> list)
+        {
+            var fileList = new StringCollection();
+            fileList.AddRange(list.ToArray());
+            return fileList;
         }
     }
 }

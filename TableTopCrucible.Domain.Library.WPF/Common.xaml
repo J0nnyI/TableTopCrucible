@@ -8,9 +8,14 @@
 
         <ResourceDictionary Source="pack://application:,,,/TableTopCrucible.Core.WPF;component/Common.xaml" />
 
+        <ResourceDictionary Source="pack://application:,,,/TableTopCrucible.Domain.Library.WPF.Filter;component/Common.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/TableTopCrucible.Domain.Library.WPF.Tagging;component/Common.xaml" />
+
         <ResourceDictionary Source=".\Views\DataTemplates.xaml"/>
         <ResourceDictionary Source=".\Pages\DataTemplates.xaml"/>
         <ResourceDictionary Source=".\Converters\Converters.xaml"/>
+        
+        
 
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

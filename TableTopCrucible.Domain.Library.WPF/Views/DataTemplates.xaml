@@ -13,9 +13,6 @@
     <DataTemplate DataType="{x:Type viewModels:ItemCardViewModel}">
         <views:ItemCard/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type viewModels:TagEditorViewModel}">
-        <views:TagEditor/>
-    </DataTemplate>
     <DataTemplate DataType="{x:Type viewModels:ItemEditorViewModel}">
         <views:ItemEditor/>
     </DataTemplate>
@@ -45,9 +42,6 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type viewModels:MultiItemEditorViewModel}">
         <views:MultiItemEditorView/>
-    </DataTemplate>
-    <DataTemplate DataType="{x:Type viewModels:DrivenTagEditorViewModel}">
-        <views:TagEditor/>
     </DataTemplate>
 
 

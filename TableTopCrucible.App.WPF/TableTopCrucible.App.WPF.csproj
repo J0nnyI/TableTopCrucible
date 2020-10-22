@@ -9,19 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DynamicData" Version="6.16.9" />
+    <PackageReference Include="DynamicData" Version="6.17.14" />
     <PackageReference Include="DynamicData.ReactiveUI" Version="6.11.0.2613" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="9.2.0" />
-    <PackageReference Include="HelixToolkit.Core.Wpf" Version="2.12.0" />
-    <PackageReference Include="MaterialDesignThemes" Version="3.1.3" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.8" />
+    <PackageReference Include="HelixToolkit.Core.Wpf" Version="2.13.1" />
+    <PackageReference Include="MaterialDesignThemes" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.9" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
-    <PackageReference Include="ReactiveUI" Version="11.5.35" />
-    <PackageReference Include="ReactiveUI.Fody" Version="11.5.35" />
-    <PackageReference Include="ReactiveUI.Validation" Version="1.5.5" />
-    <PackageReference Include="ReactiveUI.WPF" Version="11.5.35" />
-    <PackageReference Include="VirtualizingWrapPanel" Version="1.5.1" />
+    <PackageReference Include="ReactiveUI" Version="12.1.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="12.1.1" />
+    <PackageReference Include="ReactiveUI.Validation" Version="1.8.6" />
+    <PackageReference Include="ReactiveUI.WPF" Version="12.1.1" />
+    <PackageReference Include="VirtualizingWrapPanel" Version="1.5.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +29,8 @@
     <ProjectReference Include="..\TableTopCrucible.Core\TableTopCrucible.Core.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Data.SaveFile\TableTopCrucible.Data.SaveFile.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF.Filter\TableTopCrucible.Domain.Library.WPF.Filter.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF.Tagging\TableTopCrucible.Domain.Library.WPF.Tagging.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF\TableTopCrucible.Domain.Library.WPF.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Domain.Library\TableTopCrucible.Domain.Library.csproj" />
   </ItemGroup>

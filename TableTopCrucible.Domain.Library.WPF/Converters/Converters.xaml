@@ -3,6 +3,5 @@
                     xmlns:local="clr-namespace:TableTopCrucible.Domain.Library.WPF.Converters">
     <local:ItemChangesetConverter x:Key="cv_itemChangeset"/>
     <local:ItemNameConverter x:Key="cv_itemName"/>
-    <local:TagConverter x:Key="cv_tag"/>
     <local:ItemViewModelConverter x:Key="cv_itemVm"/>
 </ResourceDictionary>

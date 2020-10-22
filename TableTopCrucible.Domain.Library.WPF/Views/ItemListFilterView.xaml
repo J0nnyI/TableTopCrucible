@@ -13,12 +13,52 @@
                     Value="30 0"/>
         </Style>
     </UserControl.Resources>
+
+    <StackPanel>
+        <Label>Sort</Label>
+        <Grid>
+            
+        </Grid>
+        <Label>Filter</Label>
+        <Grid>
+            
+        </Grid>
+    </StackPanel>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <!--
     <Grid Style="{StaticResource Indent}">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         <Expander Header="Whitelist"
                   IsExpanded="false"
                   Grid.Row="0">
@@ -75,4 +115,5 @@
         </Expander>
 
     </Grid>
+    -->
 </UserControl>

@@ -11,41 +11,22 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Models;
-using TableTopCrucible.WPF.Commands;
+using TableTopCrucible.Domain.Library.WPF.Views;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
-    public class TagBackgroundConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is bool isPrimary)
-            {
-                return isPrimary ? Brushes.Black : Brushes.DarkGray;
-            }
-            throw new InvalidOperationException("tagEx expected");
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
 
 
     public interface IManualTagEditor : ITagEditor

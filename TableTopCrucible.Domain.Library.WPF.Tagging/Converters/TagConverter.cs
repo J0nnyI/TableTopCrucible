@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 using TableTopCrucible.Data.Models.ValueTypes;
 
-namespace TableTopCrucible.Domain.Library.WPF.Converters
+namespace TableTopCrucible.Domain.Library.WPF.Tagging.Converters
 {
     public class TagConverter : IValueConverter
     {

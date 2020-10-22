@@ -43,41 +43,18 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     }
     public class ItemSelectionInfo : DisposableReactiveObjectBase
     {
-        private readonly ISelectionProvider selectionProvider;
         public ICommand ItemLeftMouseButtonDownCommand { get; }
         private ObservableAsPropertyHelper<bool> _isSelected;
         public bool IsSelected
         {
             get => _isSelected.Value;
-            set
-            {
-                //    try
-                //    {
-                //        if (selectionProvider.Disconnected)
-                //            return;
-
-                //        if (value)
-                //        {
-                //            if (value != _isSelected.Value && !selectionProvider.SelectedItemIDs.Items.Contains(Item.ItemId))
-                //                selectionProvider.SelectedItemIDs.Add(Item.ItemId);
-                //        }
-                //        else
-                //        {
-                //            if (value != _isSelected.Value && selectionProvider.SelectedItemIDs.Items.Contains(Item.ItemId))
-                //                selectionProvider.SelectedItemIDs.Remove(Item.ItemId);
-                //        }
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        MessageBox.Show(ex.ToString(), $"{nameof(ItemSelectionInfo)}.{nameof(IsSelected)}.set");
-                //    }
-            }
+            //required to prevent 2-way-binging exception, use the source-list to set it}
+            set { }
         }
         public ItemEx Item { get; }
-        public ItemSelectionInfo(ItemEx item, ISelectionProvider selectionProvider, ICommand DragCommand)
+        public ItemSelectionInfo(ItemEx item, ISelectionProvider selectionProvider, ICommand dragCommand)
         {
-            this.ItemLeftMouseButtonDownCommand = DragCommand;
-            this.selectionProvider = selectionProvider;
+            this.ItemLeftMouseButtonDownCommand = dragCommand;
             this.Item = item;
             this._isSelected =
                 selectionProvider
@@ -129,15 +106,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             {
                 if (KeyboardHelper.IsKeyPressed(ModifierKeys.Alt))
                 {
-                    var files = this.Selection.Items
-                        .Select(item => item.LatestFile?.AbsolutePath)
-                        .Where(x => x != null)
-                        .ToStringCollection();
-
-
-                    DataObject dragData = new DataObject();
-                    dragData.SetFileDropList(files);
-                    DragDrop.DoDragDrop(sender as DependencyObject, dragData, DragDropEffects.Move);
+                    itemDrag(sender as DependencyObject);
                 }
             });
 
@@ -204,7 +173,18 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             else
                 throw new InvalidOperationException($"{nameof(ItemListViewModel)}.{nameof(onItemClicked)} invalid args {e}");
         }
+        private void itemDrag(DependencyObject source)
+        {
+            var files = this.Selection.Items
+                .Select(item => item.LatestFile?.AbsolutePath)
+                .Where(x => x != null)
+                .ToStringCollection();
 
+
+            DataObject dragData = new DataObject();
+            dragData.SetFileDropList(files);
+            DragDrop.DoDragDrop(source, dragData, DragDropEffects.Move);
+        }
         private ItemSelectionInfo previouslyClickedItem = null;
         void onItemClicked(ItemClickedEventArgs args)
         {
@@ -214,7 +194,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             var isShiftPressed = KeyboardHelper.IsKeyPressed(ModifierKeys.Shift);
             var isAltPressed = KeyboardHelper.IsKeyPressed(ModifierKeys.Alt);
 
-
+            if (isAltPressed)
+                return;
             if (isStrgPressed)
             {
                 if (curItem.IsSelected)

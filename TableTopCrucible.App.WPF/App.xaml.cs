@@ -26,6 +26,8 @@ using TableTopCrucible.Domain.Library.WPF.Pages;
 using TableTopCrucible.Domain.Library.WPF.PageViewModels;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.WPF.Commands;
+using TableTopCrucible.Domain.Library.WPF.Filter.ViewModel;
+
 namespace TableTopCrucible.App.WPF
 {
 
@@ -91,6 +93,7 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<FileVersionListViewModel>();
             services.AddTransient<MassThumbnailCreatorViewModel>();
             services.AddTransient<ItemListFilterViewModel>();
+            services.AddTransient<ItemFilterViewModel>();
 
             //   pages
             services.AddScoped<DevTestPageViewModel>();

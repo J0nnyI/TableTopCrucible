@@ -66,6 +66,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 this.WhenAnyValue(x => x.NameFilter),
                 this.WhenAnyValue(x => x.DirectorySetupFilter).Select(_ => new object())
                 )
+            .ObserveOn(RxApp.TaskpoolScheduler)
             .TakeUntil(destroy)
             .Select(_ => new Func<ItemEx, bool>(Filter));
 
@@ -73,6 +74,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 itemService.GetTags(
                     itemService.GetExtended()
                         .Connect()
+                        .ObserveOn(RxApp.TaskpoolScheduler)
                         .Filter(FilterChanges)
                         .Transform(itemEx => itemEx.SourceItem)
                     );

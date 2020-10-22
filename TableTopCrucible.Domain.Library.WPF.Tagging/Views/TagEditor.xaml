@@ -16,10 +16,6 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Common.xaml"/>
-                <ResourceDictionary>
-                    <viewModels:TagBackgroundConverter x:Key="cv_tagColor"/>
-
-                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>

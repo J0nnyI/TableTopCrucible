@@ -17,5 +17,6 @@ namespace TableTopCrucible.Core.Services
         int ThreadCount { get; set; }
         int MaxPatchSize { get; set; }
         ushort CameraRotationMode { get; set; }
+        List<LibraryLocation> MostRecentLibraries { get; set; }
     }
 }

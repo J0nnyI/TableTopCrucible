@@ -19,10 +19,10 @@ using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
-    public class MainViewModel : DisposableReactiveObjectBase
+    public class LibraryViewModel : DisposableReactiveObjectBase
     {
         public TabViewModel Tabs { get; }
-        public MainViewModel(
+        public LibraryViewModel(
             TabViewModel tabs,
             TabService tabService,
             DevTestPageViewModel devTest,

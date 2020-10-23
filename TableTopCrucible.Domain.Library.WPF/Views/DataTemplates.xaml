@@ -7,6 +7,9 @@
                     xmlns:dataViews="clr-namespace:TableTopCrucible.Data.Models.Views;assembly=TableTopCrucible.Data">
 
     <!--views-->
+    <DataTemplate DataType="{x:Type viewModels:LibraryViewModel}">
+        <views:LibraryView/>
+    </DataTemplate>
     <DataTemplate DataType="{x:Type viewModels:ItemListViewModel}">
         <views:ItemList/>
     </DataTemplate>

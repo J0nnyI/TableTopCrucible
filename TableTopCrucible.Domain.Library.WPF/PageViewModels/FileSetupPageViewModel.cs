@@ -8,6 +8,7 @@ using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.Domain.Library.WPF.Commands;
 using System.Windows.Input;
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Core.WPF.Commands;
 
 namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 {

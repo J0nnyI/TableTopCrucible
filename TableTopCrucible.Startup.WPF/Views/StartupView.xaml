@@ -1,0 +1,97 @@
+﻿<UserControl x:Class="TableTopCrucible.Startup.WPF.Views.StartupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:TableTopCrucible.Startup.WPF.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="24px">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+
+        <TextBlock Text="Open Recent"
+                   Grid.Column="0"
+                   Grid.Row="0"/>
+
+        <ListView ItemsSource="{Binding MostRecentLibraries}"
+                  Style="{StaticResource MaterialDesignCardsListBox}"
+                  Grid.Column="0"
+                  Grid.Row="1">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem"
+                       BasedOn="{StaticResource MaterialDesignCardsListBoxItem}">
+                    <Setter Property="MinHeight"
+                            Value="100px"/>
+                    <Setter Property="Cursor"
+                            Value="Hand"/>
+                    <EventSetter Event="PreviewMouseDown"
+                                 Handler="ListViewItem_MouseDown"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <md:PackIcon Kind="OpenInApp"/>
+                        <TextBlock Text="{Binding Path}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>            
+        </ListView>
+
+
+
+        <TextBlock Text="Get Started"
+                   Grid.Column="1"
+                   Grid.Row="0"/>
+        <StackPanel Orientation="Vertical"
+                Grid.Column="1"
+                Grid.Row="1">
+
+            <Button MinHeight="100px"
+                    Style="{StaticResource MaterialDesignRaisedLightButton}"
+                    Command="{Binding OpenNewLibraryCommand}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <md:PackIcon Kind="OpenInNew"/>
+                    <TextBlock Text="Create a new library" 
+                           Grid.Column="1"/>
+                </Grid>
+            </Button>
+            <Button MinHeight="100px"
+                    Style="{StaticResource MaterialDesignRaisedLightButton}"
+                    Command="{Binding OpenExistingLibraryCommand}"
+                    CommandParameter="{Binding OpenExistingLibraryAction}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <md:PackIcon Kind="OpenInApp"/>
+                    <TextBlock Text="Open an existing library" 
+                           Grid.Column="1"/>
+                </Grid>
+            </Button>
+        </StackPanel>
+
+
+    </Grid>
+</UserControl>

@@ -27,6 +27,9 @@ using TableTopCrucible.Domain.Library.WPF.PageViewModels;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.Domain.Library.WPF.Filter.ViewModel;
+using TableTopCrucible.Startup.WPF.ViewModels;
+using System.Windows.Threading;
+using TableTopCrucible.Core.WPF.Windows;
 
 namespace TableTopCrucible.App.WPF
 {
@@ -51,11 +54,9 @@ namespace TableTopCrucible.App.WPF
                 saveService.Load(e.Args[0]);
                 tabService.SetTabIndex(1);
             }
-
-            new MainWindow()
-            {
-                DataContext = serviceProvider.GetRequiredService<MainViewModel>()
-            }.Show();
+            var window = serviceProvider.GetRequiredService<AppWindow>();
+            window.Content = serviceProvider.GetRequiredService<StartupViewModel>();
+            window.Show();
         }
         private ServiceProvider _createServiceProvider()
         {
@@ -66,6 +67,7 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<ISettingsService, Settings>();
             services.AddScoped<IInjectionProviderService, InjectionProviderService>();
             services.AddSingleton<ISaveService, SaveService>();
+            services.AddSingleton<LibraryInfoService>();
             // library domain services
             services.AddSingleton<IItemService, ItemService>();
             services.AddSingleton<IFileItemLinkService, FileItemLinkService>();
@@ -77,7 +79,7 @@ namespace TableTopCrucible.App.WPF
             services.AddScoped<TabService>();
 
             // viewModels
-            services.AddTransient<MainViewModel>();
+            services.AddTransient<LibraryViewModel>();
             services.AddTransient<ItemListViewModel>();
             services.AddTransient<ItemCardViewModel>();
             services.AddTransient<IManualTagEditor, TagEditorViewModel>();
@@ -94,12 +96,16 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<MassThumbnailCreatorViewModel>();
             services.AddTransient<ItemListFilterViewModel>();
             services.AddTransient<ItemFilterViewModel>();
+            services.AddTransient<StartupViewModel>();
 
             //   pages
             services.AddScoped<DevTestPageViewModel>();
             services.AddScoped<ItemEditorPageViewModel>();
             services.AddScoped<FileSetupPageViewModel>();
             services.AddScoped<AppSettingsPageViewModel>();
+
+            // windows
+            services.AddScoped<AppWindow>();
 
             // commands
             services.AddSingleton<CreateItemCommand>();
@@ -126,7 +132,7 @@ namespace TableTopCrucible.App.WPF
             this._disposables.Dispose();
         }
 
-        private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             try
             {

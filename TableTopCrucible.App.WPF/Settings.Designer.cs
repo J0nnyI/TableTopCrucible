@@ -58,5 +58,16 @@ namespace TableTopCrucible.App.WPF {
                 this["CameraRotationMode"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Generic.List<TableTopCrucible.Core.Models.Sources.LibraryLocation> MostRecentLibraries {
+            get {
+                return ((global::System.Collections.Generic.List<TableTopCrucible.Core.Models.Sources.LibraryLocation>)(this["MostRecentLibraries"]));
+            }
+            set {
+                this["MostRecentLibraries"] = value;
+            }
+        }
     }
 }

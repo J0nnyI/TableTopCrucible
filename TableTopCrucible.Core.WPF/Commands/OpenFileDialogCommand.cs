@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 using TableTopCrucible.Core.Services;
 
-namespace TableTopCrucible.Domain.Library.WPF.Commands
+namespace TableTopCrucible.Core.WPF.Commands
 {
     public class OpenFileDialogCommand : ICommand
     {

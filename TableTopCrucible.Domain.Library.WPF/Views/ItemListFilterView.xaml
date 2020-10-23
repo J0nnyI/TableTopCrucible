@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:local="clr-namespace:TableTopCrucible.Domain.Library.WPF.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -17,16 +16,24 @@
     <StackPanel>
         <Label>Sort</Label>
         <Grid>
-            
+
+            <md:Card>
+
+            </md:Card>
         </Grid>
         <Label>Filter</Label>
         <Grid>
-            
+
+            <md:Card>
+
+            </md:Card>
+
+            <md:PackIcon Kind="Loading">
+
+            </md:PackIcon>
         </Grid>
     </StackPanel>
-    
-    
-    
+
     
     
     

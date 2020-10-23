@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TableTopCrucible.Core.Services
+namespace TableTopCrucible.Core.Helper
 {
     public static class StructHelper
     {

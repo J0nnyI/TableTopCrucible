@@ -9,15 +9,18 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Windows;
 
+using TableTopCrucible.Core.Enums;
 using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Data.SaveFile.DataTransferObjects;
+using TableTopCrucible.Data.SaveFile.Models;
 using TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.Sources;
@@ -48,32 +51,25 @@ namespace TableTopCrucible.Data.SaveFile.Services
             this._notificationCenterService = notificationCenterService;
         }
 
-        public void Load(string file)
+        public ISaveFileProgression Load(string file)
         {
-            var job = _notificationCenterService.CreateSingleTaskJob(out var proc, $"loading savefile {file}");
+            var progression = new SaveFileProgression();
             try
             {
-
-                proc.State = AsyncState.InProgress;
                 Observable.Start(() => loadFile(file))
-                    .Subscribe(dto => applyFile(dto, proc));
-
+                    .Subscribe(dto => applyFile(dto, progression));
             }
-            catch (Exception ex)
+            catch ( Exception ex)
             {
-                proc.Details = ex.ToString();
-                proc.State = AsyncState.Failed;
+                progression.OnError(ex);
             }
-            finally
-            {
-                job.Dispose();
-            }
+            return progression;
         }
 
         private MasterDTO loadFile(string file)
             => JsonSerializer.Deserialize<MasterDTO>(File.ReadAllText(file));
 
-        private void applyFile(MasterDTO dto, AsyncProcessState proc)
+        private ISaveFileProgression applyFile(MasterDTO dto, SaveFileProgression progression)
         {
             Observable.Start(() =>
             {
@@ -85,29 +81,44 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     _itemService.Clear();
 
 
-                    proc.AddProgress(4, $"loading {dto.Directories.Count()} directories");
-                    _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()));
+                    progression.DirectoryTaskState = _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()));
+                    progression.DirectoryTaskState.Title = "loading directories";
+                    progression.DirectoryTaskState.DoneChanges.Subscribe(
+                        dirState =>
+                    {
+                        if (dirState != TaskState.Done)
+                            return;
+                        progression.FileTaskState = _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()));
+                        progression.FileTaskState.Title = "loading files";
+                        progression.FileTaskState.DoneChanges.Subscribe(fileState =>
+                        {
+                            if (fileState != TaskState.Done)
+                                return;
+                            progression.LinkTaskState = fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity()));
+                            progression.LinkTaskState.Title = "loading links";
+                            progression.LinkTaskState.DoneChanges.Subscribe(linkState =>
+                            {
+                                if (linkState != TaskState.Done)
+                                    return;
+                                progression.ItemTaskState = _itemService.Set(dto.Items.Select(dto => dto.ToEntity()));
+                                progression.ItemTaskState.Title = "loading links";
+                                progression.ItemTaskState.DoneChanges.Subscribe(itemState =>
+                                {
+                                    if (itemState != TaskState.Done)
+                                        return;
 
-                    proc.OnNextStep($"loading {dto.Files.Count()} files");
-                    _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()));
-
-                    proc.OnNextStep($"loading {dto.Items.Count()} file-item links");
-                    fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity()));
-
-                    proc.OnNextStep($"loading {dto.Items.Count()} items");
-                    _itemService.Set(dto.Items.Select(dto => dto.ToEntity()));
-
-                    proc.OnNextStep("done");
-                    proc.State = AsyncState.Done;
+                                });
+                            });
+                        });
+                    });
                 }
                 catch (Exception ex)
                 {
-                    proc.Details = ex.ToString();
-                    proc.State = AsyncState.Failed;
+                    progression.OnError(ex);
                 }
 
-
             }, RxApp.TaskpoolScheduler);
+            return progression;
         }
 
         public IObservable<Unit> Save(string file)

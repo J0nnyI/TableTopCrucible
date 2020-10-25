@@ -13,5 +13,6 @@ namespace TableTopCrucible.Core.Helper
             values.Insert(0, obj);
             return values.ToArray();
         }
+        public static bool IsIn<T>(this T obj, params T[] compValues) => compValues.Contains(obj);
     }
 }

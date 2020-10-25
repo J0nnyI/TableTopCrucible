@@ -12,11 +12,13 @@ using System.Reactive.Subjects;
 using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
 
+using TableTopCrucible.Core.Enums;
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes.IDs;
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Core.ValueTypes;
 using TableTopCrucible.WPF.Helper;
 
 namespace TableTopCrucible.Data.Services
@@ -88,33 +90,35 @@ namespace TableTopCrucible.Data.Services
         // post
         public void Post(Tentity entity)
             => this.cache.AddOrUpdate(entity);
-        public void Post(IEnumerable<Tentity> entities)
+        public ITaskProgressionInfo Post(IEnumerable<Tentity> entities)
         {
-            var job = this.notificationCenter.CreateSingleTaskJob(out var process, $"patching {entities.Count()} entities of type {typeof(Tentity).Name}");
+            var progInfo = new TaskProgression();
             var chunks = entities.ChunkBy(settingsService.MaxPatchSize)
                   .ToList();
-            process.AddProgress(chunks.Count);
-            process.State = AsyncState.InProgress;
-            try
+            progInfo.RequiredProgress = chunks.Count;
+            Observable.Start(() =>
             {
-                process.State = AsyncState.InProgress;
-                chunks.ForEach(x =>
+                progInfo.State = TaskState.InProgress;
+                try
                 {
-                    process.OnNextStep("posting ...");
-                    this.cache.AddOrUpdate(x);
-                });
-                process.State = AsyncState.Done;
-                process.Details = "done";
-            }
-            catch (Exception ex)
-            {
-                process.State = AsyncState.Failed;
-                process.Details = ex.ToString();
-            }
-            finally
-            {
-                job.Dispose();
-            }
+                    progInfo.Details = "posting ...";
+                    chunks.ForEach(x =>
+                    {
+                        this.cache.AddOrUpdate(x);
+                        progInfo.CurrentProgress++;
+                    });
+                    progInfo.State = TaskState.Done;
+                    progInfo.Details = "done";
+                }
+                catch (Exception ex)
+                {
+                    progInfo.State = TaskState.Failed;
+                    progInfo.Details = ex.ToString();
+                    progInfo.Error = ex;
+                }
+            }, RxApp.TaskpoolScheduler);
+
+            return progInfo;
         }
 
         protected DataServiceBase(
@@ -129,14 +133,11 @@ namespace TableTopCrucible.Data.Services
         public void Clear() => this.cache.Clear();
 
         private bool _disposedValue = false; // To detect redundant calls
-        public void Set(IEnumerable<Tentity> data)
+        public ITaskProgressionInfo Set(IEnumerable<Tentity> data)
         {
             this.cache.Clear();
-            this.Post(data);
+            return this.Post(data);
         }
-
-        public IObservable<Unit> SetAsync(IEnumerable<Tentity> data)
-            => Observable.Start(() => Set(data), RxApp.TaskpoolScheduler);
 
         #region IDisposable Support
         protected virtual void Dispose(bool disposing)

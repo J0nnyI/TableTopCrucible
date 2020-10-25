@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Startup", "Startup", "{AE1E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Startup.WPF", "TableTopCrucible.Startup.WPF\TableTopCrucible.Startup.WPF.csproj", "{1631CA2A-8377-4512-B8A4-763C552A14F9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TableTopCrucible.Startup", "TableTopCrucible.Startup\TableTopCrucible.Startup.csproj", "{30CDCB31-AF68-4D12-8134-6CAC49C8A047}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTopCrucible.Data.SaveFile.WPF", "TableTopCrucible.Data.SaveFile.WPF\TableTopCrucible.Data.SaveFile.WPF.csproj", "{075EBCF0-FC46-4825-B2EB-87D77E6EF4EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,10 +101,10 @@ Global
 		{1631CA2A-8377-4512-B8A4-763C552A14F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1631CA2A-8377-4512-B8A4-763C552A14F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1631CA2A-8377-4512-B8A4-763C552A14F9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{30CDCB31-AF68-4D12-8134-6CAC49C8A047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{30CDCB31-AF68-4D12-8134-6CAC49C8A047}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{30CDCB31-AF68-4D12-8134-6CAC49C8A047}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{30CDCB31-AF68-4D12-8134-6CAC49C8A047}.Release|Any CPU.Build.0 = Release|Any CPU
+		{075EBCF0-FC46-4825-B2EB-87D77E6EF4EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{075EBCF0-FC46-4825-B2EB-87D77E6EF4EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{075EBCF0-FC46-4825-B2EB-87D77E6EF4EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{075EBCF0-FC46-4825-B2EB-87D77E6EF4EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,7 +122,7 @@ Global
 		{BC56C75B-2C18-4406-A0E8-2D1C3FB78CA2} = {E7F1703B-F7F4-43C9-AA6B-9A6D0726D987}
 		{0E055EB1-FC7E-4FD0-AE3B-60949477D0A0} = {E7F1703B-F7F4-43C9-AA6B-9A6D0726D987}
 		{1631CA2A-8377-4512-B8A4-763C552A14F9} = {AE1E620C-2CB4-4FE2-AE3B-C4F3E56DF360}
-		{30CDCB31-AF68-4D12-8134-6CAC49C8A047} = {AE1E620C-2CB4-4FE2-AE3B-C4F3E56DF360}
+		{075EBCF0-FC46-4825-B2EB-87D77E6EF4EE} = {1F2AE50D-863D-42A0-8906-888F77E2CFF6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5FA1A29D-7A36-494A-9156-8A7C94F97FA2}

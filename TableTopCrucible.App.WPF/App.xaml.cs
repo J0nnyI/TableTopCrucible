@@ -30,6 +30,7 @@ using TableTopCrucible.Domain.Library.WPF.Filter.ViewModel;
 using TableTopCrucible.Startup.WPF.ViewModels;
 using System.Windows.Threading;
 using TableTopCrucible.Core.WPF.Windows;
+using TableTopCrucible.Data.SaveFile.WPF.ViewModels;
 
 namespace TableTopCrucible.App.WPF
 {
@@ -97,6 +98,7 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<ItemListFilterViewModel>();
             services.AddTransient<ItemFilterViewModel>();
             services.AddTransient<StartupViewModel>();
+            services.AddTransient<SaveFileLoadingViewModel>();
 
             //   pages
             services.AddScoped<DevTestPageViewModel>();

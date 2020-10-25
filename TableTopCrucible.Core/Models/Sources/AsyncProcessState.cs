@@ -67,7 +67,7 @@ namespace TableTopCrucible.Core.Models.Sources
         }
         private readonly ObservableAsPropertyHelper<string> _errors;
 
-
+        public IObservable<AsyncState> OnComplete { get; }
 
         public AsyncProcessState(string title = "untitled process", string details = "")
         {
@@ -76,6 +76,8 @@ namespace TableTopCrucible.Core.Models.Sources
             this._details = _detailsChanges.ToProperty(this, nameof(Details));
             this._errors = ErrorChanges.ToProperty(this, nameof(Errors));
             this._progress = ProgressChanges.ToProperty(this, nameof(Progress));
+
+            this.OnComplete = StateChanges.Where(state => state.IsIn(AsyncState.Done, AsyncState.Skipped, AsyncState.Failed));
 
             this.Title = title;
             this.Details = details;

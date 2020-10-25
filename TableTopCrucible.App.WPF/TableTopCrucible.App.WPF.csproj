@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TableTopCrucible.Core.WPF\TableTopCrucible.Core.WPF.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Core\TableTopCrucible.Core.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.Data.SaveFile.WPF\TableTopCrucible.Data.SaveFile.WPF.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Data.SaveFile\TableTopCrucible.Data.SaveFile.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF.Filter\TableTopCrucible.Domain.Library.WPF.Filter.csproj" />
@@ -34,7 +35,6 @@
     <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF\TableTopCrucible.Domain.Library.WPF.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Domain.Library\TableTopCrucible.Domain.Library.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Startup.WPF\TableTopCrucible.Startup.WPF.csproj" />
-    <ProjectReference Include="..\TableTopCrucible.Startup\TableTopCrucible.Startup.csproj" />
   </ItemGroup>
 
   <ItemGroup>

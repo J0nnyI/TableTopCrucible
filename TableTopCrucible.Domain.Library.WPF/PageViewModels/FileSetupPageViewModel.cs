@@ -37,7 +37,7 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
             this.SaveFileAction = (path) => saveService.Save(path);
         }
 
-        public Action<string> OpenFileAction => saveService.Load;
+        public Action<string> OpenFileAction => throw new NotImplementedException("moved to another location");
         public Action<string> SaveFileAction { get; }
     }
 }

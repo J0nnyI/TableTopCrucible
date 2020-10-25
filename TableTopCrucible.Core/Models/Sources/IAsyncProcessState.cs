@@ -15,6 +15,8 @@ namespace TableTopCrucible.Core.Models.Sources
         IObservable<string> DetailsChanges { get; }
         string Details { get; }
         IObservable<string> ErrorChanges { get; }
+        IObservable<AsyncState> OnComplete { get; }
+
         string Errors { get; }
         void Complete();
     }

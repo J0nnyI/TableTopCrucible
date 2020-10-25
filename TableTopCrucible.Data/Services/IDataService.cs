@@ -18,9 +18,8 @@ namespace TableTopCrucible.Data.Services
         IObservable<IChangeSet<Tentity, Tid>> Get(IEnumerable<Tid> ids);
 
         public void Post(Tentity entity);
-        public void Post(IEnumerable<Tentity> entity);
-        void Set(IEnumerable<Tentity> data);
-        IObservable<Unit> SetAsync(IEnumerable<Tentity> data);
+        ITaskProgressionInfo Post(IEnumerable<Tentity> entity);
+        ITaskProgressionInfo Set(IEnumerable<Tentity> data);
         void Delete(Tid key);
         void Delete(IEnumerable<Tid> key);
         void Clear();

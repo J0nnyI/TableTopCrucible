@@ -16,6 +16,7 @@ using TableTopCrucible.Core.Services;
 using TableTopCrucible.Core.WPF.Commands;
 using TableTopCrucible.Core.WPF.Windows;
 using TableTopCrucible.Data.SaveFile.Services;
+using TableTopCrucible.Data.SaveFile.WPF.ViewModels;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.WPF.Commands;
 
@@ -26,6 +27,7 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
         private readonly ISettingsService settingsService;
         private readonly ISaveService saveService;
         private readonly LibraryViewModel libraryViewModel;
+        private readonly SaveFileLoadingViewModel loadingScreen;
         private readonly IInjectionProviderService injectionProvider;
         private readonly Window window;
 
@@ -41,6 +43,7 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
             OpenFileDialogCommand openExistingLibraryCommand,
             LibraryInfoService libraryInfoService,
             LibraryViewModel libraryViewModel,
+            SaveFileLoadingViewModel loadingScreen,
             IInjectionProviderService injectionProvider,
             AppWindow window)
         {
@@ -53,6 +56,7 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
             OpenExistingLibraryAction = openExistingLibrary;
             LibraryInfoService = libraryInfoService;
             this.libraryViewModel = libraryViewModel;
+            this.loadingScreen = loadingScreen;
             this.injectionProvider = injectionProvider;
             this.window = window;
         }
@@ -80,8 +84,13 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
 
 
             window.Title = "TableTopCrucible";
-            window.Content = libraryViewModel;
-            saveService.Load(path);
+
+            loadingScreen.SetProgressionSource(saveService.Load(path));
+
+
+            window.Content = loadingScreen;
+
+            //window.Content = libraryViewModel;
 
             if (settingsService.MostRecentLibraries == null)
                 settingsService.MostRecentLibraries = new List<LibraryLocation>();

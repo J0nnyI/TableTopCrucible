@@ -91,9 +91,10 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
 
             var loadProgress = saveService.Load(path);
             loadingScreen.SetProgressionSource(loadProgress);
-
-
             window.Content = loadingScreen;
+            window.MaxWidth = window.MinWidth = window.Width = 700;
+            window.MaxHeight = window.MinHeight = window.Height = 400;
+
 
             loadProgress.MainTaskProgression.DoneChanges
                 .ObserveOn(RxApp.MainThreadScheduler)
@@ -101,7 +102,11 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
             {
                 if (x == TaskState.Done)
                 {
+                    window.MinWidth = 400;
+                    window.MinHeight = 400;
+                    window.MaxWidth = window.MaxHeight = int.MaxValue;
                     window.WindowState = WindowState.Maximized;
+
                     window.Content = libraryViewModel;
                 }
                 if (x == TaskState.Failed)

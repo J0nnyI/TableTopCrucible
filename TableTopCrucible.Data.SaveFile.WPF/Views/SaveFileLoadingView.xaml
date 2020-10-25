@@ -7,8 +7,12 @@
              xmlns:local="clr-namespace:TableTopCrucible.Data.SaveFile.WPF.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
-        <TextBlock Text="loading..."/>
+    <StackPanel MaxHeight="400px"
+                Width="300px"
+                VerticalAlignment="Center">
+        <TextBlock Text="loading..."
+                   Margin="0 0 0 10"/>
+        
         <ProgressBar Minimum="0" 
                      Value="{Binding PrimaryCurrent, Mode=OneWay}"
                      Maximum="{Binding PrimaryRequired, Mode=OneWay}"/>
@@ -19,7 +23,8 @@
         </TextBlock>
         <ProgressBar Minimum="0" 
                      Value="{Binding SecondaryCurrent, Mode=OneWay}"
-                     Maximum="{Binding SecondaryRequired, Mode=OneWay}"/>
+                     Maximum="{Binding SecondaryRequired, Mode=OneWay}"
+                     Margin="0 10 0 0"/>
         <TextBlock>
             <Run Text="{Binding SecondaryCurrent, Mode=OneWay}"/>
             <Run Text="/"/>

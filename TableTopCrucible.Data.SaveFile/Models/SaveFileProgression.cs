@@ -51,30 +51,33 @@ namespace TableTopCrucible.Data.SaveFile.Models
 
             this.SubTaskProgressionChanges =
                 onNextPhase
-                .Select(tasks =>
-                    tasks.item?.TaskProgressionStateChanges
-                    ?? tasks.link?.TaskProgressionStateChanges
-                    ?? tasks.file?.TaskProgressionStateChanges
-                    ?? tasks.dir?.TaskProgressionStateChanges
-                    ?? Observable.Return<TaskProgressionState>(default)
-                )
+                .Select(tasks => tasks.item ?? tasks.link ?? tasks.file ?? tasks.dir)
+                .Select(task => task?.TaskProgressionStateChanges ?? Observable.Return<TaskProgressionState>(default))
                 .Switch();
 
             this.SubTaskProgressionChanges.Subscribe(prog => this.SubTaskProgression = prog);
 
-            onNextPhase.Subscribe(tasks =>
+            onNextPhase
+                .Select(tasks => Observable.CombineLatest(
+                     tasks.dir?.TaskProgressionStateChanges.Select(x => x as TaskProgressionState?) ?? Observable.Return<TaskProgressionState?>(null),
+                    tasks.file?.TaskProgressionStateChanges.Select(x => x as TaskProgressionState?) ?? Observable.Return<TaskProgressionState?>(null),
+                    tasks.link?.TaskProgressionStateChanges.Select(x => x as TaskProgressionState?) ?? Observable.Return<TaskProgressionState?>(null),
+                    tasks.item?.TaskProgressionStateChanges.Select(x => x as TaskProgressionState?) ?? Observable.Return<TaskProgressionState?>(null)))
+                .Switch()
+                .Subscribe(tasks =>
             {
-                var dir = tasks.dir;
-                var file = tasks.file;
-                var link = tasks.link;
-                var item = tasks.item;
-                var states = new ITaskProgressionInfo[] { dir, file, link, item };
+                var dir = tasks[0];
+                var file = tasks[1];
+                var link = tasks[2];
+                var item = tasks[3];
+                var progInfos = new TaskProgressionState?[] { dir, file, link, item };
                 if ((TaskState.Failed as TaskState?).IsIn(dir?.State, file?.State, link?.State, item?.State))
-                {
                     _mainTaskProgression.State = TaskState.Failed;
-                    return;
-                }
-                this._mainTaskProgression.RequiredProgress = states.Count(states => states?.State == TaskState.Done);
+                else if (progInfos.Any(x => x?.State == TaskState.InProgress))
+                    _mainTaskProgression.State = TaskState.InProgress;
+                else if(progInfos.All(x=>x?.State == TaskState.Done))
+                    _mainTaskProgression.State = TaskState.Done;
+                this._mainTaskProgression.CurrentProgress = progInfos.Count(progInfo => progInfo?.State == TaskState.Done);
                 this._mainTaskProgression.Details =
                     item?.Title
                     ?? link?.Title

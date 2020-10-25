@@ -80,33 +80,35 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     fileItemLinkService.Clear();
                     _itemService.Clear();
 
-
-                    progression.DirectoryTaskState = _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()));
-                    progression.DirectoryTaskState.Title = "loading directories";
+                    var dir = _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()));
+                    dir.Title = "loading directories";
+                    progression.DirectoryTaskState = dir;
                     progression.DirectoryTaskState.DoneChanges.Subscribe(
                         dirState =>
                     {
                         if (dirState != TaskState.Done)
                             return;
-                        progression.FileTaskState = _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()));
-                        progression.FileTaskState.Title = "loading files";
+                        var file = _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()));
+                        file.Title = "loading files";
+                        progression.FileTaskState = file;
                         progression.FileTaskState.DoneChanges.Subscribe(fileState =>
                         {
                             if (fileState != TaskState.Done)
                                 return;
-                            progression.LinkTaskState = fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity()));
-                            progression.LinkTaskState.Title = "loading links";
+                            var link = fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity()));
+                            link.Title = "loading links";
+                            progression.LinkTaskState = link;
                             progression.LinkTaskState.DoneChanges.Subscribe(linkState =>
                             {
                                 if (linkState != TaskState.Done)
                                     return;
-                                progression.ItemTaskState = _itemService.Set(dto.Items.Select(dto => dto.ToEntity()));
-                                progression.ItemTaskState.Title = "loading links";
+                                var item = _itemService.Set(dto.Items.Select(dto => dto.ToEntity()));
+                                item.Title = "loading links";
+                                progression.ItemTaskState = item;
                                 progression.ItemTaskState.DoneChanges.Subscribe(itemState =>
                                 {
                                     if (itemState != TaskState.Done)
                                         return;
-
                                 });
                             });
                         });

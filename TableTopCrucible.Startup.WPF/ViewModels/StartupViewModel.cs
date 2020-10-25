@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 
+using ReactiveUI;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +12,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 
+using TableTopCrucible.Core.Enums;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Core.Services;
@@ -53,8 +56,8 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
             this.settingsService = settingsService;
             this.saveService = saveService;
             this.OpenExistingLibraryCommand = openExistingLibraryCommand;
-            OpenExistingLibraryAction = openExistingLibrary;
-            LibraryInfoService = libraryInfoService;
+            this.OpenExistingLibraryAction = openExistingLibrary;
+            this.LibraryInfoService = libraryInfoService;
             this.libraryViewModel = libraryViewModel;
             this.loadingScreen = loadingScreen;
             this.injectionProvider = injectionProvider;
@@ -83,14 +86,27 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
             }
 
 
-            window.Title = "TableTopCrucible";
+            window.Title = $"TableTopCrucible - loading {path}";
 
-            loadingScreen.SetProgressionSource(saveService.Load(path));
+
+            var loadProgress = saveService.Load(path);
+            loadingScreen.SetProgressionSource(loadProgress);
 
 
             window.Content = loadingScreen;
 
-            //window.Content = libraryViewModel;
+            loadProgress.MainTaskProgression.DoneChanges
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(x =>
+            {
+                if (x == TaskState.Done)
+                {
+                    window.WindowState = WindowState.Maximized;
+                    window.Content = libraryViewModel;
+                }
+                if (x == TaskState.Failed)
+                    window.Content = "Loading failed";
+            });
 
             if (settingsService.MostRecentLibraries == null)
                 settingsService.MostRecentLibraries = new List<LibraryLocation>();
@@ -98,7 +114,6 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
             settingsService.MostRecentLibraries.RemoveAll(library => library.Path == path);
             settingsService.MostRecentLibraries.Add(new LibraryLocation(false, path, DateTime.Now));
             settingsService.Save();
-            window.WindowState = WindowState.Maximized;
         }
     }
 }

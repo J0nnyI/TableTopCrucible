@@ -17,6 +17,7 @@ using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.WPF.Commands;
+using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {

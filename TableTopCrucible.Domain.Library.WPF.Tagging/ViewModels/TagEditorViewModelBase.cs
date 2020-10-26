@@ -19,10 +19,10 @@ using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Services;
-using TableTopCrucible.Domain.Library.WPF.Models;
+using TableTopCrucible.Domain.Library.WPF.Tagging.Models;
 using TableTopCrucible.WPF.Commands;
 
-namespace TableTopCrucible.Domain.Library.WPF.ViewModels
+namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
 {
     public abstract class TagEditorViewModelBase : DisposableReactiveValidationObject<TagEditorViewModel>, ITagEditor
     {
@@ -34,49 +34,49 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public TagEditorViewModelBase(IItemService itemService)
         {
             this.itemService = itemService;
-            this.NewTagChanges =
+            NewTagChanges =
                 this.WhenAnyValue(vm => vm.NewTag)
                 .TakeUntil(destroy);
 
-            this.AddTagButtonCommand = new RelayCommand(
+            AddTagButtonCommand = new RelayCommand(
                 e =>
                 {
-                    this.Select(((Tag)NewTag).AsArray());
-                    this.NewTag = string.Empty;
+                    Select(((Tag)NewTag).AsArray());
+                    NewTag = string.Empty;
                 },
                 _ => !HasErrors);
 
-            this.AddTagTextboxCommand = new RelayCommand(
+            AddTagTextboxCommand = new RelayCommand(
                 e =>
                 {
                     if (e is KeyEventArgs args && args.Key != Key.Enter)
                         return;
-                    this.Select(((Tag)NewTag).AsArray());
-                    this.NewTag = string.Empty;
+                    Select(((Tag)NewTag).AsArray());
+                    NewTag = string.Empty;
                 },
                 _ => !HasErrors);
 
-            this.RemoveTags = new RelayCommand(_ => this.Deselect(this.markedTags), _ => this.markedTags.Any());
-            this.MarkingChanged = new RelayCommand(
+            RemoveTags = new RelayCommand(_ => Deselect(markedTags), _ => markedTags.Any());
+            MarkingChanged = new RelayCommand(
                 par =>
                 {
                     if (par is IEnumerable lst)
                     {
-                        this.markedTags = lst.OfType<Tag>().ToArray();
+                        markedTags = lst.OfType<Tag>().ToArray();
                         if (!markedTags.Any())
-                            this.markedTags = lst.OfType<CountedTag>().Select(tag => tag.Tag).ToArray();
+                            markedTags = lst.OfType<CountedTag>().Select(tag => tag.Tag).ToArray();
                     }
                 }
             );
 
-            this.allTags = this.itemService.GetTags().Connect();
+            allTags = this.itemService.GetTags().Connect();
 
-            this.CompletePoolChanges = this.WhenAnyValue(vm => vm.CompletePool).TakeUntil(destroy);
+            CompletePoolChanges = this.WhenAnyValue(vm => vm.CompletePool).TakeUntil(destroy);
 
         }
         protected void UnmarkAll()
         {
-            this.MarkedIndex = -1;
+            MarkedIndex = -1;
         }
         protected virtual void OnSelectionUpdate()
         {
@@ -90,7 +90,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         {
             if (!Tag.Validate(newTag).Any())
             {
-                if (!PermitNewTags && !this.Tagpool.Items.Contains((Tag)newTag))
+                if (!PermitNewTags && !Tagpool.Items.Contains((Tag)newTag))
                     return "there is no item with this tag";
             }
             return string.Join(Environment.NewLine, Tag.Validate(newTag));
@@ -117,12 +117,12 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private readonly IObservable<IChangeSet<Tag>> allTags;
         public void SetTagpool(IObservableList<Tag> tagpool)
         {
-            this.tagpoolReset.OnNext(new Unit());
-            this.Tagpool = tagpool;
+            tagpoolReset.OnNext(new Unit());
+            Tagpool = tagpool;
 
 
 
-            this.Tagpool
+            Tagpool
                 .Connect()
                 .Filter(
                     NewTagChanges.Select<string, Func<Tag, bool>>(
@@ -132,14 +132,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .Except(TagpoolExceptions)
                 .Transform(tag => new TagEx(tag, true))
                 .Merge(
-                    this.CompletePoolChanges
+                    CompletePoolChanges
                         .DistinctUntilChanged()
                         .Select(completePool =>
                             completePool
-                                ? this.allTags
+                                ? allTags
                                     .Except(
                                         TagpoolExceptions.Merge(
-                                        this.Selection.Connect()))
+                                        Selection.Connect()))
                                     .Transform(tag => new TagEx(tag, false))
                                 : Observable.Empty<IChangeSet<TagEx>>()
                         )
@@ -152,7 +152,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .TakeUntil(destroy)
                 .Subscribe(_ => { }, ex =>
                 {
-                    MessageBox.Show($"({this.GetType().FullName}) tagpool exception: " + Environment.NewLine + ex.ToString());
+                    MessageBox.Show($"({GetType().FullName}) tagpool exception: " + Environment.NewLine + ex.ToString());
                 });
         }
 

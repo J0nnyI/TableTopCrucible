@@ -10,11 +10,13 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
+
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
-using TableTopCrucible.Domain.Library.WPF.Models;
+using TableTopCrucible.Domain.Library.WPF.Tagging.Models;
+using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.WPF.Commands;
 

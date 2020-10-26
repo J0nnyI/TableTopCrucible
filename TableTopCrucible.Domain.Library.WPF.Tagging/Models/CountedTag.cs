@@ -7,28 +7,28 @@ using System.Reactive.Linq;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.ValueTypes;
 
-namespace TableTopCrucible.Domain.Library.WPF.Models
+namespace TableTopCrucible.Domain.Library.WPF.Tagging.Models
 {
     public class CountedTag : DisposableReactiveObjectBase, IComparable
     {
         public CountedTag(IObservable<int> totalChanges, IObservable<int> countChanges, Tag tag)
         {
             Tag = tag;
-            this._count = null;
-            this._total = null;
+            _count = null;
+            _total = null;
 
 
-            this._count = countChanges
+            _count = countChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, m => m.Count);
 
-            this._total = totalChanges
+            _total = totalChanges
                 .TakeUntil(destroy)
                 .ToProperty(this, m => m.Total);
 
             _portionPercent = Observable.CombineLatest(countChanges, totalChanges)
                 .TakeUntil(destroy)
-                .Select((values) => (double)values[0] / (double)values[1])
+                .Select((values) => values[0] / (double)values[1])
                 .ToProperty(this, nameof(PortionPercent));
         }
 
@@ -51,11 +51,11 @@ namespace TableTopCrucible.Domain.Library.WPF.Models
         {
             if (obj is CountedTag tagB)
             {
-                var countCmp = this.Count.CompareTo(tagB.Count);
+                var countCmp = Count.CompareTo(tagB.Count);
                 if (countCmp != 0)
                     return countCmp;
                 else
-                    return this.Tag.CompareTo(tagB.Tag);
+                    return Tag.CompareTo(tagB.Tag);
             }
             return -1;
         }

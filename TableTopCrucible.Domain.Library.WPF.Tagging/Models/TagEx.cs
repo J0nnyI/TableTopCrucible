@@ -4,7 +4,7 @@ using System.Windows;
 
 using TableTopCrucible.Data.Models.ValueTypes;
 
-namespace TableTopCrucible.Domain.Library.WPF.ViewModels
+namespace TableTopCrucible.Domain.Library.WPF.Tagging.Models
 {
     public struct TagEx : IComparable
     {
@@ -23,9 +23,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             {
                 if (obj is TagEx tag)
                 {
-                    if (this.IsPrimary && !tag.IsPrimary)
+                    if (IsPrimary && !tag.IsPrimary)
                         return -1;
-                    if (!this.IsPrimary && tag.IsPrimary)
+                    if (!IsPrimary && tag.IsPrimary)
                         return 1;
                     return Tag.CompareTo(tag.Tag);
                 }

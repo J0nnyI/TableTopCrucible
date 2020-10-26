@@ -14,32 +14,16 @@
     </UserControl.Resources>
 
     <StackPanel>
-        <Label>Sort</Label>
-        <Grid>
-
-            <md:Card>
-
-            </md:Card>
-        </Grid>
-        <Label>Filter</Label>
-        <Grid>
-
-            <md:Card>
-
-            </md:Card>
-
-            <md:PackIcon Kind="Loading">
-
-            </md:PackIcon>
-        </Grid>
+        <ContentPresenter Content="{Binding ItemWhitelist}"/>
+        <ContentPresenter Content="{Binding ItemBlacklist}"/>
     </StackPanel>
 
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     <!--
     <Grid Style="{StaticResource Indent}">
         <Grid.RowDefinitions>

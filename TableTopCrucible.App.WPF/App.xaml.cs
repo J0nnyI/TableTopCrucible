@@ -31,6 +31,7 @@ using TableTopCrucible.Startup.WPF.ViewModels;
 using System.Windows.Threading;
 using TableTopCrucible.Core.WPF.Windows;
 using TableTopCrucible.Data.SaveFile.WPF.ViewModels;
+using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
 
 namespace TableTopCrucible.App.WPF
 {
@@ -96,7 +97,7 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<FileVersionListViewModel>();
             services.AddTransient<MassThumbnailCreatorViewModel>();
             services.AddTransient<ItemListFilterViewModel>();
-            services.AddTransient<ItemFilterViewModel>();
+            services.AddTransient<IItemFilter, ItemFilterViewModel>();
             services.AddTransient<StartupViewModel>();
             services.AddTransient<SaveFileLoadingViewModel>();
 

@@ -15,4 +15,9 @@
     <PackageReference Include="ReactiveUI.Validation" Version="1.8.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF.Tagging\TableTopCrucible.Domain.Library.WPF.Tagging.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -10,11 +10,11 @@ using System.Linq;
 
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Services;
-using TableTopCrucible.Domain.Library.WPF.Models;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.Core.Helper;
+using TableTopCrucible.Domain.Library.WPF.Tagging.Models;
 
-namespace TableTopCrucible.Domain.Library.WPF.ViewModels
+namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
 {
     public interface IDrivenTagEditor : ITagEditor
     {
@@ -31,16 +31,16 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
         public DrivenTagEditorViewModel(IItemService itemService) : base(itemService)
         {
-            this.AddTagButtonCommand = new RelayCommand(
+            AddTagButtonCommand = new RelayCommand(
                 e =>
                 {
-                    var tags = this.markedTags.ToList();
+                    var tags = markedTags.ToList();
                     if (!HasErrors)
                         tags.Add((Tag)NewTag);
 
-                    this.Select(tags);
-                    this.NewTag = string.Empty;
-                    this.UnmarkAll();
+                    Select(tags);
+                    NewTag = string.Empty;
+                    UnmarkAll();
                 },
                 _ => !HasErrors || markedTags.Any());
         }
@@ -51,23 +51,23 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
         public void BindSelection(IObservable<IChangeSet<CountedTag>> tags)
         {
-            if (this.Selection != null)
+            if (Selection != null)
                 throw new InvalidOperationException("Selection has already been set");
 
             tags.Bind(SelectionBinding).TakeUntil(destroy).Subscribe();
-            this._selection = tags.Transform(tag => tag.Tag).AsObservableList();
+            _selection = tags.Transform(tag => tag.Tag).AsObservableList();
             _tagpoolExceptions =
                 tags
                 .Filter(cTag => cTag.Total == cTag.Count)
                 .Transform(cTag => cTag.Tag)
                 .TakeUntil(destroy);
-            this.OnSelectionUpdate();
+            OnSelectionUpdate();
         }
         public override void Deselect(IEnumerable<Tag> tags)
-            => this.OnDeselection?.Invoke(this, tags);
+            => OnDeselection?.Invoke(this, tags);
 
         public override void Select(IEnumerable<Tag> tags)
-            => this.OnSelection?.Invoke(this, tags);
+            => OnSelection?.Invoke(this, tags);
         public override string Validate(string newTag)
         {
 
@@ -75,7 +75,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             if (!string.IsNullOrWhiteSpace(basics))
                 return basics;
 
-            if (this.SelectionBinding.Any(cTag => cTag.Tag == (Tag)newTag && cTag.Total == cTag.Count))
+            if (SelectionBinding.Any(cTag => cTag.Tag == (Tag)newTag && cTag.Total == cTag.Count))
                 return "this tag has already been selected for each item";
             return null;
         }

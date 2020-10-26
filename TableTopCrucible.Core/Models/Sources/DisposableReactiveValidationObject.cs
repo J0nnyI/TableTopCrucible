@@ -7,7 +7,7 @@ using System.Reactive.Subjects;
 
 namespace TableTopCrucible.Core.Models.Sources
 {
-    public class DisposableReactiveValidationObject<T> : ReactiveValidationObject<T>, IDisposable
+    public class DisposableReactiveValidationObject : ReactiveValidationObject, IDisposable
     {
         private readonly Subject<Unit> _destroy = new Subject<Unit>();
         protected readonly CompositeDisposable disposables = new CompositeDisposable();

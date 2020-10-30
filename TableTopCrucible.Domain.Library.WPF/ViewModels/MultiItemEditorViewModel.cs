@@ -28,7 +28,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         void SetTagpool(IObservableList<Tag> tagpool);
 
     }
-    public partial class MultiItemEditorViewModel : DisposableReactiveValidationObject<MultiItemEditorViewModel>, IMultiItemEditor
+    public partial class MultiItemEditorViewModel : DisposableReactiveValidationObject, IMultiItemEditor
     {
         private readonly IItemService itemService;
 

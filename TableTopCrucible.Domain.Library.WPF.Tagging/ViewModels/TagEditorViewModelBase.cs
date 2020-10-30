@@ -24,7 +24,7 @@ using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
 {
-    public abstract class TagEditorViewModelBase : DisposableReactiveValidationObject<TagEditorViewModel>, ITagEditor
+    public abstract class TagEditorViewModelBase : DisposableReactiveValidationObject, ITagEditor
     {
         private readonly IItemService itemService;
         public abstract IObservableList<Tag> Selection { get; }

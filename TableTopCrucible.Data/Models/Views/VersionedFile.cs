@@ -23,6 +23,7 @@ namespace TableTopCrucible.Data.Models.Views
         public FileInfoHashKey HashKey => Link.FileKey;
         public ItemId ItemId => Link.ItemId;
         public FileInfoEx File => Files.FirstOrDefault(x => System.IO.File.Exists(x.AbsolutePath));
+        public IEnumerable<string> FilePaths => Files.Select(file => file.AbsolutePath);
         public Version Version => Link.Version;
         public FileInfoEx? Thumbnail => Link.Thumbnail;
     }

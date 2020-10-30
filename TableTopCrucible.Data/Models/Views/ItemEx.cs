@@ -56,6 +56,7 @@ namespace TableTopCrucible.Data.Models.Views
             FileVersions
             .Select(x => x.Link.Version);
         public IEnumerable<VersionedFile> FileVersions { get; }
+        public IEnumerable<string> FilePaths => this.FileVersions.SelectMany(file => file.FilePaths);
         public FileInfoEx? LatestThumbnail => this.LatestVersionedFile.Thumbnail;
         public IEnumerable<FileInfoHashKey> Thumbnails =>
             this.FileVersions

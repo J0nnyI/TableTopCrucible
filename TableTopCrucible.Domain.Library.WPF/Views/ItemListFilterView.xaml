@@ -13,10 +13,20 @@
         </Style>
     </UserControl.Resources>
 
-    <StackPanel>
-        <ContentPresenter Content="{Binding ItemWhitelist}"/>
-        <ContentPresenter Content="{Binding ItemBlacklist}"/>
-    </StackPanel>
+    <Grid Margin="0 16 0 16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ContentPresenter Content="{Binding ItemWhitelist}" 
+                          Grid.Column="0"
+                          Margin="16 0 16 0"/>
+
+
+        <ContentPresenter Content="{Binding ItemBlacklist}"
+                          Grid.Column="1"
+                          Margin="16 0 16 0"/>
+    </Grid>
 
 
 

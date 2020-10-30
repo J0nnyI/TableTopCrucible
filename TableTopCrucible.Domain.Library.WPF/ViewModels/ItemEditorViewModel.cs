@@ -32,7 +32,7 @@ using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
-    public class ItemEditorViewModel : DisposableReactiveValidationObject<ItemEditorViewModel>
+    public class ItemEditorViewModel : DisposableReactiveValidationObject
     {
         public Control ViewportControl;
         private BehaviorSubject<ItemId?> _selectedItemIdChanges = new BehaviorSubject<ItemId?>(null);

@@ -6,7 +6,7 @@ using TableTopCrucible.Core.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Core.Models.Sources
 {
-    public abstract class ReactiveEntityBase<Tself, Tentity, Tid> : DisposableReactiveValidationObject<Tself>, IEntityChangeset<Tentity, Tid>
+    public abstract class ReactiveEntityBase<Tself, Tentity, Tid> : DisposableReactiveValidationObject, IEntityChangeset<Tentity, Tid>
         where Tentity : struct, IEntity<Tid>
         where Tid : ITypedId
         where Tself : ReactiveEntityBase<Tself, Tentity, Tid>

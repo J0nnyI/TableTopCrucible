@@ -47,9 +47,9 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 
             this.disposables.Add(ItemList, ItemEditor, MultiItemEditor, Filter);
 
-            //filter.FilterChanges
-            //    .TakeUntil(destroy)
-            //    .Subscribe(itemList.FilterChanges.OnNext, ex => MessageBox.Show(ex.ToString()));
+            filter.FilterChanges
+                .TakeUntil(destroy)
+                .Subscribe(itemList.FilterChanges.OnNext, ex => MessageBox.Show(ex.ToString()));
 
             this.ItemList.Selection.Connect()
                 .ToCollection()

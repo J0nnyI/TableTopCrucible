@@ -25,7 +25,7 @@ using TableTopCrucible.WPF.Commands;
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
 
-    public class AppSettingsViewModel : DisposableReactiveValidationObject<AppSettingsViewModel>
+    public class AppSettingsViewModel : DisposableReactiveValidationObject
     {
         [Reactive]
         public string ThreadCount { get; set; }

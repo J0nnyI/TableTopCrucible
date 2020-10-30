@@ -3,10 +3,84 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:TableTopCrucible.Domain.Library.WPF.Filter.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Label Content="{Binding FilterType}"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding FilterMode}"
+                   Style="{StaticResource MaterialDesignBody1TextBlock}"
+                   Grid.Column="0"
+                   Grid.Row="0"/>
+        <DockPanel Grid.Column="0"
+                   Grid.Row="1">
+            <ComboBox ItemsSource="{Binding StringFilterModeValues}"
+                      SelectedValue="{Binding NameFilterMode}"
+                      SelectedValuePath="Key"
+                      DisplayMemberPath="Value"
+                      md:HintAssist.Hint="Search Mode"
+                      DockPanel.Dock="Right"
+                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                      VerticalAlignment="Bottom"
+                      Margin="8 0 0 0"/>
+            <ComboBox ItemsSource="{Binding CaseSensitivityModeValues}"
+                      SelectedValue="{Binding NameCaseSensitivity}"
+                      SelectedValuePath="Key"
+                      DisplayMemberPath="Value"
+                      md:HintAssist.Hint="Case"
+                      md:HintAssist.IsFloating="True"
+                      DockPanel.Dock="Right"
+                      VerticalAlignment="Bottom"
+                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                      Margin="8 0 0 0"/>
+            <TextBox Text="{Binding NameFilter, UpdateSourceTrigger=PropertyChanged}"
+                     md:HintAssist.Hint="Name Filter"
+                     md:HintAssist.IsFloating="True"/>
+        </DockPanel>
+        <DockPanel Grid.Column="0"
+                   Grid.Row="2">
+            <ComboBox ItemsSource="{Binding StringFilterModeValues}"
+                      SelectedValue="{Binding PathFilterMode}"
+                      SelectedValuePath="Key"
+                      DisplayMemberPath="Value"
+                      md:HintAssist.Hint="Search Mode"
+                      DockPanel.Dock="Right"
+                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                      VerticalAlignment="Bottom"
+                      Margin="8 0 0 0"/>
+            <ComboBox ItemsSource="{Binding CaseSensitivityModeValues}"
+                      SelectedValue="{Binding PathCaseSensitivity}"
+                      SelectedValuePath="Key"
+                      DisplayMemberPath="Value"
+                      md:HintAssist.Hint="Case"
+                      DockPanel.Dock="Right"
+                      MinWidth="60px"
+                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                      VerticalAlignment="Bottom"
+                      Margin="8 0 0 0"/>
+            <ComboBox ItemsSource="{Binding PathFilterComponentValues}"
+                      SelectedValue="{Binding PathFilterComponent}"
+                      SelectedValuePath="Key"
+                      DisplayMemberPath="Value"
+                      md:HintAssist.Hint="Component"
+                      DockPanel.Dock="Right"
+                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                      VerticalAlignment="Bottom"
+                      Margin="8 0 0 0"/>
+            
+            <TextBox Text="{Binding PathFilter, UpdateSourceTrigger=PropertyChanged}"
+                     md:HintAssist.Hint="Path Filter"
+                     md:HintAssist.IsFloating="True"
+                     Grid.Column="0"
+                     Grid.Row="2"/>
+        </DockPanel>
     </Grid>
 </UserControl>

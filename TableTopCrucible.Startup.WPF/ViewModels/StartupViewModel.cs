@@ -117,7 +117,7 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
                 settingsService.MostRecentLibraries = new List<LibraryLocation>();
 
             settingsService.MostRecentLibraries.RemoveAll(library => library.Path == path);
-            settingsService.MostRecentLibraries.Add(new LibraryLocation(false, path, DateTime.Now));
+            settingsService.MostRecentLibraries.Insert(0,new LibraryLocation(false, path, DateTime.Now));
             settingsService.Save();
         }
     }

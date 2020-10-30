@@ -28,7 +28,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     }
     public class ItemListFilterViewModel : DisposableReactiveObjectBase
     {
-        public IObservable<Func<ItemEx, bool>> FilterChanges;
+        public IObservable<Func<ItemEx, bool>> FilterChanges { get; }
         public IObservableList<Tag> Tagpool { get; }
 
         public ItemListFilterViewModel(
@@ -37,12 +37,12 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             IDirectoryDataService directoryDataService,
             IItemService itemService)
         {
-            itemWhitelist.FilterType = FilterType.Whitelist;
+            itemWhitelist.FilterMode = FilterMode.Whitelist;
             ItemWhitelist = itemWhitelist;
-            itemBlacklist.FilterType = FilterType.Blacklist;
+            itemBlacklist.FilterMode = FilterMode.Blacklist;
             ItemBlacklist = itemBlacklist;
 
-            Observable.CombineLatest(
+            this.FilterChanges = Observable.CombineLatest(
                 itemWhitelist.FilterChanges,
                 itemBlacklist.FilterChanges
             )

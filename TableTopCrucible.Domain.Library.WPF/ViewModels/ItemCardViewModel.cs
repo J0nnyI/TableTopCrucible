@@ -21,7 +21,7 @@ using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
-    public class ItemCardViewModel : DisposableReactiveValidationObject<ItemCardViewModel>
+    public class ItemCardViewModel : DisposableReactiveValidationObject
     {
 
         #region observable properties

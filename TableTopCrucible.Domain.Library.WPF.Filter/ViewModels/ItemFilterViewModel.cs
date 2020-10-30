@@ -58,6 +58,19 @@ namespace TableTopCrucible.Domain.Library.WPF.Filter.ViewModel
         public CaseSensitivityMode PathCaseSensitivity { get; set; } = CaseSensitivityMode.IgnoreCase;
         [Reactive]
         public string PathFilter { get; set; } = string.Empty;
+        private bool? _hasThumbnailFilter = null;
+        public bool? HasThumbnailFilter
+        {
+            get => _hasThumbnailFilter;
+            set => this.RaiseAndSetIfChanged(ref _hasThumbnailFilter, value);
+        }
+        public bool? _hasFilesFilter = null;
+        public bool? HasFilesFilter
+        {
+            get => _hasFilesFilter;
+            set => this.RaiseAndSetIfChanged(ref _hasFilesFilter, value);
+
+        }
 
         public IObservable<Func<ItemEx, bool>> FilterChanges { get; }
 
@@ -70,6 +83,61 @@ namespace TableTopCrucible.Domain.Library.WPF.Filter.ViewModel
                 _ => throw new InvalidOperationException()
             };
         }
+
+
+        public ItemFilterViewModel(IManualTagEditor tagEditor)
+        {
+            this.FilterChanges = this.WhenAnyValue(
+                vm => vm.FilterMode,
+                vm => vm.NameFilter,
+                vm => vm.NameFilterMode,
+                vm => vm.NameCaseSensitivity,
+                vm => vm.PathFilter,
+                vm => vm.PathFilterMode,
+                vm => vm.PathFilterComponent,
+                vm => vm.PathCaseSensitivity,
+                vm => vm.HasThumbnailFilter,
+                vm => vm.HasFilesFilter,
+                (
+                    filterMode,
+                    nameFilter,
+                    nameFilterMode,
+                    nameCaseSensitivity,
+                    pathFilter,
+                    pathFilterMode,
+                    pathFilterComponent,
+                    pathCaseSensitivity,
+                    hasThumbnailFilter,
+                    hasFilesFilter
+                ) =>
+                {
+                    return new
+                    {
+                        filterMode,
+                        nameFilter,
+                        nameFilterMode,
+                        nameCaseSensitivity,
+                        pathFilter,
+                        pathFilterMode,
+                        pathFilterComponent,
+                        pathCaseSensitivity,
+                        hasThumbnailFilter,
+                        hasFilesFilter
+                    };
+                })
+                .ObserveOn(RxApp.TaskpoolScheduler)
+                .Select(filters =>
+                    new Func<ItemEx, bool>((ItemEx item) =>
+                            stringFilter(item.Name.ToString(), filters.nameFilter, filters.nameFilterMode, filters.nameCaseSensitivity, filters.filterMode) &&
+                            filePathFilter(item, filters.pathFilter, filters.pathFilterComponent, filters.pathFilterMode, filters.pathCaseSensitivity, filters.filterMode) &&
+                            checkBool(item.LatestThumbnail.HasValue, filters.hasThumbnailFilter, filters.filterMode) &&
+                            checkBool(item.HasFiles, filters.hasFilesFilter, filters.filterMode)
+                    )
+                );
+        }
+        private bool checkBool(bool value, bool? filter, FilterMode filterMode)
+            => filter == null || ((filterMode == FilterMode.Whitelist) == (value == filter));
+
         private bool stringFilter(
             string text,
             string filter,
@@ -119,50 +187,6 @@ namespace TableTopCrucible.Domain.Library.WPF.Filter.ViewModel
                     }
                 );
 
-        }
-
-
-        public ItemFilterViewModel(IManualTagEditor tagEditor)
-        {
-            this.FilterChanges = this.WhenAnyValue(
-                vm => vm.FilterMode,
-                vm => vm.NameFilter,
-                vm => vm.NameFilterMode,
-                vm => vm.NameCaseSensitivity,
-                vm => vm.PathFilter,
-                vm => vm.PathFilterMode,
-                vm => vm.PathFilterComponent,
-                vm => vm.PathCaseSensitivity,
-                (
-                    filterMode,
-                    nameFilter,
-                    nameFilterMode,
-                    nameCaseSensitivity,
-                    pathFilter,
-                    pathFilterMode,
-                    pathFilterComponent,
-                    pathCaseSensitivity
-                ) =>
-                {
-                    return new
-                    {
-                        filterMode,
-                        nameFilter,
-                        nameFilterMode,
-                        nameCaseSensitivity,
-                        pathFilter,
-                        pathFilterMode,
-                        pathFilterComponent,
-                        pathCaseSensitivity
-                    };
-                })
-                .ObserveOn(RxApp.TaskpoolScheduler)
-                .Select(filters =>
-                    new Func<ItemEx, bool>((ItemEx item) =>
-                            stringFilter(item.Name.ToString(), filters.nameFilter, filters.nameFilterMode, filters.nameCaseSensitivity, filters.filterMode) &&
-                            filePathFilter(item, filters.pathFilter, filters.pathFilterComponent, filters.pathFilterMode, filters.pathCaseSensitivity, filters.filterMode)
-                    )
-                );
         }
     }
 }

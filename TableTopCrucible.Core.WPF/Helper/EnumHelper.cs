@@ -10,7 +10,7 @@ namespace TableTopCrucible.Core.Helper
     public static class EnumHelper
     {
         //https://stackoverflow.com/questions/27572843/is-it-possible-to-databind-to-a-enum-and-show-user-friendly-values/27573155#27573155
-        public static List<KeyValuePair<T, string>> GetValuesForComboBox<T>(this T theEnum) where T:Enum
+        public static List<KeyValuePair<T, string>> GetValuesForComboBox<T>(this T theEnum) where T : Enum
         {
             List<KeyValuePair<T, string>> _comboBoxItemSource = null;
             if (_comboBoxItemSource == null)
@@ -31,5 +31,7 @@ namespace TableTopCrucible.Core.Helper
             }
             return _comboBoxItemSource;
         }
+        public static string GetValueForComboBox<T>(this T theEnum) where T : Enum
+            => theEnum.GetValuesForComboBox().FirstOrDefault(v => v.Key.Equals(theEnum)).Value;
     }
 }

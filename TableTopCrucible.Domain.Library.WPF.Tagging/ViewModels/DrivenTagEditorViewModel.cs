@@ -54,7 +54,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
             if (Selection != null)
                 throw new InvalidOperationException("Selection has already been set");
 
-            tags.Bind(SelectionBinding).TakeUntil(destroy).Subscribe();
+            tags.ObserveOn(RxApp.MainThreadScheduler).Bind(SelectionBinding).TakeUntil(destroy).Subscribe();
             _selection = tags.Transform(tag => tag.Tag).AsObservableList();
             _tagpoolExceptions =
                 tags

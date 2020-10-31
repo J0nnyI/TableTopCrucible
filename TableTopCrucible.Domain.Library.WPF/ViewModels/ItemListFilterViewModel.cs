@@ -13,19 +13,6 @@ using TableTopCrucible.Domain.Library.WPF.Filter.ViewModel;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {
-    public enum TagFilterMode
-    {
-        HasAll,
-        HasAny,
-        HasNone
-    }
-    public enum TextFilterMode
-    {
-        StartsWith,
-        EndsWith,
-        Equals,
-        Contains
-    }
     public class ItemListFilterViewModel : DisposableReactiveObjectBase
     {
         public IObservable<Func<ItemEx, bool>> FilterChanges { get; }
@@ -52,7 +39,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             itemBlacklist.SetTagpool(tagPool);
 
             this.Tagpool = tagPool;
-            this.Tagpool =new SourceList<Tag>();
         }
 
         public IItemFilter ItemWhitelist { get; }

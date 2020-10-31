@@ -17,8 +17,16 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid >
-        <Grid Grid.Effect="{Binding SelectedItem, Converter={StaticResource cv_blur}}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Effect="{Binding SelectedItem, Converter={StaticResource cv_blur}}"
+              Grid.Column="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
@@ -29,7 +37,7 @@
             </Grid.RowDefinitions>
 
             <!--#region name, thumbnail & tag-->
-            <Expander>
+            <Expander Grid.ColumnSpan="2">
                 <Expander.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -209,7 +217,8 @@
             </Grid>
         </Label>
         <StackPanel VerticalAlignment="Bottom"
-                    HorizontalAlignment="Right">
+                    HorizontalAlignment="Right"
+                    Grid.Column="1">
             <Button Command="{Binding CreateThumbnail}"
                     Style="{StaticResource MaterialDesignIconButton}">
                 <md:PackIcon Kind="Image"/>

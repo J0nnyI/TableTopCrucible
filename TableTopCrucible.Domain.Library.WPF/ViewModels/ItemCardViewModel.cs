@@ -78,7 +78,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             )
         {
             this.TagEditor = tagEditorViewModel;
-
+            this.TagEditor.Editmode = false;
 
             #region Observables 
 

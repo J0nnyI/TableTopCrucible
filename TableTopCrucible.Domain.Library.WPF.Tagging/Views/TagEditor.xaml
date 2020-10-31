@@ -39,6 +39,7 @@
                  SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"
                  Style="{StaticResource MaterialDesignFilterChipListBox}"
                  md:ListBoxAssist.IsToggle="{Binding Editmode}"
+                 ItemContainerStyle="{StaticResource MaterialDesignFilterChipAccentOutlineListBoxItem}"
                  Grid.Column="0"
                  Grid.Row="0">
             <i:Interaction.Triggers>
@@ -47,35 +48,19 @@
                                            CommandParameter="{Binding SelectedItems, ElementName=tagList}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
+            <ListBox.Resources>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Background" Value="Red"/>
+                </Style>
+            </ListBox.Resources>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem"
-                        BasedOn="{StaticResource MaterialDesignFilterChipListBoxItem}">
-                    <Setter Property="Focusable"
-                            Value="False"/>
-                    <Setter Property="Background">
-                        <Setter.Value>
-                            <LinearGradientBrush StartPoint="0,0"
-                                                 EndPoint="1,0">
-                                <GradientStop Color="{StaticResource Primary100}" 
-                                              Offset="{Binding PortionPercent, FallbackValue='0'}"/>
-                                <GradientStop Color="#12000000" Offset="{Binding PortionPercent}"/>
-                            </LinearGradientBrush>
-                        </Setter.Value>
-                    </Setter>
-                    <Setter Property="BorderBrush"
-                            Value="Orange"/>
-                    <Setter Property="BorderThickness" 
-                            Value="4px"/>
-                </Style>
-            </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel>
+                    <StackPanel Orientation="Horizontal">
                         <TextBlock>
                             <TextBlock.Text>
                                 <PriorityBinding>
@@ -84,6 +69,12 @@
                                 </PriorityBinding>
                             </TextBlock.Text>
                         </TextBlock>
+                        <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                     Minimum="0"
+                                     Value="{Binding Count, Mode=OneWay}"
+                                     Maximum="{Binding Total, Mode=OneWay}"
+                                     Margin="4 0 0 0"
+                                     Visibility="{Binding Total, FallbackValue=false, Mode=OneWay, Converter={StaticResource cv_visibillity}}"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

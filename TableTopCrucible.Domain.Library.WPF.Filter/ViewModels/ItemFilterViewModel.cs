@@ -166,16 +166,17 @@ namespace TableTopCrucible.Domain.Library.WPF.Filter.ViewModel
                         };
                     }
                 )
+                .ObserveOn(RxApp.TaskpoolScheduler)
                 .Select(filters =>
                     new Func<ItemEx, bool>((ItemEx item) =>
                             stringFilter(item.Name.ToString(), filters.nameFilter, filters.nameFilterMode, filters.nameCaseSensitivity, filters.filterMode) &&
                             filePathFilter(item, filters.pathFilter, filters.pathFilterComponent, filters.pathFilterMode, filters.pathCaseSensitivity, filters.filterMode) &&
                             checkBool(item.LatestThumbnail.HasValue, filters.hasThumbnailFilter, filters.filterMode) &&
                             checkBool(item.HasFiles, filters.hasFilesFilter, filters.filterMode) &&
-                            (!filters.tags?.Any() == true)|| (
+                            ((!filters.tags?.Any() == true)|| (
                                 (filters.filterMode == FilterMode.Whitelist)
                                 == filters.tags?.All(tag => item.Tags?.Contains(tag) == true) == true
-                            )
+                            ))
                     )
                 );
         }

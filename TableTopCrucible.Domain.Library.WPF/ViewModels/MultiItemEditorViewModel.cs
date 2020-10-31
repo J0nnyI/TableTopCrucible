@@ -84,13 +84,13 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     MessageBox.Show(ex.ToString(),$"{nameof(MultiItemEditorViewModel)}.{nameof(BindSelection)}: selection subscription threw exception");
                 });
 
-            var count = this.Selection.Connect().Count();
+            var count = this.Selection.Connect().Count().ObserveOn(RxApp.MainThreadScheduler);
 
             var selectedTags = this.Selection.Connect()
                 .TransformMany(item => item.Tags)
                 .GroupOn(tag => tag)
                 .Transform(group =>
-                    new CountedTag(count, group.List.Connect().Count(), group.GroupKey)
+                    new CountedTag(count, group.List.Connect().Count().ObserveOn(RxApp.MainThreadScheduler), group.GroupKey)
                 )
                 .DisposeMany()
                 //.Sort()

@@ -22,6 +22,7 @@ namespace TableTopCrucible.Data.Services
         IObservable<ItemEx> GetExtended(ItemId item);
         IObservable<ItemEx?> GetExtended(IObservable<ItemId?> itemIdChanges);
         IObservable<IChangeSet<Tag>> GetTags(IObservable<IChangeSet<Item, ItemId>> sourceItems);
+        IObservable<IChangeSet<Tag>> GetTags(IObservable<Func<ItemEx, bool>> itemFilter);
         IObservableList<Tag> GetTags();
     }
     public class ItemService : DataServiceBase<Item, ItemId, ItemChangeset>, IItemService
@@ -83,6 +84,8 @@ namespace TableTopCrucible.Data.Services
         private IObservableList<Tag> _tags;
         public IObservableList<Tag> GetTags()
             => _tags;
+        public IObservable<IChangeSet<Tag>> GetTags(IObservable<IChangeSet<ItemEx, ItemId>> sourceItems)
+            => GetTags(sourceItems.Transform(itemEx => itemEx.SourceItem));
         public IObservable<IChangeSet<Tag>> GetTags(IObservable<IChangeSet<Item, ItemId>> sourceItems)
         {
             return sourceItems
@@ -90,5 +93,9 @@ namespace TableTopCrucible.Data.Services
                 .DistinctValues(tag => tag)
                 .RemoveKey();
         }
+
+
+        public IObservable<IChangeSet<Tag>> GetTags(IObservable<Func<ItemEx, bool>> itemFilter)
+            => GetTags(this.GetExtended().Connect().Filter(itemFilter));
     }
 }

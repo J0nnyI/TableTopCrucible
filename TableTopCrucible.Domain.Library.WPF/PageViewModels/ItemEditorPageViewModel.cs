@@ -67,8 +67,8 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
                     else
                         this.Editor = MultiItemEditor;
                 });
-            //itemEditor.SetTagpool(Filter.Tagpool);
-            //multiItemEditor.SetTagpool(Filter.Tagpool);
+            itemEditor.SetTagpool(Filter.Tagpool);
+            multiItemEditor.SetTagpool(Filter.Tagpool);
         }
 
     }

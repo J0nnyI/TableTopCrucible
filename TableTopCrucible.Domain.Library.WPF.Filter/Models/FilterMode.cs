@@ -8,9 +8,9 @@ namespace TableTopCrucible.Domain.Library.WPF.Filter.Models
 {
     public enum FilterMode
     {
-        [Description("Must Include")]
+        [Description("Include")]
         Whitelist,
-        [Description("Must Exclude")]
+        [Description("Exclude")]
         Blacklist
     }
     public enum StringFilterMode

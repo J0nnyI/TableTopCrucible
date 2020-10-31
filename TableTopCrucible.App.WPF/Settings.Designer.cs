@@ -25,7 +25,7 @@ namespace TableTopCrucible.App.WPF {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("8")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
         public int ThreadCount {
             get {
                 return ((int)(this["ThreadCount"]));
@@ -37,7 +37,7 @@ namespace TableTopCrucible.App.WPF {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        [global::System.Configuration.DefaultSettingValueAttribute("500")]
         public int MaxPatchSize {
             get {
                 return ((int)(this["MaxPatchSize"]));

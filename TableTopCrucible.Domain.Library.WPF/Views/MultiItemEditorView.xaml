@@ -39,7 +39,8 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <ContentPresenter Content="{Binding TagEditor}"
-                              />
+                              Validation.ErrorTemplate="{x:Null}"
+                              Margin="16"/>
         </Grid>
     </Grid>
 </UserControl>

@@ -24,7 +24,9 @@
             <ColumnDefinition/>            
         </Grid.ColumnDefinitions>
 
-        <Button Command="{Binding CreateAllThumbnails}"
+        <ContentPresenter Content="{Binding NotificationCenterViewModel}"/>
+
+        <!--<Button Command="{Binding CreateAllThumbnails}"
                 Style="{StaticResource MaterialDesignIconButton}">
             <md:PackIcon Kind="ImageArea"/>
 
@@ -32,6 +34,6 @@
         </Button>
         <Button Command="{Binding ThrowExCmd}">
             Crash it baby
-        </Button>
+        </Button>-->
     </Grid>
 </Page>

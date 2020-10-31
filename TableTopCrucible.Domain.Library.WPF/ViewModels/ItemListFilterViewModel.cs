@@ -34,7 +34,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public ItemListFilterViewModel(
             IItemFilter itemWhitelist,
             IItemFilter itemBlacklist,
-            IDirectoryDataService directoryDataService,
             IItemService itemService)
         {
             itemWhitelist.FilterMode = FilterMode.Whitelist;
@@ -46,8 +45,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 itemWhitelist.FilterChanges,
                 itemBlacklist.FilterChanges
             )
-            .Select(filters => new Func<ItemEx, bool>( (ItemEx item) => filters.All(filter => filter(item))));
+            .Select(filters => new Func<ItemEx, bool>((ItemEx item) => filters.All(filter => filter(item))));
 
+            var tagPool = itemService.GetTags(FilterChanges).AsObservableList();
+            itemWhitelist.SetTagpool(tagPool);
+            itemBlacklist.SetTagpool(tagPool);
+
+            this.Tagpool = tagPool;
+            this.Tagpool =new SourceList<Tag>();
         }
 
         public IItemFilter ItemWhitelist { get; }

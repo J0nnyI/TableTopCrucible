@@ -9,4 +9,5 @@
     <local:BlurConverter x:Key="cv_blur"/>
     <local:NumericConverter x:Key="cv_num"/>
     <local:ImageConverter x:Key="cv_img"/>
+    <local:EnumTextConverter x:Key="cv_enum"/>
 </ResourceDictionary>

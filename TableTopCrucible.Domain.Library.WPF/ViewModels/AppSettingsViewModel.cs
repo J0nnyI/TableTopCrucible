@@ -64,7 +64,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.Save = new RelayCommand(_ => _save(), _ => !this.HasErrors);
 
             _createMinMaxValidators(1, vm => vm.ThreadCount, 16);
-            _createMinMaxValidators(10, vm => vm.MaxPatchSize, 500);
+            _createMinMaxValidators(10, vm => vm.MaxPatchSize, 5000);
         }
 
         enum MinMaxParseResult

@@ -17,8 +17,9 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Text="{Binding FilterMode}"
+        <TextBlock Text="{Binding FilterMode, Converter={StaticResource cv_enum}}"
                    Style="{StaticResource MaterialDesignBody1TextBlock}"
                    Grid.Column="0"
                    Grid.Row="0"/>
@@ -84,17 +85,22 @@
                      Grid.Column="0"
                      Grid.Row="2"/>
         </DockPanel>
+        <ContentControl Content="{Binding TagEditor}"
+                        Validation.ErrorTemplate="{x:Null}"
+                        Margin="0 8 0 0"
+                        Grid.Column="0"
+                        Grid.Row="3"/>
         <CheckBox Content="Has Thumbnail"
                   IsChecked="{Binding HasThumbnailFilter}"
                   IsThreeState="true"
                   Grid.Column="0"
-                  Grid.Row="3" 
+                  Grid.Row="4" 
                   Margin="0 8 0 0"/>
         <CheckBox Content="Has Files"
                   IsChecked="{Binding HasFilesFilter}"
                   IsThreeState="true"
                   Grid.Column="0"
-                  Grid.Row="4" 
+                  Grid.Row="5" 
                   Margin="0 8 0 0"/>
     </Grid>
 </UserControl>

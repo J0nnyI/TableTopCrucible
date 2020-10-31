@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive;
+using System.Reactive.Concurrency;
 
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes.IDs;
@@ -18,8 +19,8 @@ namespace TableTopCrucible.Data.Services
         IObservable<IChangeSet<Tentity, Tid>> Get(IEnumerable<Tid> ids);
 
         public void Post(Tentity entity);
-        ITaskProgressionInfo Post(IEnumerable<Tentity> entity);
-        ITaskProgressionInfo Set(IEnumerable<Tentity> data);
+        ITaskProgressionInfo Post(IEnumerable<Tentity> entity, IScheduler scheduler = null);
+        ITaskProgressionInfo Set(IEnumerable<Tentity> data, IScheduler scheduler = null);
         void Delete(Tid key);
         void Delete(IEnumerable<Tid> key);
         void Clear();

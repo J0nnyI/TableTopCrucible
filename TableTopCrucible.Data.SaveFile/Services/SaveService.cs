@@ -80,7 +80,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     fileItemLinkService.Clear();
                     _itemService.Clear();
 
-                    var dir = _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()));
+                    var dir = _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()),RxApp.TaskpoolScheduler);
                     dir.Title = "loading directories";
                     progression.DirectoryTaskState = dir;
                     progression.DirectoryTaskState.DoneChanges.Subscribe(
@@ -88,14 +88,14 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     {
                         if (dirState != TaskState.Done)
                             return;
-                        var file = _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()));
+                        var file = _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()), RxApp.TaskpoolScheduler);
                         file.Title = "loading files";
                         progression.FileTaskState = file;
                         progression.FileTaskState.DoneChanges.Subscribe(fileState =>
                         {
                             if (fileState != TaskState.Done)
                                 return;
-                            var link = fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity()));
+                            var link = fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity()), RxApp.TaskpoolScheduler);
                             link.Title = "loading links";
                             progression.LinkTaskState = link;
                             progression.LinkTaskState.DoneChanges.Subscribe(linkState =>

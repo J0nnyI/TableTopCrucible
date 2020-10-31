@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -90,7 +91,7 @@ namespace TableTopCrucible.Data.Services
         // post
         public void Post(Tentity entity)
             => this.cache.AddOrUpdate(entity);
-        public ITaskProgressionInfo Post(IEnumerable<Tentity> entities)
+        public ITaskProgressionInfo Post(IEnumerable<Tentity> entities, IScheduler scheduler = null)
         {
             var progInfo = new TaskProgression();
             var chunks = entities.ChunkBy(settingsService.MaxPatchSize)
@@ -116,7 +117,7 @@ namespace TableTopCrucible.Data.Services
                     progInfo.Details = ex.ToString();
                     progInfo.Error = ex;
                 }
-            }, RxApp.TaskpoolScheduler);
+            }, scheduler ?? RxApp.MainThreadScheduler);
 
             return progInfo;
         }
@@ -133,10 +134,10 @@ namespace TableTopCrucible.Data.Services
         public void Clear() => this.cache.Clear();
 
         private bool _disposedValue = false; // To detect redundant calls
-        public ITaskProgressionInfo Set(IEnumerable<Tentity> data)
+        public ITaskProgressionInfo Set(IEnumerable<Tentity> data, IScheduler scheduler = null)
         {
             this.cache.Clear();
-            return this.Post(data);
+            return this.Post(data, scheduler);
         }
 
         #region IDisposable Support

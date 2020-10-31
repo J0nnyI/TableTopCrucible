@@ -25,10 +25,10 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Effect="{Binding SelectedItem, Converter={StaticResource cv_blur}}"
-              Grid.Column="0">
+        <Grid Grid.Effect="{Binding SelectedItem, Converter={StaticResource cv_blur}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"
@@ -160,12 +160,24 @@
                                 BorderThickness="1px"
                                 CameraRotationMode="{Binding CameraRotationMode}"
                                 Grid.Column="0"
-                                Grid.ColumnSpan="4"
                                 Grid.Row="1">
                 <hx:DefaultLights/>
 
                 <ModelVisual3D Content="{Binding ViewportContent}"/>
             </hx:HelixViewport3D>
+            <StackPanel VerticalAlignment="Bottom"
+                        HorizontalAlignment="Right"
+                        Grid.Column="1"
+                        Grid.Row="1">
+                <Button Command="{Binding CreateThumbnail}"
+                    Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="Image"/>
+                </Button>
+                <Button Command="{Binding Save}"
+                Style="{StaticResource MaterialDesignIconButton}">
+                    <md:PackIcon Kind="ContentSave"/>
+                </Button>
+            </StackPanel>
             <Label Background="#AAAAAAAA"
                Visibility="{Binding LoadingModel, Converter={StaticResource cv_visibillity}}"
                    VerticalContentAlignment="Center"
@@ -216,17 +228,5 @@
                            Name="tb_text"/>
             </Grid>
         </Label>
-        <StackPanel VerticalAlignment="Bottom"
-                    HorizontalAlignment="Right"
-                    Grid.Column="1">
-            <Button Command="{Binding CreateThumbnail}"
-                    Style="{StaticResource MaterialDesignIconButton}">
-                <md:PackIcon Kind="Image"/>
-            </Button>
-            <Button Command="{Binding Save}"
-                Style="{StaticResource MaterialDesignIconButton}">
-                <md:PackIcon Kind="ContentSave"/>
-            </Button>
-        </StackPanel>
     </Grid>
 </UserControl>

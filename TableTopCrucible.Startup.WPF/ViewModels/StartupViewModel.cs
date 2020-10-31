@@ -94,6 +94,7 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
             window.Content = loadingScreen;
             window.MaxWidth = window.MinWidth = window.Width = 700;
             window.MaxHeight = window.MinHeight = window.Height = 400;
+            window.WindowState = WindowState.Normal;
 
 
             loadProgress.MainTaskProgression.DoneChanges
@@ -106,6 +107,7 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
                     window.MinHeight = 400;
                     window.MaxWidth = window.MaxHeight = int.MaxValue;
                     window.WindowState = WindowState.Maximized;
+                    window.Title = $"Table Top Crucible - {path}";
 
                     window.Content = libraryViewModel;
                 }

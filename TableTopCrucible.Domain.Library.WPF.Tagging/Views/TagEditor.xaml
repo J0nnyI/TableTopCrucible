@@ -39,7 +39,6 @@
                  SelectiveScrollingGrid.SelectiveScrollingOrientation="Vertical"
                  Style="{StaticResource MaterialDesignFilterChipListBox}"
                  md:ListBoxAssist.IsToggle="{Binding Editmode}"
-                 ItemContainerStyle="{StaticResource MaterialDesignFilterChipAccentOutlineListBoxItem}"
                  Grid.Column="0"
                  Grid.Row="0">
             <i:Interaction.Triggers>
@@ -74,7 +73,7 @@
                                      Value="{Binding Count, Mode=OneWay}"
                                      Maximum="{Binding Total, Mode=OneWay}"
                                      Margin="4 0 0 0"
-                                     Visibility="{Binding Total, FallbackValue=false, Mode=OneWay, Converter={StaticResource cv_visibillity}}"/>
+                                     Visibility="{Binding Total, FallbackValue=collapsed, Mode=OneWay, Converter={StaticResource cv_visibillity}}"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

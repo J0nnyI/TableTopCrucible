@@ -33,6 +33,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
             OnSelectionUpdate();
             Selection
                 .Connect()
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(SelectionBinding)
                 .TakeUntil(destroy)
                 .Subscribe();

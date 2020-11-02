@@ -52,7 +52,8 @@ namespace TableTopCrucible.Core.Models.Sources
                     m => m.Details,
                     m => m.CurrentProgress,
                     m => m.RequiredProgress,
-                    (t,s,d,c,r)=>new TaskProgressionState(t,s,d,c,r));
+                    m => m.Error,
+                    (t,s,d,c,r,e)=>new TaskProgressionState(t,s,d,c,r,e));
             DoneChanges = TaskStateChanges.Where(state => state.IsIn(TaskState.Done, TaskState.Failed));
         }
     }

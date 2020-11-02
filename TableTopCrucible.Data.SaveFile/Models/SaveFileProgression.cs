@@ -72,10 +72,13 @@ namespace TableTopCrucible.Data.SaveFile.Models
                 var item = tasks[3];
                 var progInfos = new TaskProgressionState?[] { dir, file, link, item };
                 if ((TaskState.Failed as TaskState?).IsIn(dir?.State, file?.State, link?.State, item?.State))
+                {
+                    _mainTaskProgression.Error = dir?.Error ?? file?.Error ?? link?.Error ?? item?.Error;
                     _mainTaskProgression.State = TaskState.Failed;
+                }
                 else if (progInfos.Any(x => x?.State == TaskState.InProgress))
                     _mainTaskProgression.State = TaskState.InProgress;
-                else if(progInfos.All(x=>x?.State == TaskState.Done))
+                else if (progInfos.All(x => x?.State == TaskState.Done))
                     _mainTaskProgression.State = TaskState.Done;
                 this._mainTaskProgression.CurrentProgress = progInfos.Count(progInfo => progInfo?.State == TaskState.Done);
                 this._mainTaskProgression.Details =

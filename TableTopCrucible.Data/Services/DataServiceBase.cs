@@ -113,11 +113,11 @@ namespace TableTopCrucible.Data.Services
                 }
                 catch (Exception ex)
                 {
-                    progInfo.State = TaskState.Failed;
-                    progInfo.Details = ex.ToString();
                     progInfo.Error = ex;
+                    progInfo.Details = ex.ToString();
+                    progInfo.State = TaskState.Failed;
                 }
-            }, scheduler ?? RxApp.MainThreadScheduler);
+            }, scheduler ?? Scheduler.CurrentThread);
 
             return progInfo;
         }
@@ -182,14 +182,17 @@ namespace TableTopCrucible.Data.Services
             cache.AddOrUpdate(entity);
             return entity;
         }
-        public IEnumerable<Tentity> Patch(IEnumerable<Tchangeset> changeSet)
+        public IObservable<IEnumerable<Tentity>> Patch(IEnumerable<Tchangeset> changeSet, IScheduler scheduler = null)
         {
-            var changes = changeSet.Select(change =>
-                change.Origin != null
-                ? change.Apply()
-                : change.ToEntity());
-            this.Post(changes);
-            return changes;
+            return Observable.Start(() =>
+            {
+                var changes = changeSet.Select(change =>
+                    change.Origin != null
+                    ? change.Apply()
+                    : change.ToEntity());
+                this.Post(changes);
+                return changes;
+            }, scheduler ?? Scheduler.CurrentThread);
         }
         public bool CanPatch(Tchangeset changeset)
         {

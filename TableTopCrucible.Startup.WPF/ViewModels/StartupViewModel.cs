@@ -111,8 +111,12 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
 
                     window.Content = libraryViewModel;
                 }
-                if (x == TaskState.Failed)
-                    window.Content = "Loading failed";
+                if (x == TaskState.Failed) { 
+                    window.Content = string.Join(Environment.NewLine,"Loading failed",
+                    loadProgress.MainTaskProgression.Details,
+                    loadProgress.MainTaskProgression.Error?.ToString()
+                );
+                }
             });
 
             if (settingsService.MostRecentLibraries == null)

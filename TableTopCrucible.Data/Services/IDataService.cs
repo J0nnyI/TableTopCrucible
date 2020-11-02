@@ -31,7 +31,7 @@ namespace TableTopCrucible.Data.Services
     where Tid : ITypedId
     {
         Tentity Patch(TChangeset data);
-        IEnumerable<Tentity> Patch(IEnumerable<TChangeset> data);
+        IObservable<IEnumerable<Tentity>> Patch(IEnumerable<TChangeset> changeSet, IScheduler scheduler = null);
         bool CanPatch(TChangeset changeset);
     }
 }

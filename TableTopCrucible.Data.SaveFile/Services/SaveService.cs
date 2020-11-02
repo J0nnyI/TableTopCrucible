@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Runtime.CompilerServices;
@@ -119,7 +120,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     progression.OnError(ex);
                 }
 
-            }, RxApp.TaskpoolScheduler);
+            }, Scheduler.ThreadPool);
             return progression;
         }
 

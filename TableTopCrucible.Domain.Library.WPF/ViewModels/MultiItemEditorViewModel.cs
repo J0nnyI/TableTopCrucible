@@ -54,14 +54,17 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
         private void TagEditor_OnSelection(object sender, IEnumerable<Tag> e)
         {
-            this.itemService.Patch(this.Selection.Items.Select(itemEx =>
-            {
-                var changeset = new ItemChangeset(itemEx.SourceItem);
-                var tags = changeset.Tags.ToList();
-                tags.Add(e);
-                changeset.Tags = tags.Distinct();
-                return changeset;
-            }));
+            this.itemService.Patch(
+                this.Selection.Items.Select(itemEx =>
+                {
+                    var changeset = new ItemChangeset(itemEx.SourceItem);
+                    var tags = changeset.Tags.ToList();
+                    tags.Add(e);
+                    changeset.Tags = tags.Distinct();
+                    return changeset;
+                }),RxApp.TaskpoolScheduler
+
+            );
         }
 
         public IObservableList<ItemEx> Selection { get; private set; }

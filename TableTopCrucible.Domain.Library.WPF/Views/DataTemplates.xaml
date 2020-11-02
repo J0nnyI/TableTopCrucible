@@ -37,9 +37,6 @@
     <DataTemplate DataType="{x:Type viewModels:FileVersionListViewModel}">
         <views:FileVersionListView/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type viewModels:MassThumbnailCreatorViewModel}">
-        <views:MassThumbnailCreatorView/>
-    </DataTemplate>
     <DataTemplate DataType="{x:Type viewModels:ItemListFilterViewModel}">
         <views:ItemListFilterView/>
     </DataTemplate>

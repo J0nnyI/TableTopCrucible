@@ -52,9 +52,9 @@ namespace TableTopCrucible.Domain.Models.Sources
         }
         public void SetSysFileInfo(DirectorySetup directorySetup, SysFileInfo fileInfo)
         {
+            DirectorySetupId = directorySetup.Id;
             Path = fileInfo != null ? directorySetup.Path.MakeUnescapedRelativeUri(fileInfo?.FullName) : null;
             CreationTime = fileInfo?.CreationTime ?? default;
-            FileHash = null;
             LastWriteTime = fileInfo?.LastWriteTime ?? default;
             FileSize = fileInfo?.Length ?? default;
             IsAccessible = fileInfo != null;

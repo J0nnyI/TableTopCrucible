@@ -1,9 +1,12 @@
 ﻿using DynamicData;
 
+using Microsoft.WindowsAPICodePack.Shell;
+
 using ReactiveUI;
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reactive.Concurrency;
@@ -14,6 +17,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Enums;
@@ -35,12 +40,12 @@ namespace TableTopCrucible.Domain.Library
 {
     public interface ILibraryManagementService
     {
-        public void FullSync();
-        public void FullSync(IEnumerable<DirectorySetup> dirSetups);
+        void FullSync();
+        void FullSync(IEnumerable<DirectorySetup> dirSetups);
         void AutoGenerateItems();
         FileInfo? UpdateFile(DirectorySetup dirSetup, Uri relativePath);
         void RemoveDirectorySetupRecursively(DirectorySetupId dirSetupId);
-
+        void GenerateAllThumbnails();
     }
 
     public class LibraryManagementService : ILibraryManagementService
@@ -122,7 +127,7 @@ namespace TableTopCrucible.Domain.Library
                 Hash = hash;
             }
 
-            public bool IsUpdate { get; } 
+            public bool IsUpdate { get; }
             public DirectorySetup DirectorySetup { get; }
             public SysFileInfo FileInfo { get; }
             public FileHash Hash { get; }
@@ -561,7 +566,7 @@ namespace TableTopCrucible.Domain.Library
                         .WhereNotIn(remainingFileKeys, link => link.FileKey)
                         .Select(link => link.ItemId)
                         .ToArray();
-                        
+
                     removedLinks = null;
 
                     process.OnNextStep("removing items");
@@ -573,6 +578,83 @@ namespace TableTopCrucible.Domain.Library
                     MessageBox.Show(ex.ToString());
                 }
             }, RxApp.TaskpoolScheduler);
+        }
+
+
+        private static BitmapSource CreateBitmapSourceFromGdiBitmap(Bitmap bitmap)
+        {
+            if (bitmap == null)
+                throw new ArgumentNullException("bitmap");
+
+            var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+
+            var bitmapData = bitmap.LockBits(
+                rect,
+                System.Drawing.Imaging.ImageLockMode.ReadWrite,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            try
+            {
+                var size = (rect.Width * rect.Height) * 4;
+
+                return BitmapSource.Create(
+                    bitmap.Width,
+                    bitmap.Height,
+                    bitmap.HorizontalResolution,
+                    bitmap.VerticalResolution,
+                    PixelFormats.Bgra32,
+                    null,
+                    bitmapData.Scan0,
+                    size,
+                    bitmapData.Stride);
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
+        }
+
+        public void GenerateAllThumbnails()
+        {
+            var patches = this.itemService
+                .GetExtended()
+                .Items
+                .Where(item =>
+                    !item.LatestThumbnail.HasValue
+                    && item.LatestVersionedFile != null
+                    )
+                .Select(item =>
+                {
+                    var path = item.GenerateNewThumbnailPath();
+                    try
+                    {
+
+                        using (ShellFile shellFile = ShellFile.FromFilePath(item.LatestFilePath))
+                        {
+                            using (Bitmap shellThumb = shellFile.Thumbnail.ExtraLargeBitmap)
+                            {
+                                using (Stream fs = File.OpenWrite(path))
+                                    shellThumb.Save(fs,System.Drawing.Imaging.ImageFormat.Jpeg);
+                            }
+                        }
+                        var hash = _hashFile(path);
+                        var fileCs = new FileInfoChangeset();
+                        fileCs.FileHash = hash;
+                        fileCs.SetSysFileInfo(item.DirectorySetups.FirstOrDefault(), new SysFileInfo(path));
+                        var file = fileCs.ToEntity();
+
+                        var linkCs = new FileItemLinkChangeset(item.LatestVersionedFile.Value.Link.Link);
+                        linkCs.ThumbnailKey = file.HashKey;
+                        return new { file, linkCs };
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "thumbnail creation failed "+path);
+                        return null;
+                    }
+                }).ToList();
+            fileDataService.Post(patches.Select(x => x.file));
+            fileItemLinkService.Patch(patches.Select(x => x.linkCs));
         }
     }
 }

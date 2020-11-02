@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using TableTopCrucible.Core.Helper;
@@ -26,13 +27,19 @@ namespace TableTopCrucible.Data.Models.Views
         public ItemName Name => SourceItem.Name;
         public ItemId ItemId => this.SourceItem.Id;
         public IEnumerable<Tag> Tags => SourceItem.Tags;
+        public string ThumbnailPath => LatestFile?.DirectorySetup.AbsoluteThumbnailUri.LocalPath;
         public int FileCount => FileVersions
             .SelectMany(files => files.Files)
             .Count();
-        public VersionedFile LatestVersionedFile =>
+        public VersionedFile? LatestVersionedFile =>
             FileVersions
                 .OrderByDescending(x => x.Link.Version)
+                .Select(file => file as VersionedFile?)
                 .FirstOrDefault();
+        public string GenerateNewThumbnailPath()
+            => Path.GetFullPath(@$"{Name}_{DateTime.Now:yyyyMMdd_HHmmssss}.png", ThumbnailPath);
+        public string LatestFilePath => LatestVersionedFile?.File.AbsolutePath;
+        public Uri LatestFileUri => LatestVersionedFile?.File.AbsoluteUri;
         public IEnumerable<DirectorySetup> DirectorySetups
             => FileVersions
             .OrderByDescending(x => x.Link.Version)
@@ -42,9 +49,9 @@ namespace TableTopCrucible.Data.Models.Views
 
         public FileInfoEx? LatestFile =>
             LatestVersionedFile
-            .Files
-            .Select(x => x as FileInfoEx?)
-            .FirstOrDefault(file => file?.IsFileAccessible == true);
+            ?.Files
+            ?.Select(x => x as FileInfoEx?)
+            ?.FirstOrDefault(file => file?.IsFileAccessible == true);
         public Version? LatestVersion =>
             FileVersions.Any() ? (Version?)FileVersions.Max(x => x.Link.Version) : null;
         public IEnumerable<DirectorySetup> Directories =>
@@ -58,7 +65,7 @@ namespace TableTopCrucible.Data.Models.Views
         public IEnumerable<VersionedFile> FileVersions { get; }
         public bool HasFiles => FilePaths.Any();
         public IEnumerable<string> FilePaths => this.FileVersions.SelectMany(file => file.FilePaths);
-        public FileInfoEx? LatestThumbnail => this.LatestVersionedFile.Thumbnail;
+        public FileInfoEx? LatestThumbnail => this.LatestVersionedFile?.Thumbnail;
         public IEnumerable<FileInfoHashKey> Thumbnails =>
             this.FileVersions
             .Select(file => file.Thumbnail)

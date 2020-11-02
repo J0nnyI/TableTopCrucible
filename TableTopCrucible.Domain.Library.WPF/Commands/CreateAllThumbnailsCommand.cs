@@ -10,7 +10,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Commands
 {
     public class CreateAllThumbnailsCommand : ICommand
     {
-        private readonly MassThumbnailCreatorViewModel massThumbnailCreator;
+        public ILibraryManagementService LibraryManagementService { get; }
 
         public event EventHandler CanExecuteChanged
         {
@@ -18,9 +18,9 @@ namespace TableTopCrucible.Domain.Library.WPF.Commands
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        public CreateAllThumbnailsCommand(MassThumbnailCreatorViewModel massThumbnailCreator)
+        public CreateAllThumbnailsCommand(ILibraryManagementService libraryManagementService)
         {
-            this.massThumbnailCreator = massThumbnailCreator;
+            LibraryManagementService = libraryManagementService;
         }
 
 
@@ -28,10 +28,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Commands
 
         public void Execute(object parameter)
         {
-            new Window()
-            {
-                Content = massThumbnailCreator
-            }.Show();
+            LibraryManagementService.GenerateAllThumbnails();
         }
     }
 }

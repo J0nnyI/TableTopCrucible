@@ -24,14 +24,17 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 
         public DevTestPageViewModel(
             CreateAllThumbnailsCommand createAllThumbnails,
-            NotificationCenterViewModel notificationCenterViewModel
+            NotificationCenterViewModel notificationCenterViewModel,
+            CreateAllThumbnailsCommand generateThumbnails
             ) : base("dev test", PackIconKind.DeveloperBoard)
         {
             CreateAllThumbnails = createAllThumbnails;
             NotificationCenterViewModel = notificationCenterViewModel;
+            GenerateThumbnails = generateThumbnails;
         }
 
         public CreateAllThumbnailsCommand CreateAllThumbnails { get; }
         public NotificationCenterViewModel NotificationCenterViewModel { get; }
+        public CreateAllThumbnailsCommand GenerateThumbnails { get; }
     }
 }

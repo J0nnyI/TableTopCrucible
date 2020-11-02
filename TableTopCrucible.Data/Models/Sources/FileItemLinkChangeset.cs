@@ -21,6 +21,12 @@ namespace TableTopCrucible.Domain.Models.Sources
         public FileItemLinkChangeset(FileItemLink? origin = null) 
         {
             this.Origin = origin;
+            if (origin.HasValue) {
+                this.ItemId = origin.Value.ItemId;
+                this.Version = origin.Value.Version;
+                this.FileKey = origin.Value.FileKey;
+                this.ThumbnailKey = origin.Value.ThumbnailKey;
+            }
         }
         public FileItemLink Apply() => new FileItemLink(Origin.Value, this.ItemId, this.FileKey, this.ThumbnailKey, this.Version);
         public IEnumerable<string> GetErrors() => throw new NotImplementedException();

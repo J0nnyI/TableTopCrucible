@@ -24,8 +24,10 @@
             <ColumnDefinition/>            
         </Grid.ColumnDefinitions>
 
-        <ContentPresenter Content="{Binding NotificationCenterViewModel}"/>
-
+        <!--<ContentPresenter Content="{Binding NotificationCenterViewModel}"/>-->
+        <Button Command="{Binding GenerateThumbnails}">
+            GenerateThumbnails
+        </Button>
         <!--<Button Command="{Binding CreateAllThumbnails}"
                 Style="{StaticResource MaterialDesignIconButton}">
             <md:PackIcon Kind="ImageArea"/>

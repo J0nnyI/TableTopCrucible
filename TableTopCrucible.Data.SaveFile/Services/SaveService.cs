@@ -120,7 +120,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     progression.OnError(ex);
                 }
 
-            }, Scheduler.ThreadPool);
+            }, Scheduler.Default);
             return progression;
         }
 

@@ -2,6 +2,7 @@
 using System;
 
 using TableTopCrucible.Core.Enums;
+using TableTopCrucible.Core.Helper;
 
 namespace TableTopCrucible.Core.Models.Sources
 {
@@ -17,6 +18,7 @@ namespace TableTopCrucible.Core.Models.Sources
             Error = error;
         }
 
+        public bool IsDone => State.IsIn(TaskState.Failed, TaskState.Done, TaskState.PartialSuccess);
         public TaskState State { get; }
         public string Details { get; }
         public string Title { get; }

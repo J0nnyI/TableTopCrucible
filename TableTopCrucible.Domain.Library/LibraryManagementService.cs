@@ -20,6 +20,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
+using TableTopCrucible.Core.Enums;
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Core.Models.Sources;
@@ -45,7 +46,7 @@ namespace TableTopCrucible.Domain.Library
         void AutoGenerateItems();
         FileInfo? UpdateFile(DirectorySetup dirSetup, Uri relativePath);
         void RemoveDirectorySetupRecursively(DirectorySetupId dirSetupId);
-        void GenerateAllThumbnails();
+        IEnumerable<ITaskProgressionInfo> GenerateAllThumbnails();
     }
 
     public class LibraryManagementService : ILibraryManagementService
@@ -580,81 +581,104 @@ namespace TableTopCrucible.Domain.Library
             }, RxApp.TaskpoolScheduler);
         }
 
-
-        private static BitmapSource CreateBitmapSourceFromGdiBitmap(Bitmap bitmap)
+        public IEnumerable<ITaskProgressionInfo> GenerateAllThumbnails()
         {
-            if (bitmap == null)
-                throw new ArgumentNullException("bitmap");
-
-            var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-
-            var bitmapData = bitmap.LockBits(
-                rect,
-                System.Drawing.Imaging.ImageLockMode.ReadWrite,
-                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            try
-            {
-                var size = (rect.Width * rect.Height) * 4;
-
-                return BitmapSource.Create(
-                    bitmap.Width,
-                    bitmap.Height,
-                    bitmap.HorizontalResolution,
-                    bitmap.VerticalResolution,
-                    PixelFormats.Bgra32,
-                    null,
-                    bitmapData.Scan0,
-                    size,
-                    bitmapData.Stride);
-            }
-            finally
-            {
-                bitmap.UnlockBits(bitmapData);
-            }
-        }
-
-        public void GenerateAllThumbnails()
-        {
-            var patches = this.itemService
+            return this.itemService
                 .GetExtended()
                 .Items
                 .Where(item =>
                     !item.LatestThumbnail.HasValue
                     && item.LatestVersionedFile != null
                     )
-                .Select(item =>
+                .ChunkBy(settingsService.ThreadCount)
+                .Select(chunk =>
                 {
-                    var path = item.GenerateNewThumbnailPath();
-                    try
+                    TaskProgression prog = new TaskProgression();
+                    prog.Title = "Creating Thumbnails";
+                    prog.RequiredProgress = chunk.Count();
+                    Observable.Start(() =>
                     {
-
-                        using (ShellFile shellFile = ShellFile.FromFilePath(item.LatestFilePath))
+                        prog.State = TaskState.InProgress;
+                        var chunkResult = chunk.Select(item =>
                         {
-                            using (Bitmap shellThumb = shellFile.Thumbnail.ExtraLargeBitmap)
-                            {
-                                using (Stream fs = File.OpenWrite(path))
-                                    shellThumb.Save(fs,System.Drawing.Imaging.ImageFormat.Jpeg);
-                            }
-                        }
-                        var hash = _hashFile(path);
-                        var fileCs = new FileInfoChangeset();
-                        fileCs.FileHash = hash;
-                        fileCs.SetSysFileInfo(item.DirectorySetups.FirstOrDefault(), new SysFileInfo(path));
-                        var file = fileCs.ToEntity();
+                            FileInfo file = default;
+                            FileItemLinkChangeset linkCs = null;
+                            FailedThumbnailResult? err = null;
 
-                        var linkCs = new FileItemLinkChangeset(item.LatestVersionedFile.Value.Link.Link);
-                        linkCs.ThumbnailKey = file.HashKey;
-                        return new { file, linkCs };
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString(), "thumbnail creation failed "+path);
-                        return null;
-                    }
-                }).ToList();
-            fileDataService.Post(patches.Select(x => x.file));
-            fileItemLinkService.Patch(patches.Select(x => x.linkCs));
+                            var imgPath = item.GenerateNewThumbnailPath();
+                            var itemPath = item.LatestFilePath;
+                            try
+                            {
+                                prog.Details = itemPath;
+                                if (!Directory.Exists(Path.GetFullPath(imgPath)))
+                                    Directory.CreateDirectory(Path.GetFullPath(imgPath));
+
+                                using ShellFile shellFile = ShellFile.FromFilePath(itemPath);
+                                using Bitmap shellThumb = shellFile.Thumbnail.ExtraLargeBitmap;
+                                using Stream fs = File.OpenWrite(imgPath);
+                                shellThumb.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                                file = new FileInfoChangeset(item.DirectorySetups.FirstOrDefault(), new SysFileInfo(imgPath), _hashFile(imgPath)).ToEntity();
+
+                                linkCs = new FileItemLinkChangeset(item.LatestVersionedFile.Value.Link.Link);
+                                linkCs.ThumbnailKey = file.HashKey;
+                            }
+                            catch (Exception ex)
+                            {
+                                err = new FailedThumbnailResult(ex, itemPath, imgPath);
+                                prog.State = TaskState.RunningWithErrors;
+                            }
+                            prog.CurrentProgress++;
+                            return new { file, linkCs, err };
+                        }).ToArray();
+
+
+                        var groupedResult = chunkResult.GroupBy(data => data.err.HasValue);
+                        var successes = groupedResult.FirstOrDefault(x => x.Key).Where(x=>x!=null);
+                        var errors = groupedResult.FirstOrDefault(x => !x.Key)?.Select(x => x.err.Value);
+                        fileDataService.Post(successes.Select(x => x.file).Where(x=>x!=null));
+                        if(successes?.Any() == true)
+                            fileItemLinkService.Patch(successes.Select(x => x.linkCs));
+
+                        if (prog.State == TaskState.RunningWithErrors)
+                            prog.State = successes?.Any() == true ? TaskState.PartialSuccess : TaskState.Failed;
+                        else
+                            prog.State = TaskState.Done;
+
+                        if (errors?.Any() == true)
+                        {
+                            var eGroups = errors.GroupBy(e => e.Exception.GetType().FullName);
+                            string msg = "the following Thumbnails could not be created";
+
+                            foreach (var eGroup in eGroups)
+                            {
+                                msg += string.Join(Environment.NewLine, new string[]{
+                                    "",
+                                    "--------------------------------",
+                                    eGroup.Key,
+                                    "3dFile / thumbnail",
+                                    string.Join(Environment.NewLine, eGroup.Select(e => $"{e.FilePath} / {e.ThumbnailPath}"))
+                                });
+                            }
+                            prog.Error = new Exception(msg);
+                        }
+                    }, RxApp.TaskpoolScheduler);
+                    return prog as ITaskProgressionInfo;
+                })
+                .ToArray();
+        }
+        private struct FailedThumbnailResult
+        {
+            public FailedThumbnailResult(Exception exception, string filePath, string thumbnailPath)
+            {
+                Exception = exception;
+                FilePath = filePath;
+                ThumbnailPath = thumbnailPath;
+            }
+
+            public Exception Exception { get; }
+            public string FilePath { get; }
+            public string ThumbnailPath { get; }
         }
     }
 }

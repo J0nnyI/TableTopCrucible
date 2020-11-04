@@ -9,6 +9,8 @@ namespace TableTopCrucible.Core.Enums
         Todo,
         Done,
         Failed,
-        InProgress
+        InProgress,
+        RunningWithErrors,
+        PartialSuccess
     }
 }

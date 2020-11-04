@@ -199,7 +199,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     notificationCenter.OnError(new Exception("no thumbnail-directory found"));
                     return;
                 }
-                var thumbnailDir = dirSetup?.Path.LocalPath + dirSetup?.ThumbnailPath;
+                var thumbnailDir = dirSetup?.Path.LocalPath + SelectedItem?.GenerateNewThumbnailPath();
                 var relativeFilename = @$"{thumbnailDir}\{SelectedItem?.Name}_{DateTime.Now:yyyyMMdd_HHmmssss}.png";
                 var relativeUri = new Uri(relativeFilename, UriKind.Relative);
                 var absoluteFilename = new Uri(dirSetup?.Path, relativeUri);

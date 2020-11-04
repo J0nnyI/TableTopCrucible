@@ -50,6 +50,11 @@ namespace TableTopCrucible.Domain.Models.Sources
                 this.FileSize = origin.Value.FileSize;
             }
         }
+        public FileInfoChangeset(DirectorySetup directorySetup, SysFileInfo fileInfo, FileHash hash):this(null)
+        {
+            SetSysFileInfo(directorySetup, fileInfo);
+            this.FileHash = hash;
+        }
         public void SetSysFileInfo(DirectorySetup directorySetup, SysFileInfo fileInfo)
         {
             DirectorySetupId = directorySetup.Id;

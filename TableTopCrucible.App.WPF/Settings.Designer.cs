@@ -37,7 +37,7 @@ namespace TableTopCrucible.App.WPF {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("500")]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
         public int MaxPatchSize {
             get {
                 return ((int)(this["MaxPatchSize"]));
@@ -67,6 +67,18 @@ namespace TableTopCrucible.App.WPF {
             }
             set {
                 this["MostRecentLibraries"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5000")]
+        public int LoadingPatchSize {
+            get {
+                return ((int)(this["LoadingPatchSize"]));
+            }
+            set {
+                this["LoadingPatchSize"] = value;
             }
         }
     }

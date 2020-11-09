@@ -414,8 +414,8 @@ namespace TableTopCrucible.Domain.Library
 
         private FileHash _hashFile(string path)
         {
-            using (HashAlgorithm hashAlgorithm = SHA512.Create())
-                return _hashFile(hashAlgorithm, path);
+            using HashAlgorithm hashAlgorithm = SHA512.Create();
+            return _hashFile(hashAlgorithm, path);
         }
 
         private FileHash _hashFile(HashAlgorithm hashAlgorithm, string path)
@@ -580,7 +580,6 @@ namespace TableTopCrucible.Domain.Library
                 }
             }, RxApp.TaskpoolScheduler);
         }
-
         public IEnumerable<ITaskProgressionInfo> GenerateAllThumbnails()
         {
             return this.itemService
@@ -605,7 +604,7 @@ namespace TableTopCrucible.Domain.Library
                             FileItemLinkChangeset linkCs = null;
                             FailedThumbnailResult? err = null;
 
-                            var imgPath = item.GenerateNewThumbnailPath();
+                            var imgPath = item.GenerateAbsoluteThumbnailPath();
                             var itemPath = item.LatestFilePath;
                             try
                             {

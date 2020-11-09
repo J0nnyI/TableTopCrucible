@@ -91,10 +91,10 @@ namespace TableTopCrucible.Data.Services
         // post
         public void Post(Tentity entity)
             => this.cache.AddOrUpdate(entity);
-        public ITaskProgressionInfo Post(IEnumerable<Tentity> entities, IScheduler scheduler = null)
+        public ITaskProgressionInfo Post(IEnumerable<Tentity> entities, IScheduler scheduler = null, int? patchSize = null)
         {
             var progInfo = new TaskProgression();
-            var chunks = entities.ChunkBy(settingsService.MaxPatchSize)
+            var chunks = entities.ChunkBy(patchSize ?? settingsService.MaxPatchSize)
                   .ToList();
             progInfo.RequiredProgress = chunks.Count;
             Observable.Start(() =>
@@ -134,10 +134,10 @@ namespace TableTopCrucible.Data.Services
         public void Clear() => this.cache.Clear();
 
         private bool _disposedValue = false; // To detect redundant calls
-        public ITaskProgressionInfo Set(IEnumerable<Tentity> data, IScheduler scheduler = null)
+        public ITaskProgressionInfo Set(IEnumerable<Tentity> data, IScheduler scheduler = null, int? patchSize = null)
         {
             this.cache.Clear();
-            return this.Post(data, scheduler);
+            return this.Post(data, scheduler, patchSize);
         }
 
         #region IDisposable Support

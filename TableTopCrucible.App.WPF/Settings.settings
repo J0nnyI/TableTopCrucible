@@ -6,13 +6,16 @@
       <Value Profile="(Default)">2</Value>
     </Setting>
     <Setting Name="MaxPatchSize" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">500</Value>
+      <Value Profile="(Default)">50</Value>
     </Setting>
     <Setting Name="CameraRotationMode" Type="System.UInt16" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="MostRecentLibraries" Type="System.Collections.Generic.List&lt;TableTopCrucible.Core.Models.Sources.LibraryLocation&gt;" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LoadingPatchSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5000</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -31,13 +31,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public string ThreadCount { get; set; }
         [Reactive]
         public string MaxPatchSize { get; set; }
-        private int? _maxPatchSize
-        {
-            get
-            {
-                return int.TryParse(MaxPatchSize, out int res) ? res : (int?)null;
-            }
-        }
+        [Reactive]
+        public string MaxLoadingPatchSize { get; set; }
 
         public IEnumerable<CameraRotationMode> CameraRotationModes { get; } = new CameraRotationMode[]
         {
@@ -58,13 +53,15 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.ThreadCount = settingsService.ThreadCount.ToString();
 
             this.MaxPatchSize = settingsService.MaxPatchSize.ToString();
+            this.MaxLoadingPatchSize = settingsService.LoadingPatchSize.ToString();
 
             this.CameraRotationMode = (CameraRotationMode)settingsService.CameraRotationMode;
 
             this.Save = new RelayCommand(_ => _save(), _ => !this.HasErrors);
 
             _createMinMaxValidators(1, vm => vm.ThreadCount, 16);
-            _createMinMaxValidators(10, vm => vm.MaxPatchSize, 5000);
+            _createMinMaxValidators(10, vm => vm.MaxPatchSize, 500);
+            _createMinMaxValidators(10, vm => vm.MaxLoadingPatchSize, 5000);
         }
 
         enum MinMaxParseResult
@@ -103,6 +100,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         {
             _settingsService.ThreadCount = int.Parse(this.ThreadCount);
             _settingsService.MaxPatchSize = int.Parse(this.MaxPatchSize);
+            _settingsService.LoadingPatchSize = int.Parse(this.MaxLoadingPatchSize);
             _settingsService.CameraRotationMode = (ushort)this.CameraRotationMode;
             _settingsService.Save();
         }

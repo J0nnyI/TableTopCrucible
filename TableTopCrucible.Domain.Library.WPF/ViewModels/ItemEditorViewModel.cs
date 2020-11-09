@@ -199,10 +199,12 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     notificationCenter.OnError(new Exception("no thumbnail-directory found"));
                     return;
                 }
-                var thumbnailDir = dirSetup?.Path.LocalPath + SelectedItem?.GenerateNewThumbnailPath();
-                var relativeFilename = @$"{thumbnailDir}\{SelectedItem?.Name}_{DateTime.Now:yyyyMMdd_HHmmssss}.png";
-                var relativeUri = new Uri(relativeFilename, UriKind.Relative);
-                var absoluteFilename = new Uri(dirSetup?.Path, relativeUri);
+
+                var relativeThumbnailPath = SelectedItem?.GenerateRelativeThumbnailPath();
+                Uri relativeFile = new Uri(relativeThumbnailPath.TrimStart('\\'), UriKind.Relative);
+                Uri rootDir = SelectedItem?.RootUri;
+                Uri absoluteFile = new Uri(rootDir, relativeFile);
+                string thumbnailDir = Path.GetDirectoryName(absoluteFile.LocalPath);
 
                 var rect = VisualTreeHelper.GetDescendantBounds(ViewportControl);
 
@@ -211,14 +213,30 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 if (!Directory.Exists(thumbnailDir))
                     Directory.CreateDirectory(thumbnailDir);
 
-                using (var fileStream = new FileStream(absoluteFilename.LocalPath, FileMode.Create))
+                using (var fileStream = new FileStream(absoluteFile.LocalPath, FileMode.Create))
                 {
                     BitmapEncoder encoder = new PngBitmapEncoder();
                     encoder.Frames.Add(BitmapFrame.Create(source));
                     encoder.Save(fileStream);
-                };
+                    fileStream.Close();
+                }
 
-                var entity = libraryManagement.UpdateFile(dirSetup.Value, relativeUri);
+                try
+                {
+
+                    using (FileStream stream = File.OpenRead(absoluteFile.LocalPath))
+                    {
+
+                    }
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+
+                var entity = libraryManagement.UpdateFile(dirSetup.Value, relativeFile);
 
                 var oldLink = this.newLinks.KeyValues
                     .Select(x => x.Value)

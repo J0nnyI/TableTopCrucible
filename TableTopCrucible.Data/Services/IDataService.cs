@@ -19,8 +19,8 @@ namespace TableTopCrucible.Data.Services
         IObservable<IChangeSet<Tentity, Tid>> Get(IEnumerable<Tid> ids);
 
         public void Post(Tentity entity);
-        ITaskProgressionInfo Post(IEnumerable<Tentity> entity, IScheduler scheduler = null);
-        ITaskProgressionInfo Set(IEnumerable<Tentity> data, IScheduler scheduler = null);
+        ITaskProgressionInfo Post(IEnumerable<Tentity> entity, IScheduler scheduler = null, int? patchSize = null);
+        ITaskProgressionInfo Set(IEnumerable<Tentity> data, IScheduler scheduler = null, int? patchSize = null);
         void Delete(Tid key);
         void Delete(IEnumerable<Tid> key);
         void Clear();

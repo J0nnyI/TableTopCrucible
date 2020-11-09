@@ -37,19 +37,22 @@ namespace TableTopCrucible.Data.SaveFile.Services
         private readonly IFileItemLinkService fileItemLinkService;
         private readonly IDirectoryDataService _directoryDataService;
         private readonly INotificationCenterService _notificationCenterService;
+        private readonly ISettingsService settingsService;
 
         public SaveService(
             IItemService itemService,
             IFileDataService _fileDataService,
             IFileItemLinkService _fileItemLinkService,
             IDirectoryDataService directoryDataService,
-            INotificationCenterService notificationCenterService)
+            INotificationCenterService notificationCenterService,
+            ISettingsService settingsService)
         {
             this._itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
             this._fileDataService = _fileDataService;
             fileItemLinkService = _fileItemLinkService;
             this._directoryDataService = directoryDataService ?? throw new ArgumentNullException(nameof(directoryDataService));
             this._notificationCenterService = notificationCenterService;
+            this.settingsService = settingsService;
         }
 
         public ISaveFileProgression Load(string file)
@@ -89,7 +92,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     {
                         if (dirState != TaskState.Done)
                             return;
-                        var file = _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()), RxApp.TaskpoolScheduler);
+                        var file = _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()), RxApp.TaskpoolScheduler, settingsService.LoadingPatchSize);
                         file.Title = "loading files";
                         progression.FileTaskState = file;
                         progression.FileTaskState.DoneChanges.Subscribe(fileState =>

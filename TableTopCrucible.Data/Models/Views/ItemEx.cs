@@ -43,7 +43,7 @@ namespace TableTopCrucible.Data.Models.Views
         public string GenerateRelativeThumbnailPath(string filename = null)
             => Path.Combine(RealtiveThumbnailPath, filename ?? GenerateThumbnailFilename());
         public string GenerateAbsoluteThumbnailPath(string filename = null)
-            => Path.Combine(RootPath, filename ?? GenerateThumbnailFilename());
+            => Path.Combine(RootPath, GenerateRelativeThumbnailPath(filename).TrimStart('\\'));
         public string LatestFilePath => LatestVersionedFile?.File.AbsolutePath;
         public Uri LatestFileUri => LatestVersionedFile?.File.AbsoluteUri;
         public IEnumerable<DirectorySetup> DirectorySetups

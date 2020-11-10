@@ -220,22 +220,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     encoder.Save(fileStream);
                     fileStream.Close();
                 }
-
-                try
-                {
-
-                    using (FileStream stream = File.OpenRead(absoluteFile.LocalPath))
-                    {
-
-                    }
-
-                }
-                catch (Exception ex)
-                {
-
-                    throw;
-                }
-
                 var entity = libraryManagement.UpdateFile(dirSetup.Value, relativeFile);
 
                 var oldLink = this.newLinks.KeyValues

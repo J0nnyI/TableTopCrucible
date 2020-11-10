@@ -589,7 +589,7 @@ namespace TableTopCrucible.Domain.Library
                     !item.LatestThumbnail.HasValue
                     && item.LatestVersionedFile != null
                     )
-                .ChunkBy(settingsService.ThreadCount)
+                .SplitEvenly(settingsService.ThreadCount)
                 .Select(chunk =>
                 {
                     TaskProgression prog = new TaskProgression();
@@ -610,17 +610,22 @@ namespace TableTopCrucible.Domain.Library
                             {
                                 prog.Details = itemPath;
                                 if (!Directory.Exists(Path.GetFullPath(imgPath)))
-                                    Directory.CreateDirectory(Path.GetFullPath(imgPath));
+                                    Directory.CreateDirectory(Path.GetDirectoryName(imgPath));
 
                                 using ShellFile shellFile = ShellFile.FromFilePath(itemPath);
                                 using Bitmap shellThumb = shellFile.Thumbnail.ExtraLargeBitmap;
-                                using Stream fs = File.OpenWrite(imgPath);
-                                shellThumb.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
+                                using (Stream fs = File.OpenWrite(imgPath))
+                                {
+                                    shellThumb.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
+                                }
 
                                 file = new FileInfoChangeset(item.DirectorySetups.FirstOrDefault(), new SysFileInfo(imgPath), _hashFile(imgPath)).ToEntity();
 
-                                linkCs = new FileItemLinkChangeset(item.LatestVersionedFile.Value.Link.Link);
-                                linkCs.ThumbnailKey = file.HashKey;
+                                linkCs = new FileItemLinkChangeset(item.LatestVersionedFile.Value.Link.Link)
+                                {
+                                    ThumbnailKey = file.HashKey
+                                };
+
                             }
                             catch (Exception ex)
                             {
@@ -633,11 +638,13 @@ namespace TableTopCrucible.Domain.Library
 
 
                         var groupedResult = chunkResult.GroupBy(data => data.err.HasValue);
-                        var successes = groupedResult.FirstOrDefault(x => x.Key).Where(x=>x!=null);
-                        var errors = groupedResult.FirstOrDefault(x => !x.Key)?.Select(x => x.err.Value);
-                        fileDataService.Post(successes.Select(x => x.file).Where(x=>x!=null));
-                        if(successes?.Any() == true)
+                        var successes = groupedResult.FirstOrDefault(x => !x.Key)?.Where(x => x != null);
+                        var errors = groupedResult.FirstOrDefault(x => x.Key)?.Select(x => x.err.Value);
+                        if (successes?.Any() == true)
+                        {
                             fileItemLinkService.Patch(successes.Select(x => x.linkCs));
+                            fileDataService.Post(successes.Select(x => x.file).Where(x => x != null));
+                        }
 
                         if (prog.State == TaskState.RunningWithErrors)
                             prog.State = successes?.Any() == true ? TaskState.PartialSuccess : TaskState.Failed;

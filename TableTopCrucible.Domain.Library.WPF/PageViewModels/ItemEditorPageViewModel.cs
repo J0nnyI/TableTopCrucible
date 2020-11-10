@@ -49,7 +49,10 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 
             filter.FilterChanges
                 .TakeUntil(destroy)
-                .Subscribe(itemList.FilterChanges.OnNext, ex => MessageBox.Show(ex.ToString()));
+                .Subscribe(itemList.FilterChanges.OnNext,
+                    ex => 
+                    MessageBox.Show(ex.ToString(), $"{nameof(ItemEditorPageViewModel)}.ctor:subscribe")
+                );
 
             this.ItemList.Selection.Connect()
                 .ToCollection()

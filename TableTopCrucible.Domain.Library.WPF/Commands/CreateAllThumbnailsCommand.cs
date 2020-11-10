@@ -39,7 +39,6 @@ namespace TableTopCrucible.Domain.Library.WPF.Commands
                     var msg = string.Join(Environment.NewLine,
                         res.Where(x => x.Error != null).Select(x => x.Error.Message)
                         );
-                    MessageBox.Show(msg, "failed");
                 });
         }
     }

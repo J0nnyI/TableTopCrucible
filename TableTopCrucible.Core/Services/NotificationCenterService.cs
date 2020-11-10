@@ -40,7 +40,7 @@ namespace TableTopCrucible.Core.Services
 
         public void OnError(Exception ex)
         {
-            MessageBox.Show(ex.ToString());
+            MessageBox.Show(ex.ToString(), $"{nameof(NotificationCenterService)}.{nameof(OnError)}");
             this.CreateSingleTaskJob(out var _, ex.ToString());
         }
     }

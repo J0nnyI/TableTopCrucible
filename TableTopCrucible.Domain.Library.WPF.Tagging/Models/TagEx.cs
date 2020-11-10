@@ -29,13 +29,12 @@ namespace TableTopCrucible.Domain.Library.WPF.Tagging.Models
                         return 1;
                     return Tag.CompareTo(tag.Tag);
                 }
-                MessageBox.Show("wtf?");
                 return 0;
 
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show(ex.ToString(), $"{nameof(TagEx)}.{nameof(CompareTo)}");
             }
             return -1;
         }

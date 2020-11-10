@@ -146,7 +146,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                 .Take(1)
                 .Catch((Exception ex) =>
                 {
-                    MessageBox.Show(ex.ToString(), "saving failed");
+                    MessageBox.Show(ex.ToString(), $"{nameof(SaveService)}.{nameof(Save)}:Catch");
                     return Observable.Return(new Unit());
                 })
                .Finally(() => fs.Dispose());

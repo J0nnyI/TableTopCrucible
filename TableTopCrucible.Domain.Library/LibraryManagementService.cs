@@ -350,7 +350,7 @@ namespace TableTopCrucible.Domain.Library
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
+                    MessageBox.Show(ex.ToString(), $"{nameof(LibraryManagementService)}.{nameof(FullSync)}");
                 }
             }, RxApp.TaskpoolScheduler);
         }
@@ -500,7 +500,7 @@ namespace TableTopCrucible.Domain.Library
                 catch (Exception ex)
                 {
                     process.State = AsyncState.Failed;
-                    MessageBox.Show(ex.ToString());
+                    MessageBox.Show(ex.ToString(), $"{nameof(LibraryManagementService)}.{nameof(AutoGenerateItems)}");
                 }
                 finally
                 {
@@ -576,7 +576,7 @@ namespace TableTopCrucible.Domain.Library
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
+                    MessageBox.Show(ex.ToString(), $"{nameof(LibraryManagementService)}.{nameof(RemoveDirectorySetupRecursively)}");
                 }
             }, RxApp.TaskpoolScheduler);
         }

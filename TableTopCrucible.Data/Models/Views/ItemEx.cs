@@ -27,7 +27,7 @@ namespace TableTopCrucible.Data.Models.Views
         public ItemName Name => SourceItem.Name;
         public ItemId ItemId => this.SourceItem.Id;
         public IEnumerable<Tag> Tags => SourceItem.Tags;
-        public string RealtiveThumbnailPath => LatestFile?.DirectorySetup.ThumbnailUri.ToString();
+        public string RealtiveThumbnailPath => LatestFile?.DirectorySetup.ThumbnailUri.ToString().TrimStart('\\');
         public string RootPath => RootUri.LocalPath;
         public Uri RootUri => LatestFile?.DirectorySetup.Path;
         public int FileCount => FileVersions
@@ -43,7 +43,7 @@ namespace TableTopCrucible.Data.Models.Views
         public string GenerateRelativeThumbnailPath(string filename = null)
             => Path.Combine(RealtiveThumbnailPath, filename ?? GenerateThumbnailFilename());
         public string GenerateAbsoluteThumbnailPath(string filename = null)
-            => Path.Combine(RootPath, GenerateRelativeThumbnailPath(filename).TrimStart('\\'));
+            => Path.Combine(RootPath, GenerateRelativeThumbnailPath(filename));
         public string LatestFilePath => LatestVersionedFile?.File.AbsolutePath;
         public Uri LatestFileUri => LatestVersionedFile?.File.AbsoluteUri;
         public IEnumerable<DirectorySetup> DirectorySetups

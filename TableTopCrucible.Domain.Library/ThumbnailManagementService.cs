@@ -1,5 +1,7 @@
 ﻿using Microsoft.WindowsAPICodePack.Shell;
+
 using ReactiveUI;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,12 +9,15 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+
 using TableTopCrucible.Core.Enums;
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Domain.Models.ValueTypes;
 
 using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
 using SysFileInfo = System.IO.FileInfo;
@@ -22,9 +27,11 @@ namespace TableTopCrucible.Domain.Library
     public interface IThumbnailManagementService
     {
         IEnumerable<ITaskProgressionInfo> GenerateAll();
+        void LinkThumbnail(ItemEx item, string thumbnailPath, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null);
+        void CreateThumbnail(ItemEx item, Action<FileStream> streamWriter, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null);
 
     }
-    public class ThumbnailManagementService:IThumbnailManagementService
+    public class ThumbnailManagementService : IThumbnailManagementService
     {
         private readonly IItemService itemService;
         private readonly ISettingsService settingsService;
@@ -45,6 +52,56 @@ namespace TableTopCrucible.Domain.Library
             this.fileDataService = fileDataService;
             this.fileManagement = fileManagement;
         }
+
+        private void createThumbnail(string sourcePath, FileStream fs)
+        {
+            using ShellFile shellFile = ShellFile.FromFilePath(sourcePath);
+            using Bitmap shellThumb = shellFile.Thumbnail.ExtraLargeBitmap;
+            shellThumb.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
+        }
+        private void createThumbnailDir(string thumbnailDir)
+        {
+            var rootDir = Path.GetDirectoryName(thumbnailDir);
+            if (!Directory.Exists(rootDir))
+                Directory.CreateDirectory(rootDir);
+        }
+        public void CreateThumbnail(ItemEx item, Action<FileStream> streamWriter, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null)
+        {
+            var relativeThumbnailPath = item.GenerateRelativeThumbnailPath();
+            var root = item.RootPath;
+            var absolutePath = Path.Combine(root, relativeThumbnailPath);
+
+            createThumbnailDir(absolutePath);
+
+            using (var fs = File.OpenWrite(absolutePath))
+            {
+                streamWriter(fs);
+                fs.Close();
+            }
+
+            LinkThumbnail(item, absolutePath, out file, out linkCs, linkSource);
+        }
+
+        public void LinkThumbnail(ItemEx item, string thumbnailPath, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null)
+        {
+            FileHash hash = fileManagement.HashFile(thumbnailPath);
+
+            file = new FileInfoChangeset(item.DirectorySetups.FirstOrDefault(), new SysFileInfo(thumbnailPath), hash).ToEntity();
+
+            var existing = fileDataService.GetExtendedByHash().Lookup(file.HashKey.Value);
+            if (existing.HasValue)
+                file = existing.Value.FileInfo;
+
+            linkCs = new FileItemLinkChangeset(linkSource ?? item.LatestVersionedFile.Value.Link.Link)
+            {
+                ThumbnailKey = file.HashKey
+            };
+
+            this.fileDataService.Post(file);
+        }
+
+
+
         public IEnumerable<ITaskProgressionInfo> GenerateAll()
         {
             return this.itemService
@@ -73,24 +130,10 @@ namespace TableTopCrucible.Domain.Library
                             var itemPath = item.LatestFilePath;
                             try
                             {
-                                prog.Details = itemPath;
-                                if (!Directory.Exists(Path.GetFullPath(imgPath)))
-                                    Directory.CreateDirectory(Path.GetDirectoryName(imgPath));
-
-                                using ShellFile shellFile = ShellFile.FromFilePath(itemPath);
-                                using Bitmap shellThumb = shellFile.Thumbnail.ExtraLargeBitmap;
-                                using (Stream fs = File.OpenWrite(imgPath))
+                                this.CreateThumbnail(item, fs =>
                                 {
-                                    shellThumb.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
-                                }
-
-                                file = new FileInfoChangeset(item.DirectorySetups.FirstOrDefault(), new SysFileInfo(imgPath), fileManagement.HashFile(imgPath)).ToEntity();
-
-                                linkCs = new FileItemLinkChangeset(item.LatestVersionedFile.Value.Link.Link)
-                                {
-                                    ThumbnailKey = file.HashKey
-                                };
-
+                                    createThumbnail(itemPath, fs);
+                                }, out file, out linkCs);
                             }
                             catch (Exception ex)
                             {

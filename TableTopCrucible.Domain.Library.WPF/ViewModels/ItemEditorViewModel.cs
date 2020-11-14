@@ -42,6 +42,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private readonly INotificationCenterService notificationCenter;
         private readonly ILibraryManagementService libraryManagement;
         private readonly IFileItemLinkService fileItemLinkService;
+        private readonly IThumbnailManagementService thumbnailManagementService;
 
         public IManualTagEditor TagEditor { get; }
         public FileVersionListViewModel FileVersionList { get; }
@@ -78,7 +79,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             IFileItemLinkService fileItemLinkService,
             OpenFileCommand openFile,
             FileToClipboardCommand fileToClipboard,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            IThumbnailManagementService thumbnailManagementService)
         {
             this.TagEditor = tagEdiotr;
             this._itemService = itemService;
@@ -88,6 +90,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.fileItemLinkService = fileItemLinkService;
             OpenFile = openFile;
             FileToClipboard = fileToClipboard;
+            this.thumbnailManagementService = thumbnailManagementService;
             this.TagEditor.Editmode = true;
             this.TagEditor.CompletePool = true;
             this.TagEditor.PermitNewTags = true;
@@ -191,47 +194,30 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
         private void createThumbnail()
         {
+            if (!SelectedItem.HasValue)
+                return;
+
             try
             {
-                var dirSetup = SelectedItem?.Directories?.FirstOrDefault(dir => Directory.Exists(dir.Path.LocalPath));
-                if (dirSetup == null)
-                {
-                    notificationCenter.OnError(new Exception("no thumbnail-directory found"));
-                    return;
-                }
-
-                var relativeThumbnailPath = SelectedItem?.GenerateRelativeThumbnailPath();
-                Uri relativeFile = new Uri(relativeThumbnailPath.TrimStart('\\'), UriKind.Relative);
-                Uri rootDir = SelectedItem?.RootUri;
-                Uri absoluteFile = new Uri(rootDir, relativeFile);
-                string thumbnailDir = Path.GetDirectoryName(absoluteFile.LocalPath);
-
-                var rect = VisualTreeHelper.GetDescendantBounds(ViewportControl);
-
-                var source = VisualUtility.CreateBitmap(ViewportControl, ViewportControl.ActualWidth, ViewportControl.ActualHeight);
-
-                if (!Directory.Exists(thumbnailDir))
-                    Directory.CreateDirectory(thumbnailDir);
-
-                using (var fileStream = new FileStream(absoluteFile.LocalPath, FileMode.Create))
-                {
-                    BitmapEncoder encoder = new PngBitmapEncoder();
-                    encoder.Frames.Add(BitmapFrame.Create(source));
-                    encoder.Save(fileStream);
-                    fileStream.Close();
-                }
-                var entity = libraryManagement.UpdateFile(dirSetup.Value, relativeFile);
 
                 var oldLink = this.newLinks.KeyValues
                     .Select(x => x.Value)
                     .FirstOrDefault(link => link.Version == SelectedVersion);
 
-                var changeset = new FileItemLinkChangeset(oldLink)
+                thumbnailManagementService.CreateThumbnail(SelectedItem.Value, fs =>
                 {
-                    ThumbnailKey = entity?.HashKey
-                };
+                    var ratio = ViewportControl.ActualHeight / ViewportControl.ActualWidth;
+                    var res = 400;
 
-                this.newLinks.AddOrUpdate(changeset.Apply());
+                    var source = VisualUtility.CreateBitmap(ViewportControl, res, res * ratio);
+
+                    BitmapEncoder encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(source));
+                    encoder.Save(fs);
+                    fs.Close();
+                }, out var file, out var link, oldLink);
+
+                this.newLinks.AddOrUpdate(link.Apply());
             }
             catch (Exception ex)
             {

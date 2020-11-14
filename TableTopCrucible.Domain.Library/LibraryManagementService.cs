@@ -46,7 +46,6 @@ namespace TableTopCrucible.Domain.Library
         void AutoGenerateItems();
         FileInfo? UpdateFile(DirectorySetup dirSetup, Uri relativePath);
         void RemoveDirectorySetupRecursively(DirectorySetupId dirSetupId);
-        IEnumerable<ITaskProgressionInfo> GenerateAllThumbnails();
     }
 
     public class LibraryManagementService : ILibraryManagementService
@@ -69,6 +68,7 @@ namespace TableTopCrucible.Domain.Library
         private readonly IItemService itemService;
         private readonly INotificationCenterService notificationCenter;
         private readonly ISettingsService settingsService;
+        private readonly IFileManagementService fileManagementService;
 
         public LibraryManagementService(
             IDirectoryDataService directoryDataService,
@@ -76,7 +76,8 @@ namespace TableTopCrucible.Domain.Library
             IFileItemLinkService fileItemLinkService,
             IItemService itemService,
             INotificationCenterService notificationCenter,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            IFileManagementService fileManagementService)
         {
             this.directoryDataService = directoryDataService;
             this.fileDataService = fileDataService;
@@ -84,6 +85,7 @@ namespace TableTopCrucible.Domain.Library
             this.itemService = itemService;
             this.notificationCenter = notificationCenter;
             this.settingsService = settingsService;
+            this.fileManagementService = fileManagementService;
         }
 
 
@@ -208,7 +210,7 @@ namespace TableTopCrucible.Domain.Library
                                             file.definedFile.HasValue,
                                             file.localFile.Value.DirectorySetup,
                                             file.localFile.Value.FileInfo,
-                                            _hashFile(hasher, file.localFile.Value.FileInfo.FullName)
+                                            fileManagementService.HashFile(hasher, file.localFile.Value.FileInfo.FullName)
                                         );
                                         proc.OnNextStep();
                                         return res;
@@ -404,7 +406,7 @@ namespace TableTopCrucible.Domain.Library
             {
                 Path = relativePath,
                 CreationTime = fileInfo.CreationTime,
-                FileHash = _hashFile(localPath),
+                FileHash = fileManagementService.HashFile(localPath),
                 DirectorySetupId = dirSetup.Id,
                 FileSize = fileInfo.Length,
                 IsAccessible = File.Exists(localPath),
@@ -412,28 +414,6 @@ namespace TableTopCrucible.Domain.Library
             });
         }
 
-        private FileHash _hashFile(string path)
-        {
-            using HashAlgorithm hashAlgorithm = SHA512.Create();
-            return _hashFile(hashAlgorithm, path);
-        }
-
-        private FileHash _hashFile(HashAlgorithm hashAlgorithm, string path)
-        {
-            if (!File.Exists(path))
-                throw new FileNotFoundException($"could not find file {path}");
-
-            FileHash result;
-
-            using (FileStream stream = File.OpenRead(path))
-            {
-                byte[] data = hashAlgorithm.ComputeHash(stream);
-                result = new FileHash(data);
-            }
-
-
-            return result;
-        }
 
         #endregion
 
@@ -579,112 +559,6 @@ namespace TableTopCrucible.Domain.Library
                     MessageBox.Show(ex.ToString(), $"{nameof(LibraryManagementService)}.{nameof(RemoveDirectorySetupRecursively)}");
                 }
             }, RxApp.TaskpoolScheduler);
-        }
-        public IEnumerable<ITaskProgressionInfo> GenerateAllThumbnails()
-        {
-            return this.itemService
-                .GetExtended()
-                .Items
-                .Where(item =>
-                    !item.LatestThumbnail.HasValue
-                    && item.LatestVersionedFile != null
-                    )
-                .SplitEvenly(settingsService.ThreadCount)
-                .Select(chunk =>
-                {
-                    TaskProgression prog = new TaskProgression();
-                    prog.Title = "Creating Thumbnails";
-                    prog.RequiredProgress = chunk.Count();
-                    Observable.Start(() =>
-                    {
-                        prog.State = TaskState.InProgress;
-                        var chunkResult = chunk.Select(item =>
-                        {
-                            FileInfo file = default;
-                            FileItemLinkChangeset linkCs = null;
-                            FailedThumbnailResult? err = null;
-
-                            var imgPath = item.GenerateAbsoluteThumbnailPath();
-                            var itemPath = item.LatestFilePath;
-                            try
-                            {
-                                prog.Details = itemPath;
-                                if (!Directory.Exists(Path.GetFullPath(imgPath)))
-                                    Directory.CreateDirectory(Path.GetDirectoryName(imgPath));
-
-                                using ShellFile shellFile = ShellFile.FromFilePath(itemPath);
-                                using Bitmap shellThumb = shellFile.Thumbnail.ExtraLargeBitmap;
-                                using (Stream fs = File.OpenWrite(imgPath))
-                                {
-                                    shellThumb.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
-                                }
-
-                                file = new FileInfoChangeset(item.DirectorySetups.FirstOrDefault(), new SysFileInfo(imgPath), _hashFile(imgPath)).ToEntity();
-
-                                linkCs = new FileItemLinkChangeset(item.LatestVersionedFile.Value.Link.Link)
-                                {
-                                    ThumbnailKey = file.HashKey
-                                };
-
-                            }
-                            catch (Exception ex)
-                            {
-                                err = new FailedThumbnailResult(ex, itemPath, imgPath);
-                                prog.State = TaskState.RunningWithErrors;
-                            }
-                            prog.CurrentProgress++;
-                            return new { file, linkCs, err };
-                        }).ToArray();
-
-
-                        var groupedResult = chunkResult.GroupBy(data => data.err.HasValue);
-                        var successes = groupedResult.FirstOrDefault(x => !x.Key)?.Where(x => x != null);
-                        var errors = groupedResult.FirstOrDefault(x => x.Key)?.Select(x => x.err.Value);
-                        if (successes?.Any() == true)
-                        {
-                            fileItemLinkService.Patch(successes.Select(x => x.linkCs));
-                            fileDataService.Post(successes.Select(x => x.file).Where(x => x != null));
-                        }
-
-                        if (prog.State == TaskState.RunningWithErrors)
-                            prog.State = successes?.Any() == true ? TaskState.PartialSuccess : TaskState.Failed;
-                        else
-                            prog.State = TaskState.Done;
-
-                        if (errors?.Any() == true)
-                        {
-                            var eGroups = errors.GroupBy(e => e.Exception.GetType().FullName);
-                            string msg = "the following Thumbnails could not be created";
-
-                            foreach (var eGroup in eGroups)
-                            {
-                                msg += string.Join(Environment.NewLine, new string[]{
-                                    "",
-                                    "--------------------------------",
-                                    eGroup.Key,
-                                    "3dFile / thumbnail",
-                                    string.Join(Environment.NewLine, eGroup.Select(e => $"{e.FilePath} / {e.ThumbnailPath}"))
-                                });
-                            }
-                            prog.Error = new Exception(msg);
-                        }
-                    }, RxApp.TaskpoolScheduler);
-                    return prog as ITaskProgressionInfo;
-                })
-                .ToArray();
-        }
-        private struct FailedThumbnailResult
-        {
-            public FailedThumbnailResult(Exception exception, string filePath, string thumbnailPath)
-            {
-                Exception = exception;
-                FilePath = filePath;
-                ThumbnailPath = thumbnailPath;
-            }
-
-            public Exception Exception { get; }
-            public string FilePath { get; }
-            public string ThumbnailPath { get; }
         }
     }
 }

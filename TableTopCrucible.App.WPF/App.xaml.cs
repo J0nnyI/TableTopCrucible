@@ -70,12 +70,15 @@ namespace TableTopCrucible.App.WPF
             services.AddScoped<IInjectionProviderService, InjectionProviderService>();
             services.AddSingleton<ISaveService, SaveService>();
             services.AddSingleton<LibraryInfoService>();
-            // library domain services
+            // data services
             services.AddSingleton<IItemService, ItemService>();
             services.AddSingleton<IFileItemLinkService, FileItemLinkService>();
             services.AddSingleton<IFileDataService, FileDataService>();
             services.AddSingleton<IDirectoryDataService, DirectoryDataService>();
+            // library domain services
             services.AddSingleton<ILibraryManagementService, LibraryManagementService>();
+            services.AddSingleton<IThumbnailManagementService, ThumbnailManagementService>();
+            services.AddSingleton<IFileManagementService, FileManagementService>();
 
             // WPF Services
             services.AddScoped<TabService>();

@@ -36,11 +36,18 @@
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <ContentPresenter Content="{Binding TagEditor}"
                               Validation.ErrorTemplate="{x:Null}"
+                              Grid.Row="0"
                               Margin="16"/>
+            <Button Command="{Binding CreateThumbnails}"
+                    CommandParameter="{Binding SelectionBinding}"
+                    Content="CreateThumbnails"
+                    Grid.Row="1"/>
+
         </Grid>
     </Grid>
 </UserControl>

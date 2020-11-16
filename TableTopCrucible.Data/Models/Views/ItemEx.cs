@@ -28,7 +28,7 @@ namespace TableTopCrucible.Data.Models.Views
         public ItemId ItemId => this.SourceItem.Id;
         public IEnumerable<Tag> Tags => SourceItem.Tags;
         public string RealtiveThumbnailPath => LatestFile?.DirectorySetup.ThumbnailUri.ToString().TrimStart('\\');
-        public string RootPath => RootUri.LocalPath;
+        public string RootPath => RootUri?.LocalPath;
         public Uri RootUri => LatestFile?.DirectorySetup.Path;
         public int FileCount => FileVersions
             .SelectMany(files => files.Files)

@@ -204,7 +204,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     .Select(x => x.Value)
                     .FirstOrDefault(link => link.Version == SelectedVersion);
 
-                thumbnailManagementService.CreateThumbnail(SelectedItem.Value, fs =>
+                thumbnailManagementService.CreateAndLinkThumbnail(SelectedItem.Value, fs =>
                 {
                     var ratio = ViewportControl.ActualHeight / ViewportControl.ActualWidth;
                     var res = 400;

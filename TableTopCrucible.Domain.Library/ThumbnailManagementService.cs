@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 
@@ -16,6 +17,7 @@ using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
+using TableTopCrucible.Domain.Library.Exceptions;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 
@@ -26,9 +28,11 @@ namespace TableTopCrucible.Domain.Library
 {
     public interface IThumbnailManagementService
     {
-        IEnumerable<ITaskProgressionInfo> GenerateAll();
+        IEnumerable<ITaskProgressionInfo> CreateAndLinkThumbnail();
         void LinkThumbnail(ItemEx item, string thumbnailPath, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null);
-        void CreateThumbnail(ItemEx item, Action<FileStream> streamWriter, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null);
+        void CreateAndLinkThumbnail(ItemEx item, Action<FileStream> streamWriter, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null);
+        void CreateAndLinkThumbnail(ItemEx item);
+        ITaskProgressionInfo CreateAndLinkThumbnail(IEnumerable<ItemEx> items);
 
     }
     public class ThumbnailManagementService : IThumbnailManagementService
@@ -65,7 +69,7 @@ namespace TableTopCrucible.Domain.Library
             if (!Directory.Exists(rootDir))
                 Directory.CreateDirectory(rootDir);
         }
-        public void CreateThumbnail(ItemEx item, Action<FileStream> streamWriter, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null)
+        public void CreateAndLinkThumbnail(ItemEx item, Action<FileStream> streamWriter, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null)
         {
             var relativeThumbnailPath = item.GenerateRelativeThumbnailPath();
             var root = item.RootPath;
@@ -80,6 +84,25 @@ namespace TableTopCrucible.Domain.Library
             }
 
             LinkThumbnail(item, absolutePath, out file, out linkCs, linkSource);
+        }
+        public void CreateAndLinkThumbnail(ItemEx item)
+        {
+            try
+            {
+                var imgPath = item.GenerateAbsoluteThumbnailPath();
+                var itemPath = item.LatestFilePath;
+
+                this.CreateAndLinkThumbnail(item, fs =>
+                {
+                    createThumbnail(itemPath, fs);
+                }, out var file, out var linkCs);
+
+                fileItemLinkService.Patch(linkCs);
+            }
+            catch (Exception ex)
+            {
+                throw new ThumbnailException("Thumbnail Could not be created", ex);
+            }
         }
 
         public void LinkThumbnail(ItemEx item, string thumbnailPath, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null)
@@ -102,7 +125,10 @@ namespace TableTopCrucible.Domain.Library
 
 
 
-        public IEnumerable<ITaskProgressionInfo> GenerateAll()
+        public ITaskProgressionInfo CreateAndLinkThumbnail(IEnumerable<ItemEx> items)
+            => items.Where(x=>x.Versions.Any()).ForEachAsync(CreateAndLinkThumbnail, settingsService.MaxPatchSize);
+
+        public IEnumerable<ITaskProgressionInfo> CreateAndLinkThumbnail()
         {
             return this.itemService
                 .GetExtended()
@@ -130,7 +156,10 @@ namespace TableTopCrucible.Domain.Library
                             var itemPath = item.LatestFilePath;
                             try
                             {
-                                this.CreateThumbnail(item, fs =>
+
+
+
+                                this.CreateAndLinkThumbnail(item, fs =>
                                 {
                                     createThumbnail(itemPath, fs);
                                 }, out file, out linkCs);
@@ -148,11 +177,6 @@ namespace TableTopCrucible.Domain.Library
                         var groupedResult = chunkResult.GroupBy(data => data.err.HasValue);
                         var successes = groupedResult.FirstOrDefault(x => !x.Key)?.Where(x => x != null);
                         var errors = groupedResult.FirstOrDefault(x => x.Key)?.Select(x => x.err.Value);
-                        if (successes?.Any() == true)
-                        {
-                            fileItemLinkService.Patch(successes.Select(x => x.linkCs));
-                            fileDataService.Post(successes.Select(x => x.file).Where(x => x != null));
-                        }
 
                         if (prog.State == TaskState.RunningWithErrors)
                             prog.State = successes?.Any() == true ? TaskState.PartialSuccess : TaskState.Failed;

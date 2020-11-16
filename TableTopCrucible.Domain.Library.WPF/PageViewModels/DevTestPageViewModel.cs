@@ -23,9 +23,9 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 
 
         public DevTestPageViewModel(
-            CreateAllThumbnailsCommand createAllThumbnails,
+            CreateThumbnailsCommand createAllThumbnails,
             NotificationCenterViewModel notificationCenterViewModel,
-            CreateAllThumbnailsCommand generateThumbnails
+            CreateThumbnailsCommand generateThumbnails
             ) : base("dev test", PackIconKind.DeveloperBoard)
         {
             CreateAllThumbnails = createAllThumbnails;
@@ -33,8 +33,8 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
             GenerateThumbnails = generateThumbnails;
         }
 
-        public CreateAllThumbnailsCommand CreateAllThumbnails { get; }
+        public CreateThumbnailsCommand CreateAllThumbnails { get; }
         public NotificationCenterViewModel NotificationCenterViewModel { get; }
-        public CreateAllThumbnailsCommand GenerateThumbnails { get; }
+        public CreateThumbnailsCommand GenerateThumbnails { get; }
     }
 }

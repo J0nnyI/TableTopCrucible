@@ -15,6 +15,7 @@ using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
+using TableTopCrucible.Domain.Library.WPF.Commands;
 using TableTopCrucible.Domain.Library.WPF.Tagging.Models;
 using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
 using TableTopCrucible.Domain.Models.Sources;
@@ -32,10 +33,11 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     {
         private readonly IItemService itemService;
 
-        public MultiItemEditorViewModel(IDrivenTagEditor tagEditor, IItemService itemService)
+        public MultiItemEditorViewModel(IDrivenTagEditor tagEditor, IItemService itemService, CreateThumbnailsCommand createThumbnails)
         {
             TagEditor = tagEditor;
             this.itemService = itemService;
+            CreateThumbnails = createThumbnails;
             this.TagEditor.Editmode = true;
             this.TagEditor.PermitNewTags = true;
             this.TagEditor.OnSelection += TagEditor_OnSelection;
@@ -71,6 +73,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public ObservableCollectionExtended<CountedTag> CountedTags { get; } = new ObservableCollectionExtended<CountedTag>();
         public ObservableCollectionExtended<ItemEx> SelectionBinding { get; } = new ObservableCollectionExtended<ItemEx>();
         public IDrivenTagEditor TagEditor { get; }
+        public CreateThumbnailsCommand CreateThumbnails { get; }
 
         public void BindSelection(IObservableList<ItemEx> selection)
         {

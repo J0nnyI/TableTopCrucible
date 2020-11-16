@@ -1,5 +1,7 @@
 ﻿using DynamicData;
 
+using ReactiveUI;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,8 +9,14 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Text;
+
+using TableTopCrucible.Core.Enums;
+using TableTopCrucible.Core.Models.Sources;
 
 namespace TableTopCrucible.Core.Helper
 {
@@ -32,12 +40,25 @@ namespace TableTopCrucible.Core.Helper
 
         public static IEnumerable<T> Distinct<T>(this IEnumerable<T> list, Func<T, T, bool> comparer)
             => list.Distinct(new proxyComparer<T>(comparer));
-
+        /// <summary>
+        /// ([1,2,3,4,5],2) => [[1,3,5],[2,4]]
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public static IEnumerable<IGrouping<int, T>> SplitEvenly<T>(this IEnumerable<T> list, int count)
         {
             int i = 0;
             return list.GroupBy(_ => Convert.ToInt32(decimal.Remainder(i++, count)));
         }
+        /// <summary>
+        /// ([1,2,3,4,5],2) => [[1,2],[3,4],[5]]
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="maxSize"></param>
+        /// <returns></returns>
         public static IEnumerable<IEnumerable<T>> ChunkBy<T>(this IEnumerable<T> list, int maxSize)
         {
             for (int i = 0; i < list.Count(); i += maxSize)
@@ -82,7 +103,56 @@ namespace TableTopCrucible.Core.Helper
             fileList.AddRange(list.ToArray());
             return fileList;
         }
+        private static IEnumerable<Subject<T>> getSubjectList<T>(int count)
+        {
+            var res = new List<Subject<T>>();
+            for (int i = 0; i < count; i++)
+                res.Add(new Subject<T>());
+            return res.ToArray();
+        }
+        public static IEnumerable<IObservable<IEnumerable<Tout>>> SelectAsync<Tin, Tout>(this IEnumerable<Tin> list, Func<Tin, Tout> selector, int chunkSize, out ITaskProgressionInfo progress)
+        {
+            var prog = new TaskProgression()
+            {
+                State = TaskState.Todo
+            };
+            var chunkCount= Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(list.Count()) / chunkSize));
+            var res = getSubjectList<IEnumerable<Tout>>(chunkCount);
+            progress = prog;
+            Observable.Start(() =>
+            {
+                try
+                {
+                    prog.State = TaskState.InProgress;
+                    var chunks = list.ChunkBy(chunkSize).ToArray();
+                    prog.RequiredProgress = chunks.Length;
+                    var i = 0;
+                    foreach (var chunk in chunks)
+                    {
+                        res.ElementAt(i).OnNext(chunk.Select(selector).ToArray());
+                        prog.CurrentProgress++;
+                        i++;
+                    }
+                    prog.State = TaskState.Done;
+                }
+                catch (Exception ex)
+                {
+                    prog.Details = "failed: " + ex.ToString();
+                    prog.Error = ex;
+                    prog.State = TaskState.Failed;
+                }
+            }, RxApp.TaskpoolScheduler);
+            return res;
+        }
 
-
+        public static ITaskProgressionInfo ForEachAsync<T>(this IEnumerable<T> list, Action<T> action, int chunkSize)
+        {
+            SelectAsync(list, x =>
+            {
+                action(x);
+                return new Unit();
+            }, chunkSize, out var prog);
+            return prog;
+        }
     }
 }

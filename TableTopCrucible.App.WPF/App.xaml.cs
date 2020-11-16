@@ -125,7 +125,7 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<OpenFileDialogCommand>();
             services.AddSingleton<OpenFileCommand>();
             services.AddSingleton<FileToClipboardCommand>();
-            services.AddSingleton<CreateAllThumbnailsCommand>();
+            services.AddSingleton<CreateThumbnailsCommand>();
             services.AddSingleton<FullSyncCommand>();
 
 

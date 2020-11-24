@@ -84,7 +84,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     fileItemLinkService.Clear();
                     _itemService.Clear();
 
-                    var dir = _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()),RxApp.TaskpoolScheduler);
+                    var dir = _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()),RxApp.TaskpoolScheduler, settingsService.LoadingPatchSize);
                     dir.Title = "loading directories";
                     progression.DirectoryTaskState = dir;
                     progression.DirectoryTaskState.DoneChanges.Subscribe(
@@ -92,21 +92,21 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     {
                         if (dirState != TaskState.Done)
                             return;
-                        var file = _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()), RxApp.TaskpoolScheduler, settingsService.LoadingPatchSize);
+                        var file = _fileDataService.Set(dto.Files.Select(dto => dto.ToEntity()), null, settingsService.LoadingPatchSize);
                         file.Title = "loading files";
                         progression.FileTaskState = file;
                         progression.FileTaskState.DoneChanges.Subscribe(fileState =>
                         {
                             if (fileState != TaskState.Done)
                                 return;
-                            var link = fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity()), RxApp.TaskpoolScheduler);
+                            var link = fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity()), null, settingsService.LoadingPatchSize);
                             link.Title = "loading links";
                             progression.LinkTaskState = link;
                             progression.LinkTaskState.DoneChanges.Subscribe(linkState =>
                             {
                                 if (linkState != TaskState.Done)
                                     return;
-                                var item = _itemService.Set(dto.Items.Select(dto => dto.ToEntity()));
+                                var item = _itemService.Set(dto.Items.Select(dto => dto.ToEntity()), null, settingsService.LoadingPatchSize);
                                 item.Title = "loading links";
                                 progression.ItemTaskState = item;
                                 progression.ItemTaskState.DoneChanges.Subscribe(itemState =>

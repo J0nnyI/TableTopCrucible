@@ -32,6 +32,7 @@ using System.Windows.Threading;
 using TableTopCrucible.Core.WPF.Windows;
 using TableTopCrucible.Data.SaveFile.WPF.ViewModels;
 using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
+using TableTopCrucible.Data.MapEditor.Stores;
 
 namespace TableTopCrucible.App.WPF
 {
@@ -79,6 +80,11 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<ILibraryManagementService, LibraryManagementService>();
             services.AddSingleton<IThumbnailManagementService, ThumbnailManagementService>();
             services.AddSingleton<IFileManagementService, FileManagementService>();
+            // map editor domain services
+            services.AddSingleton<IFloorDataService, FloorDataService>();
+            services.AddSingleton<IMapDataService, MapDataService>();
+            services.AddSingleton<ITileLayerDataService, TileLayerDataService>();
+            services.AddSingleton<ITileLocationDataService, TileLocationDataService>();
 
             // WPF Services
             services.AddScoped<TabService>();

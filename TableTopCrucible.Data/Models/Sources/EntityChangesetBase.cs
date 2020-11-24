@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
+using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Core.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Core.Models.Sources

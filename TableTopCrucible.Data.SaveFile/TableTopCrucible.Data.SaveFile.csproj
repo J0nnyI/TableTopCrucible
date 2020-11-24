@@ -6,11 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.17.14" />
-    <PackageReference Include="DynamicData.Plinq" Version="5.4.1.2196" />
     <PackageReference Include="DynamicData.ReactiveUI" Version="6.11.0.2613" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.9" />
     <PackageReference Include="ReactiveUI.Fody" Version="12.1.5" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

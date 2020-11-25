@@ -4,7 +4,7 @@ using System;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.MapEditor.Models.IDs;
 
-namespace TableTopCrucible.Data.MapEditor.Models
+namespace TableTopCrucible.Data.MapEditor.Models.Sources
 {
     public struct Map : IEntity<MapId>
     {

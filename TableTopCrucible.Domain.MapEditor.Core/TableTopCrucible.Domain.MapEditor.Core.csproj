@@ -1,10 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HelixToolkit.Core.Wpf" Version="2.13.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="12.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TableTopCrucible.Data.MapEditor.Models\TableTopCrucible.Data.MapEditor.Models.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.Data.MapEditor.Stores\TableTopCrucible.Data.MapEditor.Stores.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
   </ItemGroup>
 

@@ -33,6 +33,7 @@ using TableTopCrucible.Core.WPF.Windows;
 using TableTopCrucible.Data.SaveFile.WPF.ViewModels;
 using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
 using TableTopCrucible.Data.MapEditor.Stores;
+using TableTopCrucible.Domain.MapEditor.Core;
 
 namespace TableTopCrucible.App.WPF
 {
@@ -61,16 +62,19 @@ namespace TableTopCrucible.App.WPF
             window.Content = serviceProvider.GetRequiredService<StartupViewModel>();
             window.Show();
         }
-        private ServiceProvider _createServiceProvider()
-        {
-            IServiceCollection services = new ServiceCollection();
 
+        private void createCoreServices(IServiceCollection services)
+        {
             // core services
             services.AddSingleton<INotificationCenterService, NotificationCenterService>();
             services.AddSingleton<ISettingsService, Settings>();
             services.AddScoped<IInjectionProviderService, InjectionProviderService>();
             services.AddSingleton<ISaveService, SaveService>();
             services.AddSingleton<LibraryInfoService>();
+
+        }
+        private void createLibraryServices(IServiceCollection services)
+        {
             // data services
             services.AddSingleton<IItemService, ItemService>();
             services.AddSingleton<IFileItemLinkService, FileItemLinkService>();
@@ -80,11 +84,6 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<ILibraryManagementService, LibraryManagementService>();
             services.AddSingleton<IThumbnailManagementService, ThumbnailManagementService>();
             services.AddSingleton<IFileManagementService, FileManagementService>();
-            // map editor domain services
-            services.AddSingleton<IFloorDataService, FloorDataService>();
-            services.AddSingleton<IMapDataService, MapDataService>();
-            services.AddSingleton<ITileLayerDataService, TileLayerDataService>();
-            services.AddSingleton<ITileLocationDataService, TileLocationDataService>();
 
             // WPF Services
             services.AddScoped<TabService>();
@@ -135,6 +134,23 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<FullSyncCommand>();
 
 
+        }
+        private void createMapEditorServices(IServiceCollection services)
+        {
+            // data services
+            services.AddSingleton<IFloorDataService, FloorDataService>();
+            services.AddSingleton<IMapDataService, MapDataService>();
+            services.AddSingleton<ITileLocationDataService, TileLocationDataService>();
+            // viewModels
+            // helper
+            services.AddTransient<ITileGrid, TileGrid>();
+        }
+        private ServiceProvider _createServiceProvider()
+        {
+            IServiceCollection services = new ServiceCollection();
+            createCoreServices(services);
+            createLibraryServices(services);
+            createMapEditorServices(services);
             return services.BuildServiceProvider();
         }
 

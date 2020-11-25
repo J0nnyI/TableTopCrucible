@@ -1,81 +1,124 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="TableTopCrucible.Domain.MapEditor.Core.Models.Floor" BaseTypeListCollapsed="true">
-    <Position X="4.5" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAABAAAAAAAAAAAAAAAABAAAQAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Floor.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="TableTopCrucible.Domain.MapEditor.Core.Models.Map" BaseTypeListCollapsed="true">
-    <Position X="1.75" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAABAAAQAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Map.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Id" />
-    </ShowAsAssociation>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="TableTopCrucible.Domain.MapEditor.Core.Models.TileLayer" BaseTypeListCollapsed="true">
-    <Position X="7.25" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAgAAAAAAAAAAABAAAQAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\TileLayer.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Floor" />
-    </ShowAsAssociation>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
   <Class Name="TableTopCrucible.Domain.Models.ValueTypes.IDs.ItemId" Collapsed="true">
-    <Position X="12" Y="3.5" Width="1.5" />
+    <Position X="10.5" Y="3.5" Width="1.5" />
     <TypeIdentifier />
     <Lollipop Position="0.2" />
   </Class>
-  <Struct Name="TableTopCurcible.Data.MapEditor.Models.IDs.FloorId" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="4.5" Y="3.5" Width="1.5" />
+  <Struct Name="TableTopCrucible.Data.MapEditor.Models.IDs.FloorId" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="3.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAIAAAAACAEhIAAAAAgAAAAAIAAAAAAAAAAAiA=</HashCode>
       <FileName>IDs\FloorId.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Struct>
-  <Struct Name="TableTopCurcible.Data.MapEditor.Models.IDs.MapId" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="1.75" Y="3.5" Width="1.5" />
+  <Struct Name="TableTopCrucible.Data.MapEditor.Models.IDs.MapId" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="1.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAACIEhIAAAAAgAAAAAIAAAAAAAAAAAiA=</HashCode>
       <FileName>IDs\MapId.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Struct>
-  <Struct Name="TableTopCurcible.Data.MapEditor.Models.IDs.TileLayerId" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="7.25" Y="3.5" Width="1.5" />
+  <Struct Name="TableTopCrucible.Data.MapEditor.Models.IDs.TileLayerId" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="5.75" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>gAAAAAAAAAAAACAEhIAAAAAgAAAAAIAAAAAAAAAAAiA=</HashCode>
       <FileName>IDs\TileLayerId.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Struct>
-  <Struct Name="TableTopCrucible.Domain.Models.ValueTypes.IDs.TileLocationId" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="10" Y="3.5" Width="1.5" />
+  <Struct Name="TableTopCrucible.Data.MapEditor.Models.IDs.TileLocationId" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="7.75" Y="3.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAACCEhIAAAAAgAAAAAIAAAAAAAAAAAiA=</HashCode>
       <FileName>IDs\TileLocationId.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Struct>
-  <Struct Name="TableTopCrucible.Domain.MapEditor.Core.Models.TileLocation" BaseTypeListCollapsed="true">
-    <Position X="10" Y="0.5" Width="1.5" />
+  <Struct Name="TableTopCrucible.Data.MapEditor.Models.Floor" BaseTypeListCollapsed="true">
+    <Position X="3.5" Y="0.75" Width="1.5" />
+    <AssociationLine Name="Map" Type="TableTopCrucible.Data.MapEditor.Models.IDs.MapId" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="3.5" Y="1.398" />
+        <Point X="3.25" Y="1.398" />
+        <Point X="3.25" Y="2.296" />
+        <Point X="2.688" Y="2.296" />
+        <Point X="2.688" Y="3.75" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAAAwAAEAABAAAQEAAAAAAAAAAA=</HashCode>
-      <FileName>Models\TileLocation.cs</FileName>
+      <HashCode>AAACAAAAABAAAAAAAAAAAAAAAABAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Floor.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Id" />
+      <Property Name="Map" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Struct>
+  <Struct Name="TableTopCrucible.Data.MapEditor.Models.TileLayer" BaseTypeListCollapsed="true">
+    <Position X="5.75" Y="0.75" Width="1.5" />
+    <AssociationLine Name="Id" Type="TableTopCrucible.Data.MapEditor.Models.IDs.TileLayerId" FixedToPoint="true">
+      <Path>
+        <Point X="6.75" Y="2.046" />
+        <Point X="6.75" Y="3.75" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Floor" Type="TableTopCrucible.Data.MapEditor.Models.IDs.FloorId" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.75" Y="1.938" />
+        <Point X="5.25" Y="1.938" />
+        <Point X="5.25" Y="2.296" />
+        <Point X="4.75" Y="2.296" />
+        <Point X="4.75" Y="3.75" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAgAAAAAAAAAAABAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>TileLayer.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Id" />
+      <Property Name="Floor" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Struct>
+  <Struct Name="TableTopCrucible.Data.MapEditor.Models.TileLocation" BaseTypeListCollapsed="true">
+    <Position X="7.75" Y="0.75" Width="1.5" />
+    <AssociationLine Name="Layer" Type="TableTopCrucible.Data.MapEditor.Models.IDs.TileLayerId" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="7.75" Y="2.095" />
+        <Point X="7.188" Y="2.095" />
+        <Point X="7.188" Y="3.75" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAIAAAAEAABAAAQEAAAAAAAAAAA=</HashCode>
+      <FileName>TileLocation.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Id" />
+      <Property Name="Item" />
       <Property Name="Layer" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Struct>
+  <Struct Name="TableTopCrucible.Data.MapEditor.Models.Map" BaseTypeListCollapsed="true">
+    <Position X="1.5" Y="0.75" Width="1.5" />
+    <AssociationLine Name="Id" Type="TableTopCrucible.Data.MapEditor.Models.IDs.MapId" FixedFromPoint="true">
+      <Path>
+        <Point X="1.75" Y="2.046" />
+        <Point X="1.75" Y="3.75" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAABAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Map.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Id" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" Collapsed="true" />
   </Struct>

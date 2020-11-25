@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.PageViewModels"
       xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:hx="http://helix-toolkit.org/wpf"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       d:DataContext="{d:DesignInstance Type=viewModels:DevTestPageViewModel}"
@@ -14,20 +15,32 @@
         <ResourceDictionary Source="../Common.xaml"/>
     </Page.Resources>
     <Grid>
-        <Grid.RowDefinitions>
+        <!--<Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition MaxWidth="600"/>
             <ColumnDefinition/>
-            <ColumnDefinition/>            
-        </Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>-->
 
         <!--<ContentPresenter Content="{Binding NotificationCenterViewModel}"/>-->
-        <Button Command="{Binding GenerateThumbnails}">
+        <!--<Button Command="{Binding GenerateThumbnails}">
             GenerateThumbnails
-        </Button>
+        </Button>-->
+        <hx:HelixViewport3D Name="vp"
+                            BorderBrush="Red"
+                            BorderThickness="3px"
+                            ShowTriangleCountInfo="True">
+            <hx:DefaultLights/>
+            <hx:BoxVisual3D Center="0,0,0"
+                            Width="5"
+                            Height="5"
+                            Length="5"/>
+            <!--<ModelVisual3D Content="{Binding TileGrid.Model}">
+            </ModelVisual3D>-->
+        </hx:HelixViewport3D>
         <!--<Button Command="{Binding CreateAllThumbnails}"
                 Style="{StaticResource MaterialDesignIconButton}">
             <md:PackIcon Kind="ImageArea"/>

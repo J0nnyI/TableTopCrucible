@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TableTopCrucible.Domain.Library.WPF.PageViewModels;
 
 namespace TableTopCrucible.Domain.Library.WPF.Pages
 {
@@ -21,6 +22,13 @@ namespace TableTopCrucible.Domain.Library.WPF.Pages
         public DevTestPage()
         {
             InitializeComponent();
+            this.DataContextChanged += (_, __) =>
+            {
+                if (DataContext is DevTestPageViewModel vm)
+                {
+                    vm.Viewport = this.vp;
+                }
+            };
         }
     }
 }

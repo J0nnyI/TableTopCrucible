@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Data.MapEditor.Models.IDs;
+using TableTopCrucible.Data.MapEditor.Models.Sources;
 
 namespace TableTopCrucible.Data.MapEditor.Models.Changesets
 {

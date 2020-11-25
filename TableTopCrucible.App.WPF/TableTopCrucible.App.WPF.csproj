@@ -36,6 +36,7 @@
     <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF.Tagging\TableTopCrucible.Domain.Library.WPF.Tagging.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF\TableTopCrucible.Domain.Library.WPF.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Domain.Library\TableTopCrucible.Domain.Library.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.Domain.MapEditor.Core\TableTopCrucible.Domain.MapEditor.Core.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Startup.WPF\TableTopCrucible.Startup.WPF.csproj" />
   </ItemGroup>
 

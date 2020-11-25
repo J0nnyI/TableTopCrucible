@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Views\" />
-    <Folder Include="ViewModels\" />
+    <PackageReference Include="HelixToolkit.Core.Wpf" Version="2.13.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="12.1.5" />
   </ItemGroup>
 
 </Project>

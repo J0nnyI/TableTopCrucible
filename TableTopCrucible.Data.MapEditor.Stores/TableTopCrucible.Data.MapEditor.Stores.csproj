@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ReactiveUI.Fody" Version="12.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TableTopCrucible.Data.MapEditor.Models\TableTopCrucible.Data.MapEditor.Models.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
   </ItemGroup>

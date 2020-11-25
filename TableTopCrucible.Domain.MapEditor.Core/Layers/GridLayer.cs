@@ -21,20 +21,19 @@ using TableTopCrucible.Data.MapEditor.Stores;
 using System.Windows.Media;
 using HelixToolkit.Wpf;
 using System.Reactive.Subjects;
+using System.Windows.Input;
 
-namespace TableTopCrucible.Domain.MapEditor.Core
+namespace TableTopCrucible.Domain.MapEditor.Core.Layers
 {
-    public interface ITileGrid
+    public interface IGridLayer : IFloorLayer
     {
-        ContainerUIElement3D Model { get; }
         FloorId FloorId { get; set; }
         double GridSize { get; set; }
-        Subject<Rect3D> OnFieldHover { get; }
-        Subject<Rect3D> OnFieldClicked { get; }
+        IObservable<Rect3D> FieldMouseEnter { get; }
+        IObservable<Rect3D> FieldSelected { get; }
     }
-    public class TileGrid : DisposableReactiveObjectBase, ITileGrid
+    public class GridLayer : DisposableReactiveObjectBase, IGridLayer
     {
-        private readonly IFloorDataService floorDataService;
         private readonly ITileLocationDataService tileLocationDataService;
 
         [Reactive]
@@ -42,15 +41,16 @@ namespace TableTopCrucible.Domain.MapEditor.Core
         [Reactive]
         public double GridSize { get; set; }
 
-        public Subject<Rect3D> OnFieldHover { get; } = new Subject<Rect3D>();
-        public Subject<Rect3D> OnFieldClicked { get; } = new Subject<Rect3D>();
+        public Subject<Rect3D> fieldMouseEnter { get; } = new Subject<Rect3D>();
+        public IObservable<Rect3D> FieldMouseEnter => fieldMouseEnter;
+        public Subject<Rect3D> fieldSelected { get; } = new Subject<Rect3D>();
+        public IObservable<Rect3D> FieldSelected => fieldSelected;
 
+        public Visual3D Model => model;
+        private readonly ContainerUIElement3D model = new ContainerUIElement3D();
 
-        public ContainerUIElement3D Model { get; } = new ContainerUIElement3D();
-
-        public TileGrid(IFloorDataService floorDataService, ITileLocationDataService tileLocationDataService)
+        public GridLayer(IFloorDataService floorDataService, ITileLocationDataService tileLocationDataService)
         {
-            this.floorDataService = floorDataService;
             this.tileLocationDataService = tileLocationDataService;
 
 
@@ -64,31 +64,13 @@ namespace TableTopCrucible.Domain.MapEditor.Core
             var floorChanges = floorIdChanges.Select(id => floorDataService.Get().WatchValue(id))
                 .Switch();
             var gridSizeChanges = this.WhenAnyValue(vm => vm.GridSize);
-            floorChanges.Subscribe(AlignmentX =>
-            {
 
-            });
-            size.Subscribe(AlignmentX =>
-            {
-
-            });
-            gridSizeChanges.Subscribe(x =>
-            {
-
-            });
-            Observable
-                .CombineLatest(
-                    floorChanges,
+            floorChanges.CombineLatest(
                     size,
                     gridSizeChanges,
                     (floor, sizes, fieldSize) => { return new { floor, sizes, fieldSize }; })
                 .TakeUntil(destroy)
                 .Subscribe(x => handleSizeChange(x.floor, x.sizes, x.fieldSize));
-
-
-
-
-
 
             var currentFloor = floorIdChanges
                 .Select(floor => floorDataService.Get().WatchValue(floor))
@@ -112,34 +94,19 @@ namespace TableTopCrucible.Domain.MapEditor.Core
                         Model = new GeometryModel3D(_buildRect(x, y, fieldSize, floor.Height), Materials.LightGray)
                     };
 
-                    uiElement.MouseEnter += (s, _) =>
+                    uiElement.MouseEnter += (s, args) =>
                     {
-                        if (s is ModelUIElement3D uie && uie.Model is GeometryModel3D geom)
-                        {
-                            geom.Material = Materials.Red;
-                        }
-                        this.OnFieldHover.OnNext(fullField);
-                    };
-                    uiElement.MouseLeave += (s, _) =>
-                    {
-                        if (s is ModelUIElement3D uie && uie.Model is GeometryModel3D geom)
-                        {
-                            geom.Material = Materials.Orange;
-                        }
+                        fieldMouseEnter.OnNext(fullField);
+                        if (args.LeftButton == MouseButtonState.Pressed)
+                            fieldSelected.OnNext(fullField);
                     };
                     uiElement.MouseLeftButtonDown += (s, _) =>
-                    {
-                        if (s is ModelUIElement3D uie && uie.Model is GeometryModel3D geom)
-                        {
-                            geom.Material = Materials.Blue;
-                        }
-                        this.OnFieldClicked.OnNext(fullField);
-                    };
+                        fieldSelected.OnNext(fullField);
                     elements.Add(uiElement);
                 }
             }
-            Model.Children.Clear();
-            Model.Children.AddRange(elements);
+            model.Children.Clear();
+            model.Children.AddRange(elements);
         }
         private MeshGeometry3D _buildRect(double x, double y, double size, double height)
         {

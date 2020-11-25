@@ -33,6 +33,7 @@ using TableTopCrucible.Core.WPF.Windows;
 using TableTopCrucible.Data.SaveFile.WPF.ViewModels;
 using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
 using TableTopCrucible.Data.MapEditor.Stores;
+using TableTopCrucible.Domain.MapEditor.Core.Layers;
 using TableTopCrucible.Domain.MapEditor.Core;
 
 namespace TableTopCrucible.App.WPF
@@ -65,7 +66,6 @@ namespace TableTopCrucible.App.WPF
 
         private void createCoreServices(IServiceCollection services)
         {
-            // core services
             services.AddSingleton<INotificationCenterService, NotificationCenterService>();
             services.AddSingleton<ISettingsService, Settings>();
             services.AddScoped<IInjectionProviderService, InjectionProviderService>();
@@ -143,7 +143,8 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<ITileLocationDataService, TileLocationDataService>();
             // viewModels
             // helper
-            services.AddTransient<ITileGrid, TileGrid>();
+            services.AddTransient<IGridLayer, GridLayer>();
+            services.AddTransient<IFloorManager, FloorManager>();
         }
         private ServiceProvider _createServiceProvider()
         {

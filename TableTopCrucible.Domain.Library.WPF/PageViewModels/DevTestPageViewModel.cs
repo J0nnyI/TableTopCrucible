@@ -24,7 +24,7 @@ using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Commands;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
-using TableTopCrucible.Domain.MapEditor.Core;
+using TableTopCrucible.Domain.MapEditor.Core.Layers;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.WPF.Commands;
 
@@ -44,7 +44,7 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
             CreateThumbnailsCommand createAllThumbnails,
             NotificationCenterViewModel notificationCenterViewModel,
             CreateThumbnailsCommand generateThumbnails,
-            ITileGrid tileGrid,
+            IGridLayer tileGrid,
             IFloorDataService floorDataService
             ) : base("dev test", PackIconKind.DeveloperBoard)
         {
@@ -82,7 +82,7 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
                 });
 
             TileGrid
-                .OnFieldHover
+                .FieldMouseEnter
                 .TakeUntil(destroy)
                 .Subscribe(location =>
                 {
@@ -90,7 +90,7 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
                 });
 
             TileGrid
-                .OnFieldClicked
+                .FieldSelected
                 .TakeUntil(destroy)
                 .Subscribe(location =>
                 {
@@ -118,8 +118,8 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
             {
                 DefaultMaterial = Materials.Green
             };
-            var model = importer.Load(@"D:\3d Demofiles\FDG0280_Floor_Wood_2x2.stl");
-            //var model = importer.Load(@"D:\3d Demofiles\FDG0280_Floor_Wood_4x2.stl");
+            //var model = importer.Load(@"D:\3d Demofiles\FDG0280_Floor_Wood_2x2.stl");
+            var model = importer.Load(@"D:\3d Demofiles\FDG0280_Floor_Wood_4x2.stl");
             model.PlaceAtOrigin();
             return model;
 
@@ -129,6 +129,6 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
         public CreateThumbnailsCommand CreateAllThumbnails { get; }
         public NotificationCenterViewModel NotificationCenterViewModel { get; }
         public CreateThumbnailsCommand GenerateThumbnails { get; }
-        public ITileGrid TileGrid { get; }
+        public IGridLayer TileGrid { get; }
     }
 }

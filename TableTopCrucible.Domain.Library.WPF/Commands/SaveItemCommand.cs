@@ -26,7 +26,7 @@ namespace TableTopCrucible.WPF.Commands
 
         public event EventHandler<ItemSavedEventArgs> ItemSaved;
 
-        private readonly IItemService _itemService;
+        private readonly IItemDataService _itemService;
 
         public bool CanExecute(object parameter)
         {
@@ -46,7 +46,7 @@ namespace TableTopCrucible.WPF.Commands
 
 
 
-        public SaveItemCommand(IItemService itemService)
+        public SaveItemCommand(IItemDataService itemService)
         {
             this._itemService = itemService;
         }

@@ -10,8 +10,8 @@ namespace TableTopCrucible.Data.MapEditor.Models.Sources
     public struct TileLocation : IEntity<TileLocationId>
     {
         public TileLocationId Id { get; }
-        public ItemId Item { get; }
-        public FloorId Floor { get; }
+        public ItemId ItemId { get; }
+        public FloorId FloorId { get; }
         public Point Location { get; }
         public DateTime Created { get; }
         public DateTime LastChange { get; }

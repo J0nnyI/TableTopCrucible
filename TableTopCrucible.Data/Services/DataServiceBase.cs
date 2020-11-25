@@ -85,6 +85,8 @@ namespace TableTopCrucible.Data.Services
         // get
         public IObservableCache<Tentity, Tid> Get()
             => _readOnlyCache;
+        public IObservable<Tentity> Get(IObservable<Tid> idChanges)
+            => idChanges.Select(id => this.cache.WatchValue(id)).Switch();
         public IObservable<Tentity> Get(Tid id)
             => this.cache.WatchValue(id);
         public IObservable<IChangeSet<Tentity, Tid>> Get(IEnumerable<Tid> ids)

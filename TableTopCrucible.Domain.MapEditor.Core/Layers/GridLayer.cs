@@ -25,7 +25,7 @@ using System.Windows.Input;
 
 namespace TableTopCrucible.Domain.MapEditor.Core.Layers
 {
-    public interface IGridLayer : IFloorLayer
+    public interface IGridLayer
     {
         FloorId FloorId { get; set; }
         double GridSize { get; set; }
@@ -39,7 +39,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
         [Reactive]
         public FloorId FloorId { get; set; }
         [Reactive]
-        public double GridSize { get; set; }
+        public double GridSize { get; set; } = 51;
 
         public Subject<Rect3D> fieldMouseEnter { get; } = new Subject<Rect3D>();
         public IObservable<Rect3D> FieldMouseEnter => fieldMouseEnter;

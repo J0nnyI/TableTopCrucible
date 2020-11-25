@@ -31,9 +31,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     }
     public partial class MultiItemEditorViewModel : DisposableReactiveValidationObject, IMultiItemEditor
     {
-        private readonly IItemService itemService;
+        private readonly IItemDataService itemService;
 
-        public MultiItemEditorViewModel(IDrivenTagEditor tagEditor, IItemService itemService, CreateThumbnailsCommand createThumbnails)
+        public MultiItemEditorViewModel(IDrivenTagEditor tagEditor, IItemDataService itemService, CreateThumbnailsCommand createThumbnails)
         {
             TagEditor = tagEditor;
             this.itemService = itemService;

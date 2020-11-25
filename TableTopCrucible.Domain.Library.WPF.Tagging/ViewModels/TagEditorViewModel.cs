@@ -28,7 +28,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
         public override IObservableList<Tag> Selection => selection;
         public ObservableCollectionExtended<Tag> SelectionBinding { get; } = new ObservableCollectionExtended<Tag>();
 
-        public TagEditorViewModel(IItemService itemService) : base(itemService)
+        public TagEditorViewModel(IItemDataService itemService) : base(itemService)
         {
             OnSelectionUpdate();
             Selection

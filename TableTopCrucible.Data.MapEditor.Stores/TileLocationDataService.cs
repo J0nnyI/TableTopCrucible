@@ -31,7 +31,7 @@ namespace TableTopCrucible.Data.MapEditor.Stores
                 .Get()
                 .Connect()
                 .RemoveKey()
-                .Filter(floorId.ToFilter((TileLocation location, FloorId id) => location.Floor == id))
+                .Filter(floorId.ToFilter((TileLocation location, FloorId id) => location.FloorId == id))
                 .QueryWhenChanged(locations =>
                 {
                     return new Rect(

@@ -65,7 +65,7 @@ namespace TableTopCrucible.Domain.Library
         private readonly IDirectoryDataService directoryDataService;
         private readonly IFileDataService fileDataService;
         private readonly IFileItemLinkService fileItemLinkService;
-        private readonly IItemService itemService;
+        private readonly IItemDataService itemService;
         private readonly INotificationCenterService notificationCenter;
         private readonly ISettingsService settingsService;
         private readonly IFileManagementService fileManagementService;
@@ -74,7 +74,7 @@ namespace TableTopCrucible.Domain.Library
             IDirectoryDataService directoryDataService,
             IFileDataService fileDataService,
             IFileItemLinkService fileItemLinkService,
-            IItemService itemService,
+            IItemDataService itemService,
             INotificationCenterService notificationCenter,
             ISettingsService settingsService,
             IFileManagementService fileManagementService)

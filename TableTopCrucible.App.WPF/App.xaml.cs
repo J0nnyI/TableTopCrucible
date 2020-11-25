@@ -35,6 +35,7 @@ using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
 using TableTopCrucible.Data.MapEditor.Stores;
 using TableTopCrucible.Domain.MapEditor.Core.Layers;
 using TableTopCrucible.Domain.MapEditor.Core;
+using TableTopCrucible.Domain.MapEditor.Core.Services;
 
 namespace TableTopCrucible.App.WPF
 {
@@ -76,7 +77,7 @@ namespace TableTopCrucible.App.WPF
         private void createLibraryServices(IServiceCollection services)
         {
             // data services
-            services.AddSingleton<IItemService, ItemService>();
+            services.AddSingleton<IItemDataService, ItemService>();
             services.AddSingleton<IFileItemLinkService, FileItemLinkService>();
             services.AddSingleton<IFileDataService, FileDataService>();
             services.AddSingleton<IDirectoryDataService, DirectoryDataService>();
@@ -141,6 +142,7 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<IFloorDataService, FloorDataService>();
             services.AddSingleton<IMapDataService, MapDataService>();
             services.AddSingleton<ITileLocationDataService, TileLocationDataService>();
+            services.AddSingleton<IMapEditorManagementService, MapEditorManagementService>();
             // viewModels
             // helper
             services.AddTransient<IGridLayer, GridLayer>();

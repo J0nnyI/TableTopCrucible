@@ -32,7 +32,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
 
     public class SaveService : ISaveService
     {
-        private readonly IItemService _itemService;
+        private readonly IItemDataService _itemService;
         private readonly IFileDataService _fileDataService;
         private readonly IFileItemLinkService fileItemLinkService;
         private readonly IDirectoryDataService _directoryDataService;
@@ -40,7 +40,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
         private readonly ISettingsService settingsService;
 
         public SaveService(
-            IItemService itemService,
+            IItemDataService itemService,
             IFileDataService _fileDataService,
             IFileItemLinkService _fileItemLinkService,
             IDirectoryDataService directoryDataService,

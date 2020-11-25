@@ -39,7 +39,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         private BehaviorSubject<ItemId?> _selectedItemIdChanges = new BehaviorSubject<ItemId?>(null);
         public IObservable<ItemId?> SelectedItemIdChanges => _selectedItemIdChanges;
         public IObservable<ItemEx?> SelectedItemChanges { get; }
-        private readonly IItemService _itemService;
+        private readonly IItemDataService _itemService;
         private readonly INotificationCenterService notificationCenter;
         private readonly ILibraryManagementService libraryManagement;
         private readonly IFileItemLinkService fileItemLinkService;
@@ -73,7 +73,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
         public ItemEditorViewModel(
             IManualTagEditor tagEdiotr,
-            IItemService itemService,
+            IItemDataService itemService,
             FileVersionListViewModel fileVersionList,
             INotificationCenterService notificationCenter,
             ILibraryManagementService libraryManagement,

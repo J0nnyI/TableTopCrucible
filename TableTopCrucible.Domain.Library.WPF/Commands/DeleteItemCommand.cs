@@ -32,8 +32,8 @@ namespace TableTopCrucible.WPF.Commands
 
         }
 
-        private readonly IItemService _itemService;
-        public DeleteItemCommand(IItemService itemService)
+        private readonly IItemDataService _itemService;
+        public DeleteItemCommand(IItemDataService itemService)
         {
             this._itemService = itemService;
             this._itemService

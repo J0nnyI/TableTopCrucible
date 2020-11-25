@@ -16,7 +16,7 @@ using TableTopCrucible.Data.Models.ValueTypes;
 
 namespace TableTopCrucible.Data.Services
 {
-    public interface IItemService : IDataService<Item, ItemId, ItemChangeset>
+    public interface IItemDataService : IDataService<Item, ItemId, ItemChangeset>
     {
         IObservableCache<ItemEx, ItemId> GetExtended();
         IObservable<ItemEx> GetExtended(ItemId item);
@@ -25,7 +25,7 @@ namespace TableTopCrucible.Data.Services
         IObservable<IChangeSet<Tag>> GetTags(IObservable<Func<ItemEx, bool>> itemFilter);
         IObservableList<Tag> GetTags();
     }
-    public class ItemService : DataServiceBase<Item, ItemId, ItemChangeset>, IItemService
+    public class ItemService : DataServiceBase<Item, ItemId, ItemChangeset>, IItemDataService
     {
 
         private IFileDataService _fileService;

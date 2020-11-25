@@ -26,12 +26,12 @@ namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
 {
     public abstract class TagEditorViewModelBase : DisposableReactiveValidationObject, ITagEditor
     {
-        private readonly IItemService itemService;
+        private readonly IItemDataService itemService;
         public abstract IObservableList<Tag> Selection { get; }
         public abstract IObservable<IChangeSet<Tag>> TagpoolExceptions { get; }
         [Reactive]
         public int MarkedIndex { get; set; } = -1;
-        public TagEditorViewModelBase(IItemService itemService)
+        public TagEditorViewModelBase(IItemDataService itemService)
         {
             this.itemService = itemService;
             NewTagChanges =

@@ -25,6 +25,7 @@ namespace TableTopCrucible.Data.Services
         void Delete(IEnumerable<Tid> key);
         void Clear();
         bool CanDelete(Tid key);
+        IObservable<Tentity> Get(IObservable<Tid> idChanges);
     }
     public interface IDataService<Tentity, Tid, TChangeset> :  IDataService<Tentity, Tid>
     where Tentity : IEntity<Tid>

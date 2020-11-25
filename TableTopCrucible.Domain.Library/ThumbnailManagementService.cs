@@ -37,14 +37,14 @@ namespace TableTopCrucible.Domain.Library
     }
     public class ThumbnailManagementService : IThumbnailManagementService
     {
-        private readonly IItemService itemService;
+        private readonly IItemDataService itemService;
         private readonly ISettingsService settingsService;
         private readonly IFileItemLinkService fileItemLinkService;
         private readonly IFileDataService fileDataService;
         private readonly IFileManagementService fileManagement;
 
         public ThumbnailManagementService(
-            IItemService itemService,
+            IItemDataService itemService,
             ISettingsService settingsService,
             IFileItemLinkService fileItemLinkService,
             IFileDataService fileDataService,

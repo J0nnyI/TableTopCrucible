@@ -73,7 +73,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
         public DirectorySetupCardViewModel(
             IFileDataService fileService,
-            IItemService itemService,
+            IItemDataService itemService,
             OpenFileDialogCommand openFile,
             SaveDirectorySetupCommand save,
             DeleteDirectorySetupCommand delete,

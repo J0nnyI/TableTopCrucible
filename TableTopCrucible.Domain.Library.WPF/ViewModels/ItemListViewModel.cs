@@ -71,7 +71,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
     public class ItemListViewModel : DisposableReactiveObjectBase, ISelectionProvider
     {
-        private readonly IItemService _itemService;
+        private readonly IItemDataService _itemService;
         private readonly IInjectionProviderService _injectionProviderService;
 
 
@@ -88,7 +88,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
 
         public ItemListViewModel(
-            IItemService itemService,
+            IItemDataService itemService,
             IInjectionProviderService injectionProviderService)
         {
             this._itemService = itemService ?? throw new NullReferenceException("got no itemService");

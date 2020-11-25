@@ -21,7 +21,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public ItemListFilterViewModel(
             IItemFilter itemWhitelist,
             IItemFilter itemBlacklist,
-            IItemService itemService)
+            IItemDataService itemService)
         {
             itemWhitelist.FilterMode = FilterMode.Whitelist;
             ItemWhitelist = itemWhitelist;

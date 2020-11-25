@@ -19,8 +19,8 @@ namespace TableTopCrucible.WPF.Commands
 
     public class CreateItemCommand : ICommand
     {
-        private readonly IItemService _itemService;
-        public CreateItemCommand(IItemService itemService)
+        private readonly IItemDataService _itemService;
+        public CreateItemCommand(IItemDataService itemService)
         {
             this._itemService = itemService;
         }

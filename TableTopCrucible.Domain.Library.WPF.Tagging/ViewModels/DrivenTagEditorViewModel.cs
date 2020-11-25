@@ -29,7 +29,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
         public event EventHandler<IEnumerable<Tag>> OnDeselection;
         public event EventHandler<IEnumerable<Tag>> OnSelection;
 
-        public DrivenTagEditorViewModel(IItemService itemService) : base(itemService)
+        public DrivenTagEditorViewModel(IItemDataService itemService) : base(itemService)
         {
             AddTagButtonCommand = new RelayCommand(
                 e =>

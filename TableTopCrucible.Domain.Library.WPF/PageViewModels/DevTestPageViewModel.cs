@@ -24,6 +24,7 @@ using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Commands;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
+using TableTopCrucible.Domain.MapEditor.Core;
 using TableTopCrucible.Domain.MapEditor.Core.Layers;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.WPF.Commands;
@@ -44,21 +45,20 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
             CreateThumbnailsCommand createAllThumbnails,
             NotificationCenterViewModel notificationCenterViewModel,
             CreateThumbnailsCommand generateThumbnails,
-            IGridLayer tileGrid,
-            IFloorDataService floorDataService
+            IFloorDataService  floorDataService,
+            IFloorManager floorManager,
+            IItemDataService itemDataService
             ) : base("dev test", PackIconKind.DeveloperBoard)
         {
             CreateAllThumbnails = createAllThumbnails;
             NotificationCenterViewModel = notificationCenterViewModel;
             GenerateThumbnails = generateThumbnails;
-            TileGrid = tileGrid;
+            FloorManager = floorManager;
             this.floorDataService = floorDataService;
 
             var mapId = MapId.New();
             var floor = new Floor(null, mapId, 0);
             floorDataService.Post(floor);
-            tileGrid.GridSize = 51;
-            tileGrid.FloorId = floor.Id;
             this.model = importModel();
             this.modelCursor = new ModelUIElement3D
             {
@@ -75,8 +75,9 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
                 .Subscribe(vp =>
                 {
                     vp.Children.AddRange(new Visual3D[]{
-                        tileGrid.Model,
-                        modelCursor
+
+                        modelCursor,
+                        //FloorManager.SelectedItemId = itemDataService.Get().Items[0].
                     });
                     vp.Camera = Camera;
                 });
@@ -129,6 +130,7 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
         public CreateThumbnailsCommand CreateAllThumbnails { get; }
         public NotificationCenterViewModel NotificationCenterViewModel { get; }
         public CreateThumbnailsCommand GenerateThumbnails { get; }
+        public IFloorManager FloorManager { get; }
         public IGridLayer TileGrid { get; }
     }
 }

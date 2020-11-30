@@ -31,6 +31,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
         double GridSize { get; set; }
         IObservable<Rect3D> FieldMouseEnter { get; }
         IObservable<Rect3D> FieldSelected { get; }
+        Visual3D MasterModel { get; }
     }
     public class GridLayer : DisposableReactiveObjectBase, IGridLayer
     {
@@ -41,13 +42,13 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
         [Reactive]
         public double GridSize { get; set; } = 51;
 
-        public Subject<Rect3D> fieldMouseEnter { get; } = new Subject<Rect3D>();
+        private readonly Subject<Rect3D> fieldMouseEnter = new Subject<Rect3D>();
         public IObservable<Rect3D> FieldMouseEnter => fieldMouseEnter;
-        public Subject<Rect3D> fieldSelected { get; } = new Subject<Rect3D>();
+        private readonly Subject<Rect3D> fieldSelected = new Subject<Rect3D>();
         public IObservable<Rect3D> FieldSelected => fieldSelected;
 
-        public Visual3D Model => model;
-        private readonly ContainerUIElement3D model = new ContainerUIElement3D();
+        public Visual3D MasterModel => masterModel;
+        private readonly ContainerUIElement3D masterModel = new ContainerUIElement3D();
 
         public GridLayer(IFloorDataService floorDataService, ITileLocationDataService tileLocationDataService)
         {
@@ -105,8 +106,8 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
                     elements.Add(uiElement);
                 }
             }
-            model.Children.Clear();
-            model.Children.AddRange(elements);
+            masterModel.Children.Clear();
+            masterModel.Children.AddRange(elements);
         }
         private MeshGeometry3D _buildRect(double x, double y, double size, double height)
         {

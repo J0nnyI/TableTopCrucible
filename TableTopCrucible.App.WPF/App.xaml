@@ -17,7 +17,7 @@
                 <ResourceDictionary Source="pack://application:,,,/TableTopCrucible.Domain.Library.WPF.Filter;component/Common.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/TableTopCrucible.Startup.WPF;component/Common.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/TableTopCrucible.Data.SaveFile.WPF;component/Common.xaml"/>
-
+                <ResourceDictionary Source="pack://application:,,,/TableTopCrucible.Domain.MapEditor.WPF;component/Common.xaml"/>
 
 
 

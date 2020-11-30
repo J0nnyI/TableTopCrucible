@@ -8,10 +8,11 @@ using TableTopCrucible.Core.Models.Sources;
 
 namespace TableTopCrucible.Core.WPF.PageViewModels
 {
-    public abstract class PageViewModelBase : DisposableReactiveObjectBase
+    public abstract class PageViewModelBase : DisposableReactiveObjectBase, IPageViewModel
+
     {
-        public string Title { get;}
-        public PackIconKind ?Icon { get; }
+        public string Title { get; }
+        public PackIconKind? Icon { get; }
         public PageViewModelBase(string title, PackIconKind? icon = null)
         {
             this.Title = title;

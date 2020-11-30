@@ -12,17 +12,17 @@ namespace TableTopCrucible.Core.WPF.Services
 
     public class TabService : DisposableReactiveObjectBase
     {
-        ObservableCollection<PageViewModelBase> _tabs = new ObservableCollection<PageViewModelBase>();
-        public ReadOnlyObservableCollection<PageViewModelBase> Tabs;
+        ObservableCollection<IPageViewModel> _tabs = new ObservableCollection<IPageViewModel>();
+        public ReadOnlyObservableCollection<IPageViewModel> Tabs;
         BehaviorSubject<int> _activeTabIndex = new BehaviorSubject<int>(0);
         public IObservable<int> ActiveTabIndex => _activeTabIndex;
 
         public TabService()
         {
-            Tabs = new ReadOnlyObservableCollection<PageViewModelBase>(_tabs);
+            Tabs = new ReadOnlyObservableCollection<IPageViewModel>(_tabs);
         }
 
-        public void Append(PageViewModelBase content, bool select = true)
+        public void Append(IPageViewModel content, bool select = true)
         {
             _tabs.Add(content);
             if (select)

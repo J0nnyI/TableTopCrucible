@@ -14,9 +14,37 @@
                             <RowDefinition />
                             <RowDefinition Height="0" />
                         </Grid.RowDefinitions>
-                        <DockPanel Margin="2,2,0,0" LastChildFill="False" VerticalAlignment="Top">
+                        <DockPanel Margin="4,4,0,0" LastChildFill="False" VerticalAlignment="Top">
                             <TabPanel x:Name="HeaderPanel" Margin="0,0,0,-1" VerticalAlignment="Bottom" Panel.ZIndex="1" DockPanel.Dock="Right"
-                                  IsItemsHost="True" KeyboardNavigation.TabIndex="1" />
+                                  IsItemsHost="True" KeyboardNavigation.TabIndex="1" >
+                                <!--<TabPanel.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="Red"/>
+                                        <Setter Property="BorderThickness" Value="10"/>
+                                        <Setter Property="CornerRadius" Value="3"/>
+                                    </Style>
+                                    <Style TargetType="TabItem">
+                                        <Setter Property="Height"
+                                                Value="80"/>
+                                        <Setter Property="Width"
+                                                Value="80"/>
+                                        <Setter Property="Margin"
+                                                Value="4"/>
+                                        <Setter Property="Background"
+                                                Value="Red"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="true">
+                                                <Setter Property="Background"
+                                                        Value="Blue"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsMouseOver}" Value="true">
+                                                <Setter Property="Background"
+                                                        Value="Blue"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TabPanel.Resources>-->
+                            </TabPanel>
                         </DockPanel>
                         <Border x:Name="ContentPanel" Grid.Row="0" Grid.Column="1"
                             Background="{TemplateBinding Background}"

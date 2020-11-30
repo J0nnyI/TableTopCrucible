@@ -13,6 +13,7 @@ using TableTopCrucible.Core.WPF.Services;
 using TableTopCrucible.Core.WPF.ViewModels;
 using TableTopCrucible.Domain.Library.WPF.Pages;
 using TableTopCrucible.Domain.Library.WPF.PageViewModels;
+using TableTopCrucible.Domain.MapEditor.WPF.PageViewModels;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.WPF.Commands;
@@ -28,11 +29,13 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             DevTestPageViewModel devTest,
             ItemEditorPageViewModel itemEditor,
             FileSetupPageViewModel fileSetup,
-            AppSettingsPageViewModel settings)
+            AppSettingsPageViewModel settings,
+            IMapEditorPageVm mapEditor)
         {
             this.Tabs = tabs;
             tabService.Append(itemEditor, true);
             tabService.Append(fileSetup, false);
+            tabService.Append(mapEditor, false);
             tabService.Append(settings, false);
 #if DEBUG
             tabService.Append(devTest, false);

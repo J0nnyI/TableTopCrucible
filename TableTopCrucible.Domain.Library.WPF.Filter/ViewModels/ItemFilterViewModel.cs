@@ -109,7 +109,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Filter.ViewModel
                     .Selection
                     .Connect()
                     .ToCollection()
-                    .Merge(Observable.Return(new List<Tag>().AsReadOnly()))
+                    .StartWithEmpty()
                 .CombineLatest(
                     this.WhenAnyValue(
                         vm => vm.FilterMode,

@@ -6,8 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DynamicData" Version="6.17.14" />
+    <PackageReference Include="DynamicData.ReactiveUI" Version="6.11.0.2613" />
     <PackageReference Include="HelixToolkit.Core.Wpf" Version="2.13.1" />
+    <PackageReference Include="ReactiveUI" Version="12.1.5" />
     <PackageReference Include="ReactiveUI.Fody" Version="12.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TableTopCrucible.Core.WPF\TableTopCrucible.Core.WPF.csproj" />
   </ItemGroup>
 
 </Project>

@@ -10,16 +10,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TableTopCrucible.Domain.Library.WPF.PageViewModels;
 
-namespace TableTopCrucible.Domain.Library.WPF.Pages
+namespace TableTopCrucible.Domain.MapEditor.WPF.PageViews
 {
     /// <summary>
-    /// Interaction logic for DevTestPage.xaml
+    /// Interaction logic for MapEditorPageView.xaml
     /// </summary>
-    public partial class DevTestPage : Page
+    public partial class MapEditorPageView : Page
     {
-        public DevTestPage()
+        public MapEditorPageView()
         {
             InitializeComponent();
         }

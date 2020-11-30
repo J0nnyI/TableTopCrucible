@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Media.Media3D;
 
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.MapEditor.Models.IDs;
 using TableTopCrucible.Data.MapEditor.Stores;
@@ -18,18 +19,18 @@ namespace TableTopCrucible.Domain.MapEditor.Core
 {
     public interface IFloorManager
     {
-        public Visual3D Model { get; }
+        public Visual3D MasterModel { get; }
         public ItemId SelectedItemId { get; set; }
     }
     public class FloorManager : DisposableReactiveObjectBase, IFloorManager
     {
-        public ModelVisual3D model = new ModelVisual3D();
-        public Visual3D Model => model;
+        public ModelVisual3D masterModel = new ModelVisual3D();
+        public Visual3D MasterModel => masterModel;
         public IGridLayer GridLayer { get; }
         public ITileLayer TileLayer { get; }
 
         [Reactive]
-        public FloorId FloorId { get; }
+        public FloorId FloorId { get; set; }
         [Reactive]
         public ItemId SelectedItemId { get; set; }
 
@@ -37,6 +38,8 @@ namespace TableTopCrucible.Domain.MapEditor.Core
         {
             this.GridLayer = gridLayer;
             TileLayer = tileLayer;
+
+            masterModel.Children.Add(TileLayer.MasterModel, GridLayer.MasterModel);
 
             this.WhenAnyValue(vm => vm.FloorId)
                 .Subscribe(id =>

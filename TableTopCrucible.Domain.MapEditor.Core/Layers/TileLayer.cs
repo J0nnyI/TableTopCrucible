@@ -68,13 +68,13 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
                     mapEditorManagementService
                         .GetLocationEx()
                         .Filter(this.WhenAnyValue(vm=>vm.FloorId).ToFilter((TileLocationEx location, FloorId floorId) => location.FloorId == floorId)),
-                        location => location.ItemId,
-                        (model, location) =>
-                        {
-                            var visual = new ModelVisual3D { Content = model };
-                            visual.Move(location.Origin);
-                            return visual;
-                        })
+                    location => location.ItemId,
+                    (model, location) =>
+                    {
+                        var visual = new ModelVisual3D { Content = model };
+                        visual.Move(location.Origin);
+                        return visual;
+                    })
                 .Subscribe(change =>
                 {
                     change.HanldeManyChanges(

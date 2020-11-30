@@ -15,7 +15,7 @@ namespace TableTopCrucible.Core.WPF.ViewModels
     {
         private readonly TabService _tabService;
 
-        public ReadOnlyObservableCollection<PageViewModelBase> Tabs { get; }
+        public ReadOnlyObservableCollection<IPageViewModel> Tabs { get; }
         private ObservableAsPropertyHelper<int> _activeTabIndex;
         public int ActiveTabIndex
         {

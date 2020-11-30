@@ -1,5 +1,6 @@
 ﻿using System.Windows.Media.Media3D;
 using System.Linq;
+using DynamicData;
 
 namespace TableTopCrucible.Core.Helper
 {

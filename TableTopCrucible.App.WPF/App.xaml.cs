@@ -36,6 +36,8 @@ using TableTopCrucible.Data.MapEditor.Stores;
 using TableTopCrucible.Domain.MapEditor.Core.Layers;
 using TableTopCrucible.Domain.MapEditor.Core;
 using TableTopCrucible.Domain.MapEditor.Core.Services;
+using TableTopCrucible.Domain.MapEditor.WPF.ViewModels;
+using TableTopCrucible.Domain.MapEditor.WPF.PageViewModels;
 
 namespace TableTopCrucible.App.WPF
 {
@@ -144,9 +146,14 @@ namespace TableTopCrucible.App.WPF
             services.AddSingleton<ITileLocationDataService, TileLocationDataService>();
             services.AddSingleton<IMapEditorManagementService, MapEditorManagementService>();
             // viewModels
+            services.AddTransient<IMapEditorVm, MapEditorViewModel>();
+            // pages
+            services.AddTransient<IMapEditorPageVm, MapEditorPageViewModel>();
             // helper
             services.AddTransient<IGridLayer, GridLayer>();
             services.AddTransient<IFloorManager, FloorManager>();
+            services.AddTransient<ITileLayer, TileLayer>();
+            services.AddScoped<IModelCache, ModelCache>();
         }
         private ServiceProvider _createServiceProvider()
         {

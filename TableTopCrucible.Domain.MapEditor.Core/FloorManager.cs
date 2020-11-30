@@ -20,13 +20,11 @@ namespace TableTopCrucible.Domain.MapEditor.Core
     public interface IFloorManager
     {
         public Visual3D MasterModel { get; }
-        public ItemId SelectedItemId { get; set; }
     }
     public class FloorManager : DisposableReactiveObjectBase, IFloorManager
     {
         public ModelVisual3D masterModel = new ModelVisual3D();
         public Visual3D MasterModel => masterModel;
-        public IGridLayer GridLayer { get; }
         public ITileLayer TileLayer { get; }
 
         [Reactive]
@@ -34,18 +32,20 @@ namespace TableTopCrucible.Domain.MapEditor.Core
         [Reactive]
         public ItemId SelectedItemId { get; set; }
 
-        public FloorManager(IGridLayer gridLayer, ITileLayer tileLayer, IFloorDataService floorDataService, IItemDataService itemDataService)
+        public FloorManager(ITileLayer tileLayer, IFloorDataService floorDataService, IItemDataService itemDataService)
         {
-            this.GridLayer = gridLayer;
             TileLayer = tileLayer;
 
-            masterModel.Children.Add(TileLayer.MasterModel, GridLayer.MasterModel);
+            masterModel.Children.Add(TileLayer.MasterModel);
+            this.WhenAnyValue(vm => vm.FloorId)
+                .Subscribe(id => {
+                    tileLayer.FloorId = id;
+                });
 
             this.WhenAnyValue(vm => vm.FloorId)
                 .Subscribe(id =>
                 {
                     TileLayer.FloorId = id;
-                    GridLayer.FloorId = id;
                 });
 
             floorDataService.Get(
@@ -60,15 +60,6 @@ namespace TableTopCrucible.Domain.MapEditor.Core
                 .Select(id => itemDataService.GetExtended(id))
                 .Switch();
 
-            Observable.CombineLatest(
-                GridLayer.FieldMouseEnter,
-                itemChanges,
-                (location, item) => { return new { location, item }; })
-                .TakeUntil(destroy)
-                .Subscribe(x =>
-                {
-
-                });
 
 
         }

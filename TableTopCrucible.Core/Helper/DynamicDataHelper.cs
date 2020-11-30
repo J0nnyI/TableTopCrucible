@@ -91,22 +91,34 @@ namespace TableTopCrucible.Core.Helper
             Action<IEnumerable<Change<TObject, TKey>>> handleRemoves = null,
             Action<IEnumerable<Change<TObject, TKey>>> handleUpdates = null,
             Action<IEnumerable<Change<TObject, TKey>>> handleMoves = null,
-            Action<IEnumerable<Change<TObject, TKey>>> handleRefreshs = null)
+            Action<IEnumerable<Change<TObject, TKey>>> handleRefreshs = null,
+            Action handleNoChanges = null)
         {
+            if (changes.Any() == false)
+            {
+                handleNoChanges?.Invoke();
+                return;
+            }
+
             var groups = changes.GroupBy(change => change.Reason);
+
             var adds = groups.FirstOrDefault(x => x.Key == ChangeReason.Add);
-            if(adds?.Any()==true)
+            if (adds?.Any() == true)
                 handleAdds?.Invoke(adds);
             var removes = groups.FirstOrDefault(x => x.Key == ChangeReason.Remove);
+
             if (removes?.Any() == true)
                 handleRemoves?.Invoke(removes);
-            var updates= groups.FirstOrDefault(x => x.Key == ChangeReason.Update);
+            var updates = groups.FirstOrDefault(x => x.Key == ChangeReason.Update);
+
             if (updates?.Any() == true)
                 handleUpdates?.Invoke(updates);
-            var moves= groups.FirstOrDefault(x => x.Key == ChangeReason.Moved);
+            var moves = groups.FirstOrDefault(x => x.Key == ChangeReason.Moved);
+
             if (moves?.Any() == true)
                 handleMoves?.Invoke(moves);
-            var refreshs= groups.FirstOrDefault(x => x.Key == ChangeReason.Refresh);
+            var refreshs = groups.FirstOrDefault(x => x.Key == ChangeReason.Refresh);
+
             if (refreshs?.Any() == true)
                 handleRefreshs?.Invoke(refreshs);
 

@@ -28,12 +28,13 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
 {
     public interface ITileLayer
     {
-        ModelVisual3D MasterModel { get; }
+        Visual3D MasterModel { get; }
         public FloorId FloorId { get; set; }
     }
     public class TileLayer : DisposableReactiveObjectBase, ITileLayer
     {
-        public ModelVisual3D MasterModel { get; } = new ModelVisual3D();
+        private ModelVisual3D masterModel = new ModelVisual3D();
+        public Visual3D MasterModel => masterModel;
         [Reactive]
         public FloorId FloorId { get; set; }
 
@@ -78,18 +79,18 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
                 .Subscribe(change =>
                 {
                     change.HanldeManyChanges(
-                        adds => this.MasterModel.Children.AddRange(adds.Select(adds => adds.Current)),
-                        removes => this.MasterModel.Children.RemoveMany(removes.Select(adds => adds.Current)),
+                        adds => this.masterModel.Children.AddRange(adds.Select(adds => adds.Current)),
+                        removes => this.masterModel.Children.RemoveMany(removes.Select(adds => adds.Current)),
                         updates =>
                         {
                             var changes = updates.Where(x => x.Current != x.Previous);
 
-                            this.MasterModel.Children.RemoveMany(
+                            this.masterModel.Children.RemoveMany(
                                 changes
                                     .Where(x => x.Previous.HasValue)
                                     .Select(x => x.Previous.Value));
 
-                            this.MasterModel.Children.AddRange(
+                            this.masterModel.Children.AddRange(
                                 changes.Select(x => x.Current));
                         });
                 });

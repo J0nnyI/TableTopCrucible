@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TableTopCrucible.Core.WPF\TableTopCrucible.Core.WPF.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.Domain.MapEditor.Core\TableTopCrucible.Domain.MapEditor.Core.csproj" />
   </ItemGroup>
 
 </Project>

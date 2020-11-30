@@ -153,6 +153,7 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<IGridLayer, GridLayer>();
             services.AddTransient<IFloorManager, FloorManager>();
             services.AddTransient<ITileLayer, TileLayer>();
+            services.AddTransient<IMapManager, MapManager>();
             services.AddScoped<IModelCache, ModelCache>();
         }
         private ServiceProvider _createServiceProvider()

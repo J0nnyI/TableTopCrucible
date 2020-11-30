@@ -61,17 +61,17 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
             var floorIdChanges = this.WhenAnyValue(vm => vm.FloorId);
 
 
-            var size = this.tileLocationDataService.SizeByFloor(floorIdChanges);
-            var floorChanges = floorIdChanges.Select(id => floorDataService.Get().WatchValue(id))
-                .Switch();
-            var gridSizeChanges = this.WhenAnyValue(vm => vm.GridSize);
-
-            floorChanges.CombineLatest(
-                    size,
-                    gridSizeChanges,
-                    (floor, sizes, fieldSize) => { return new { floor, sizes, fieldSize }; })
+           
+            Observable.CombineLatest(
+                floorIdChanges
+                    .Select(id => floorDataService.Get().WatchValue(id))
+                    .Switch(),
+                this.tileLocationDataService.SizeByFloor(floorIdChanges),
+                    this.WhenAnyValue(vm => vm.GridSize),
+                    (floor, sizes, fieldSize) => { return new { floor, sizes, fieldSize }; }
+                )
                 .TakeUntil(destroy)
-                .Subscribe(x => handleSizeChange(x.floor, x.sizes, x.fieldSize));
+                .Subscribe(x => _handleSizeChange(x.floor, x.sizes, x.fieldSize));
 
             var currentFloor = floorIdChanges
                 .Select(floor => floorDataService.Get().WatchValue(floor))
@@ -79,7 +79,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
 
 
         }
-        private void handleSizeChange(Floor floor, Rect size, double fieldSize)
+        private void _handleSizeChange(Floor floor, Rect size, double fieldSize)
         {
             var border = fieldSize * 10;
 

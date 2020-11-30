@@ -6,9 +6,9 @@
       xmlns:local="clr-namespace:TableTopCrucible.Domain.MapEditor.WPF.PageViews"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="MapEditorPageView">
+      Title="MapEditorPageView"      >
 
     <Grid>
-        <Label>MapEditorPage</Label>
+        <ContentPresenter Content="{Binding MapEditor}"/>
     </Grid>
 </Page>

@@ -38,6 +38,7 @@ using TableTopCrucible.Domain.MapEditor.Core;
 using TableTopCrucible.Domain.MapEditor.Core.Services;
 using TableTopCrucible.Domain.MapEditor.WPF.ViewModels;
 using TableTopCrucible.Domain.MapEditor.WPF.PageViewModels;
+using TableTopCrucible.FeatureCore.WPF.ViewModels;
 
 namespace TableTopCrucible.App.WPF
 {

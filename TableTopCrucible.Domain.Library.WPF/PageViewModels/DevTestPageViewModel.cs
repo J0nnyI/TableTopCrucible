@@ -24,9 +24,6 @@ using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Commands;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
-using TableTopCrucible.Domain.MapEditor.Core;
-using TableTopCrucible.Domain.MapEditor.Core.Layers;
-using TableTopCrucible.Domain.MapEditor.WPF.PageViewModels;
 using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.WPF.Commands;
 
@@ -38,20 +35,17 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
         public DevTestPageViewModel(
             CreateThumbnailsCommand createAllThumbnails,
             NotificationCenterViewModel notificationCenterViewModel,
-            CreateThumbnailsCommand generateThumbnails,
-            IMapEditorPageVm mapEditor
+            CreateThumbnailsCommand generateThumbnails
             ) : base("dev test", PackIconKind.DeveloperBoard)
         {
             CreateAllThumbnails = createAllThumbnails;
             NotificationCenterViewModel = notificationCenterViewModel;
             GenerateThumbnails = generateThumbnails;
-            MapEditor = mapEditor;
         }
 
 
         public CreateThumbnailsCommand CreateAllThumbnails { get; }
         public NotificationCenterViewModel NotificationCenterViewModel { get; }
         public CreateThumbnailsCommand GenerateThumbnails { get; }
-        public IMapEditorPageVm MapEditor { get; }
     }
 }

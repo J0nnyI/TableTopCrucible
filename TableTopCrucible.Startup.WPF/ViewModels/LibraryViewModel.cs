@@ -18,7 +18,7 @@ using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.WPF.Commands;
 
-namespace TableTopCrucible.Domain.Library.WPF.ViewModels
+namespace TableTopCrucible.Startup.WPF.ViewModels
 {
     public class LibraryViewModel : DisposableReactiveObjectBase
     {
@@ -32,7 +32,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             AppSettingsPageViewModel settings,
             IMapEditorPageVm mapEditor)
         {
-            this.Tabs = tabs;
+            Tabs = tabs;
             tabService.Append(itemEditor, true);
             tabService.Append(fileSetup, false);
             tabService.Append(mapEditor, false);

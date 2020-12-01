@@ -17,7 +17,9 @@ namespace TableTopCrucible.Domain.MapEditor.Core
     public interface IMapManager
     {
         Visual3D MasterModel { get; }
-        IObservable<MapId> MapIdChanges { get; set; }
+        void CreateMap();
+        void OpenMap(MapId mapId);
+
         public IObservable<ItemId> SelectedItemIdChanges { get; set; }
     }
     public class MapManager : DisposableReactiveObjectBase,IMapManager
@@ -32,11 +34,16 @@ namespace TableTopCrucible.Domain.MapEditor.Core
 
 
         [Reactive]
-        public IObservable<MapId> MapIdChanges { get; set; }
+        public MapId MapId{ get; set; }
         public MapManager(IGridLayer gridLayer, IMapDataService mapDataService)
         {
+
+
             _gridLayer = gridLayer;
             _mapDataService = mapDataService;
+
+
+
             Observable.CombineLatest(
                 gridLayer.FieldMouseEnter,
                 this.WhenAnyObservable(vm=>vm.SelectedItemIdChanges),
@@ -48,10 +55,16 @@ namespace TableTopCrucible.Domain.MapEditor.Core
                 });
         }
 
-        public void OpenNewMap()
+        public void CreateMap()
         {
             var map = new Map("new Map",string.Empty);
             this._mapDataService.Post(map);
+            
+            this.MapId = map.Id;
+        }
+        public void OpenMap(MapId mapId)
+        {
+            this.MapId = mapId;
         }
     }
 }

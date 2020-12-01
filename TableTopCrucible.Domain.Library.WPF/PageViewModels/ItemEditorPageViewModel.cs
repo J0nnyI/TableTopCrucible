@@ -15,9 +15,11 @@ using System.Windows.Forms.VisualStyles;
 
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.WPF.PageViewModels;
+using TableTopCrucible.Core.WPF.ViewModels;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.Domain.Library.WPF.Views;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
+using TableTopCrucible.FeatureCore.WPF.ViewModels;
 
 namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 {
@@ -59,13 +61,13 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
                 .Subscribe(x =>
                 {
 
-                    this.IsSingle = x.Count <= 1;
-                    if (x.Count == 1)
+                    this.IsSingle = x.Count() <= 1;
+                    if (x.Count() == 1)
                         itemEditor.SelectItem(x.FirstOrDefault().SourceItem.Id);
                     else
                         itemEditor.SelectItem(null);
 
-                    if (x.Count <= 1)
+                    if (x.Count() <= 1)
                         this.Editor = ItemEditor;
                     else
                         this.Editor = MultiItemEditor;

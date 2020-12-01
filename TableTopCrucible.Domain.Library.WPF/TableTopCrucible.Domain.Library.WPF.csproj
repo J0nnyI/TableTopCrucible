@@ -18,7 +18,6 @@
     <PackageReference Include="ReactiveUI.Fody" Version="12.1.5" />
     <PackageReference Include="ReactiveUI.Validation" Version="1.8.6" />
     <PackageReference Include="ReactiveUI.WPF" Version="12.1.5" />
-    <PackageReference Include="VirtualizingWrapPanel" Version="1.5.2" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
   </ItemGroup>
 
@@ -28,8 +27,7 @@
     <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF.Filter\TableTopCrucible.Domain.Library.WPF.Filter.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF.Tagging\TableTopCrucible.Domain.Library.WPF.Tagging.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Domain.Library\TableTopCrucible.Domain.Library.csproj" />
-    <ProjectReference Include="..\TableTopCrucible.Domain.MapEditor.Core\TableTopCrucible.Domain.MapEditor.Core.csproj" />
-    <ProjectReference Include="..\TableTopCrucible.Domain.MapEditor.WPF\TableTopCrucible.Domain.MapEditor.WPF.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.FeatureCore.WPF\TableTopCrucible.FeatureCore.WPF.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,9 +50,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\ItemEditor.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\ItemList.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -88,9 +83,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\ItemEditor.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\ItemList.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\NotificationCenter.xaml">

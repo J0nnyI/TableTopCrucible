@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TableTopCrucible.Domain.Library.WPF.Views
+namespace TableTopCrucible.Startup.WPF.Views
 {
     /// <summary>
     /// Interaction logic for LibraryView.xaml

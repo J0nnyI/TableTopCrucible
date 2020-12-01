@@ -14,16 +14,15 @@ using System.Windows;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Core.Helper;
-using TableTopCrucible.Data.Models.Views;
-using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using System.Windows.Input;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.Core.WPF.Helper;
 using System.Collections.Specialized;
-using TableTopCrucible.Domain.Library.WPF.Views;
+using TableTopCrucible.Data.Models.Views;
+using TableTopCrucible.Data.Services;
 
-namespace TableTopCrucible.Domain.Library.WPF.ViewModels
+namespace TableTopCrucible.FeatureCore.WPF.ViewModels
 {
     public struct ItemClickedEventArgs
     {
@@ -54,9 +53,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         public ItemEx Item { get; }
         public ItemSelectionInfo(ItemEx item, ISelectionProvider selectionProvider, ICommand dragCommand)
         {
-            this.ItemLeftMouseButtonDownCommand = dragCommand;
-            this.Item = item;
-            this._isSelected =
+            ItemLeftMouseButtonDownCommand = dragCommand;
+            Item = item;
+            _isSelected =
                 selectionProvider
                 .SelectedItemIDs
                 .Connect()
@@ -91,16 +90,16 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             IItemDataService itemService,
             IInjectionProviderService injectionProviderService)
         {
-            this._itemService = itemService ?? throw new NullReferenceException("got no itemService");
-            this._injectionProviderService = injectionProviderService ?? throw new NullReferenceException("got no itemservice");
+            _itemService = itemService ?? throw new NullReferenceException("got no itemService");
+            _injectionProviderService = injectionProviderService ?? throw new NullReferenceException("got no itemservice");
 
-            this.DeselectAllCommand = new RelayCommand(
-                _ => this.SelectedItemIDs.Clear(),
-                _ => this.SelectedItemIDs.Items.Any());
+            DeselectAllCommand = new RelayCommand(
+                _ => SelectedItemIDs.Clear(),
+                _ => SelectedItemIDs.Items.Any());
 
-            this.ItemClickedCommand = new RelayCommand(onItemClicked);
+            ItemClickedCommand = new RelayCommand(onItemClicked);
 
-            this.ListKeyUpCommand = new RelayCommand(onListKeyUp);
+            ListKeyUpCommand = new RelayCommand(onListKeyUp);
 
             DragCommand = new RelayCommand(sender =>
             {
@@ -110,13 +109,13 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 }
             });
 
-            this._injectionProviderService.Provider.Subscribe(
+            _injectionProviderService.Provider.Subscribe(
                 (provider) =>
             {
                 if (provider == null)
                     throw new InvalidOperationException("provider is null");
                 #region list assembly
-                var itemList = this._itemService
+                var itemList = _itemService
                     .GetExtended()
                     .Connect()
                     .Filter(FilterChanges)
@@ -155,9 +154,9 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 selectionList
                     .Sort(item => item.Item.Name)
                     .ObserveOn(RxApp.MainThreadScheduler)
-                    .Do(_ => this.Disconnected = true)
+                    .Do(_ => Disconnected = true)
                     .Bind(out _items)
-                    .Do(_ => this.Disconnected = false)
+                    .Do(_ => Disconnected = false)
                     .Subscribe();
                 #endregion
             });
@@ -175,7 +174,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         }
         private void itemDrag(DependencyObject source)
         {
-            var files = this.Selection.Items
+            var files = Selection.Items
                 .Select(item => item.LatestFile?.AbsolutePath)
                 .Where(x => x != null)
                 .ToStringCollection();
@@ -205,18 +204,18 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             }
             else if (isShiftPressed)
             {
-                var section = this.Items.Subsection(curItem, prevItem);
+                var section = Items.Subsection(curItem, prevItem);
 
                 if (section.All(item => item.IsSelected))
                     SelectedItemIDs.RemoveMany(section.Select(item => item.Item.ItemId));
                 else
-                    SelectedItemIDs.AddRange(section.Select(item => item.Item.ItemId).Except(this.SelectedItemIDs.Items));
+                    SelectedItemIDs.AddRange(section.Select(item => item.Item.ItemId).Except(SelectedItemIDs.Items));
             }
             else
             {
                 if (SelectedItemIDs.Count == 1 && SelectedItemIDs.Items.Contains(curItem.Item.ItemId))
                     return;
-                this.SelectedItemIDs.Clear();
+                SelectedItemIDs.Clear();
                 SelectedItemIDs.Add(curItem.Item.ItemId);
             }
             previouslyClickedItem = curItem;

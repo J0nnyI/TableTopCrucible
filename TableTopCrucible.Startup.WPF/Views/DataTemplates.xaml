@@ -6,4 +6,7 @@
     <DataTemplate DataType="{x:Type vm:StartupViewModel}">
         <v:StartupView/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:LibraryViewModel}">
+        <v:LibraryView/>
+    </DataTemplate>
 </ResourceDictionary>

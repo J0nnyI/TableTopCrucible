@@ -23,6 +23,15 @@
     <ProjectReference Include="..\TableTopCrucible.Data.SaveFile\TableTopCrucible.Data.SaveFile.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF\TableTopCrucible.Domain.Library.WPF.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.Domain.MapEditor.WPF\TableTopCrucible.Domain.MapEditor.WPF.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.FeatureCore.WPF\TableTopCrucible.FeatureCore.WPF.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\LibraryView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
 </Project>

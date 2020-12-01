@@ -2,9 +2,9 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 
-using TableTopCrucible.Domain.Library.WPF.ViewModels;
+using TableTopCrucible.FeatureCore.WPF.ViewModels;
 
-namespace TableTopCrucible.Domain.Library.WPF.Views
+namespace TableTopCrucible.FeatureCore.WPF.Views
 {
     /// <summary>
     /// Interaction logic for ItemList.xaml
@@ -18,7 +18,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Views
 
         private void ListViewItem_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (this.DataContext is ItemListViewModel vm &&
+            if (DataContext is ItemListViewModel vm &&
                 sender is ListViewItem rawItem &&
                 rawItem.DataContext is ItemSelectionInfo itemVm)
                 vm.ItemClickedCommand.Execute(new ItemClickedEventArgs(itemVm, e));

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace TableTopCrucible.Domain.Library.WPF.Tagging.Converters
+namespace TableTopCrucible.FeatureCore.WPF.Tagging.Converters
 {
     public class TagBackgroundConverter : IValueConverter
     {

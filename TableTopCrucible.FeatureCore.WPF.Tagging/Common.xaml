@@ -3,5 +3,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source=".\Converters\Converters.xaml"/>
         <ResourceDictionary Source=".\Views\DataTemplates.xaml"/>
+
+        <ResourceDictionary Source="pack://application:,,,/TableTopCrucible.Core.WPF;component/Common.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

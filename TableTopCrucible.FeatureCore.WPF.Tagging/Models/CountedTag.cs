@@ -7,7 +7,7 @@ using System.Reactive.Linq;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.ValueTypes;
 
-namespace TableTopCrucible.Domain.Library.WPF.Tagging.Models
+namespace TableTopCrucible.FeatureCore.WPF.Tagging.Models
 {
     public class CountedTag : DisposableReactiveObjectBase, IComparable
     {

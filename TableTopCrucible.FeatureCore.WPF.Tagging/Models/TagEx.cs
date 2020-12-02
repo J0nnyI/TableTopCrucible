@@ -4,7 +4,7 @@ using System.Windows;
 
 using TableTopCrucible.Data.Models.ValueTypes;
 
-namespace TableTopCrucible.Domain.Library.WPF.Tagging.Models
+namespace TableTopCrucible.FeatureCore.WPF.Tagging.Models
 {
     public struct TagEx : IComparable
     {

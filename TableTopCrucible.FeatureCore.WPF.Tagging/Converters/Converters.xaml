@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:cv="clr-namespace:TableTopCrucible.Domain.Library.WPF.Tagging.Converters">
+                    xmlns:cv="clr-namespace:TableTopCrucible.FeatureCore.WPF.Tagging.Converters">
     <cv:TagBackgroundConverter x:Key="cv_tagColor"/>
     <cv:TagConverter x:Key="cv_tag"/>
 

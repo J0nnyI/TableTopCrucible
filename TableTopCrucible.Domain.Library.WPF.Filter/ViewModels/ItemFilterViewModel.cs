@@ -26,8 +26,7 @@ using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Domain.Library.WPF.Filter.Models;
-using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
-using TableTopCrucible.Domain.Library.WPF.Views;
+using TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels;
 
 namespace TableTopCrucible.Domain.Library.WPF.Filter.ViewModel
 {

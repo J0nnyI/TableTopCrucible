@@ -12,6 +12,7 @@ using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Core.Helper;
@@ -28,10 +29,8 @@ using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.Domain.Library.WPF.Filter.ViewModel;
 using TableTopCrucible.Startup.WPF.ViewModels;
-using System.Windows.Threading;
 using TableTopCrucible.Core.WPF.Windows;
 using TableTopCrucible.Data.SaveFile.WPF.ViewModels;
-using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
 using TableTopCrucible.Data.MapEditor.Stores;
 using TableTopCrucible.Domain.MapEditor.Core.Layers;
 using TableTopCrucible.Domain.MapEditor.Core;
@@ -39,6 +38,7 @@ using TableTopCrucible.Domain.MapEditor.Core.Services;
 using TableTopCrucible.Domain.MapEditor.WPF.ViewModels;
 using TableTopCrucible.Domain.MapEditor.WPF.PageViewModels;
 using TableTopCrucible.FeatureCore.WPF.ViewModels;
+using TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels;
 
 namespace TableTopCrucible.App.WPF
 {

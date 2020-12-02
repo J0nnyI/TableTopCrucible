@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using TableTopCrucible.Data.Models.ValueTypes;
 
-namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
+namespace TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels
 {
     public interface ITagEditor
     {

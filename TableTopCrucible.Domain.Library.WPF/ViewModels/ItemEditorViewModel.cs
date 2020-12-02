@@ -28,8 +28,8 @@ using TableTopCrucible.Core.WPF.Commands;
 using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf;
 using TableTopCrucible.Data.Models.ValueTypes;
-using TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels;
 using System.Collections.Generic;
+using TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {

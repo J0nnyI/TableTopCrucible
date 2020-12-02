@@ -12,9 +12,9 @@ using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.Core.Helper;
-using TableTopCrucible.Domain.Library.WPF.Tagging.Models;
+using TableTopCrucible.FeatureCore.WPF.Tagging.Models;
 
-namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
+namespace TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels
 {
     public interface IDrivenTagEditor : ITagEditor
     {

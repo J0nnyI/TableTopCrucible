@@ -12,7 +12,7 @@ using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Services;
 
-namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
+namespace TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels
 {
 
 

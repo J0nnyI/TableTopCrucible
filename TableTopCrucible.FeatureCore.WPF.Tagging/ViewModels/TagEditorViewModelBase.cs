@@ -19,10 +19,10 @@ using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Services;
-using TableTopCrucible.Domain.Library.WPF.Tagging.Models;
+using TableTopCrucible.FeatureCore.WPF.Tagging.Models;
 using TableTopCrucible.WPF.Commands;
 
-namespace TableTopCrucible.Domain.Library.WPF.Tagging.ViewModels
+namespace TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels
 {
     public abstract class TagEditorViewModelBase : DisposableReactiveValidationObject, ITagEditor
     {

@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 using TableTopCrucible.Domain.Models.ValueTypes;
 
-namespace TableTopCrucible.Domain.Library.WPF.Views
+namespace TableTopCrucible.FeatureCore.WPF.Tagging.Views
 {
     /// <summary>
     /// Interaction logic for TagList.xaml

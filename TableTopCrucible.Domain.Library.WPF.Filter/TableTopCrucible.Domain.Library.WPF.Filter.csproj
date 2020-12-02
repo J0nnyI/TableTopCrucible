@@ -20,7 +20,6 @@
     <ProjectReference Include="..\TableTopCrucible.Core.WPF\TableTopCrucible.Core.WPF.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Core\TableTopCrucible.Core.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
-    <ProjectReference Include="..\TableTopCrucible.Domain.Library.WPF.Tagging\TableTopCrucible.FeatureCore.WPF.Tagging.csproj" />
     <ProjectReference Include="..\TableTopCrucible.FeatureCore.WPF.Tagging\TableTopCrucible.FeatureCore.WPF.Tagging.csproj" />
     <ProjectReference Include="..\TableTopCrucible.FeatureCore.WPF\TableTopCrucible.FeatureCore.WPF.csproj" />
   </ItemGroup>

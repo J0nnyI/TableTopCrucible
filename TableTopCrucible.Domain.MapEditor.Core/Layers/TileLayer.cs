@@ -5,6 +5,7 @@ using HelixToolkit.Wpf;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -37,45 +38,38 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
         public Visual3D MasterModel => masterModel;
         [Reactive]
         public FloorId FloorId { get; set; }
-        public TileLayer(ITileLocationDataService tileLocationDataService, IItemDataService itemService,IMapEditorManagementService mapEditorManagementService, IModelCache modelCache)
+        public TileLayer(ITileLocationDataService tileLocationDataService, IItemDataService itemService, IMapEditorManagementService mapEditorManagementService, IModelCache modelCache)
         {
-
-
-            // todo: create the cache for all maps at one location to prevent redundant memory usage
-
-            modelCache
+            var visuals = modelCache
                 .Get()
                 .Connect()
-                .InnerJoin(
+                .InnerJoinMany(
                     mapEditorManagementService
                         .GetLocationEx()
-                        .Filter(this.WhenAnyValue(vm=>vm.FloorId).ToFilter((TileLocationEx location, FloorId floorId) => location.FloorId == floorId)),
+                        .Filter(this.WhenAnyValue(vm => vm.FloorId).ToFilter((TileLocationEx location, FloorId floorId) => location.FloorId == floorId)),
                     location => location.ItemId,
-                    (model, location) =>
-                    {
-                        var visual = new ModelVisual3D { Content = model };
-                        visual.Move(location.Origin);
-                        return visual;
-                    })
-                .Subscribe(change =>
+                    (model, locations) => locations.Items.Select(location =>
+                         {
+                             var visual = new ModelVisual3D { Content = model };
+                             visual.Move(location.Origin);
+                             return new { visual, location.LocationId };
+                         })
+                    )
+                .TransformMany(visuals => visuals, visuals => visuals.LocationId)
+                .Transform(x => x.visual)
+                .OnItemAdded(visual => this.masterModel.Children.Add(visual))
+                .OnItemRemoved(visual => this.masterModel.Children.Remove(visual))
+                .OnItemUpdated((current, previous) =>
                 {
-                    change.HanldeManyChanges(
-                        adds => this.masterModel.Children.AddRange(adds.Select(adds => adds.Current)),
-                        removes => this.masterModel.Children.RemoveMany(removes.Select(adds => adds.Current)),
-                        updates =>
-                        {
-                            var changes = updates.Where(x => x.Current != x.Previous);
-
-                            this.masterModel.Children.RemoveMany(
-                                changes
-                                    .Where(x => x.Previous.HasValue)
-                                    .Select(x => x.Previous.Value));
-
-                            this.masterModel.Children.AddRange(
-                                changes.Select(x => x.Current));
-                        });
-                });
-
+                    if (current == previous)
+                        return;
+                    if (current != null)
+                        this.masterModel.Children.Add(current);
+                    if (previous != null)
+                        this.masterModel.Children.Remove(previous);
+                })
+                .TakeUntil(destroy)
+                .Subscribe();
 
         }
 

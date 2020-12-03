@@ -25,7 +25,7 @@
 
                 <ResourceDictionary Source="pack://application:,,,/TableTopCrucible.Startup.WPF;component/Common.xaml"/>
 
-                <ResourceDictionary Source="./Views/DataTemplates.xaml"/>
+                <ResourceDictionary Source="./PageViews/DataTemplates.xaml"/>
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

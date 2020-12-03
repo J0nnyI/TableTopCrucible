@@ -28,7 +28,6 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
         void AddMapToCache(MapId mapId);
         IObservableCache<Model3DGroup, ItemId> Get();
         IObservable<Model3DGroup> Get(IObservable<ItemId> idChanges);
-        IObservable<Model3DGroup> Get(ItemId id);
         void RemoveMapFromCache(MapId mapId);
     }
     public class ModelCache:DisposableReactiveObjectBase, IModelCache
@@ -43,8 +42,8 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
         private readonly ISourceList<MapId> _cachedMaps = new SourceList<MapId>();
         public ModelCache(IItemDataService itemDataService, IFloorDataService floorDataService, ITileLocationDataService tileLocationDataService)
         {
-
-            _modelCache = _cachedMaps
+            _cachedMaps.Connect().Subscribe(x => { });
+            var maps = _cachedMaps
                 .Connect()
                 .AddKey(id => id)
                 .InnerJoinMany(
@@ -54,7 +53,10 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
                     floor => floor.MapId,
                     (mapId, floors) => floors.Items.Select(floor => floor.Id)
                 )
-                .TransformMany(floors => floors, id => id)
+                .TransformMany(floorIds => floorIds, id => id);
+            maps.Subscribe(x => { });
+
+            var floors = maps
                 .InnerJoinMany(
                     tileLocationDataService
                         .Get()
@@ -62,7 +64,10 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
                     location => location.FloorId,
                     (floorId, locations) => locations.Items.Select(location => location.ItemId)
                 )
-                .TransformMany(locations => locations, id => id)
+                .TransformMany(locations => locations, id => id);
+            floors.Subscribe(x => { });
+
+            _modelCache = floors
                 .InnerJoin(
                     itemDataService.GetExtended().Connect(),
                     item => item.ItemId,
@@ -71,6 +76,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
                 .Transform(_itemToModel)
                 .AsObservableCache();
 
+            _modelCache.Connect().Subscribe(x => { });
             _itemDataService = itemDataService;
 
         }
@@ -81,36 +87,23 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
         public IObservable<Model3DGroup> Get(IObservable<ItemId> idChanges)
         {
             return idChanges
+                .DistinctUntilChanged()
                 .Select(id =>
-                    this.Get()
-                        .Connect()
-                        .WatchValue(id)
-                        .Select(model =>
-                        {
-                            return new { id, model };
-                        })
+                    (
+                        id == default
+                            ? Observable.Return<Model3DGroup>(null)
+                            :
+                        this.Get().Keys.Contains(id)
+                            ? Observable.Never<Model3DGroup>()
+                            : this._itemDataService.GetExtended(id).Select(_itemToModel)
                     )
-                .Switch()
-                .Select((x) =>
-                {
-                    if (x.model == null)
-                        return this._itemDataService.GetExtended(x.id).Select(_itemToModel);
-                    return Observable.Return(x.model);
-                })
-                .Switch();
-        }
-        public IObservable<Model3DGroup> Get(ItemId id)
-        {
-            return this
-                .Get()
-                .Connect()
-                .WatchValue(id)
-                .Select(model =>
-                {
-                    if (model == null)
-                        return this._itemDataService.GetExtended(id).Select(_itemToModel);
-                    return Observable.Return(model);
-                })
+                    .Merge(
+                        this.Get()
+                            .Connect()
+                            .WatchValue(id)
+                    )
+                )
+                .TakeUntil(destroy)
                 .Switch();
         }
         private Model3DGroup _itemToModel(ItemEx item)

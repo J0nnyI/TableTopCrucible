@@ -20,6 +20,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
     public interface IFloorManager
     {
         public Visual3D MasterModel { get; }
+        FloorId FloorId { get; set; }
     }
     public class FloorManager : DisposableReactiveObjectBase, IFloorManager
     {
@@ -29,8 +30,6 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
 
         [Reactive]
         public FloorId FloorId { get; set; }
-        [Reactive]
-        public ItemId SelectedItemId { get; set; }
 
         public FloorManager(ITileLayer tileLayer, IFloorDataService floorDataService, IItemDataService itemDataService)
         {
@@ -56,14 +55,6 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
                 {
                     tileLayer.FloorId = floor.Id;
                 });
-
-            var itemChanges =
-                this.WhenAnyValue(vm => vm.SelectedItemId)
-                .Select(id => itemDataService.GetExtended(id))
-                .Switch();
-
-
-
         }
     }
 }

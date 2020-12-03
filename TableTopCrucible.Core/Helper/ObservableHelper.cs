@@ -21,8 +21,12 @@ namespace TableTopCrucible.Core.Helper
     }
     public static class ObservableHelper
     {
-        public static IObservable<PreviousAndCurrentValue<T>> PreviousAndCurrent<T>(this IObservable<T> src)
-            => src.Aggregate(new PreviousAndCurrentValue<T>(Optional.None<T>(), Optional.None<T>()),
-                (acc, val) => new PreviousAndCurrentValue<T>(acc.Current, val));
+        public static IObservable<PreviousAndCurrentValue<T>> Pairwise<T>(this IObservable<T> src)
+        {
+            var prev = Optional<T>.None;
+            return src
+                .Select(value => new PreviousAndCurrentValue<T>(prev, value))
+                .Do(cs => prev = cs.Current);
+        }
     }
 }

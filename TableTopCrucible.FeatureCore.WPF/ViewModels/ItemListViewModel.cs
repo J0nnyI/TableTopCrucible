@@ -109,57 +109,51 @@ namespace TableTopCrucible.FeatureCore.WPF.ViewModels
                 }
             });
 
-            _injectionProviderService.Provider.Subscribe(
-                (provider) =>
-            {
-                if (provider == null)
-                    throw new InvalidOperationException("provider is null");
-                #region list assembly
-                var itemList = _itemService
-                    .GetExtended()
-                    .Connect()
-                    .Filter(FilterChanges)
-                    .TakeUntil(destroy);
+            #region list assembly
+            var itemList = _itemService
+                .GetExtended()
+                .Connect()
+                .Filter(FilterChanges)
+                .TakeUntil(destroy);
 
-                var selectionList =
-                    itemList.Transform(item => new ItemSelectionInfo(item, this, DragCommand))
-                    .DisposeMany();
+            var selectionList =
+                itemList.Transform(item => new ItemSelectionInfo(item, this, DragCommand))
+                .DisposeMany();
 
-                var _selection =
-                    SelectedItemIDs.Connect()
-                    .AddKey(id => id)
-                    .LeftJoin(
-                        itemList,
-                        item => item.ItemId,
-                        (id, item) => new { id, item })
-                    .RemoveKey();
+            var _selection =
+                SelectedItemIDs.Connect()
+                .AddKey(id => id)
+                .LeftJoin(
+                    itemList,
+                    item => item.ItemId,
+                    (id, item) => new { id, item })
+                .RemoveKey();
 
 
-                Selection =
-                    _selection
-                    .Filter(x => x.item.HasValue)
-                    .Transform(x => x.item.Value)
-                    .AsObservableList();
-
-
+            Selection =
                 _selection
-                     .Filter(x => !x.item.HasValue)
-                     .ToCollection()
-                     .Subscribe(col =>
-                     {
-                         if (col.Any())
-                             SelectedItemIDs.RemoveMany(col.Select(x => x.id));
-                     });
+                .Filter(x => x.item.HasValue)
+                .Transform(x => x.item.Value)
+                .AsObservableList();
 
-                selectionList
-                    .Sort(item => item.Item.Name)
-                    .ObserveOn(RxApp.MainThreadScheduler)
-                    .Do(_ => Disconnected = true)
-                    .Bind(out _items)
-                    .Do(_ => Disconnected = false)
-                    .Subscribe();
-                #endregion
-            });
+
+            _selection
+                 .Filter(x => !x.item.HasValue)
+                 .ToCollection()
+                 .Subscribe(col =>
+                 {
+                     if (col.Any())
+                         SelectedItemIDs.RemoveMany(col.Select(x => x.id));
+                 });
+
+            selectionList
+                .Sort(item => item.Item.Name)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Do(_ => Disconnected = true)
+                .Bind(out _items)
+                .Do(_ => Disconnected = false)
+                .Subscribe();
+            #endregion
 
 
 

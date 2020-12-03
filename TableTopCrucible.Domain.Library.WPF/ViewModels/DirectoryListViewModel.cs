@@ -42,7 +42,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             FullSync = fullSync;
             GenerateItems = generateItems;
             this._injectionProviderService
-                .Provider
+                .ProviderChanges
                 .Select(provider =>
                     this._directorySetupService
                         .Get()

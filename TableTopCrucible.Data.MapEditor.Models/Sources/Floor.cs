@@ -7,16 +7,15 @@ namespace TableTopCrucible.Data.MapEditor.Models.Sources
 {
     public struct Floor : IEntity<FloorId>
     {
-        public Floor(TileLayer? tileLayer, MapId mapId, int height)
+        public Floor(string name,MapId mapId, int height)
         {
-            TileLayer = tileLayer;
+            this.Name = name;
             Id = FloorId.New();
             MapId = mapId;
             LastChange = Created = DateTime.Now;
             Height = height;
         }
-
-        public TileLayer? TileLayer { get; }
+        public string Name { get; }
         public FloorId Id { get; }
         public MapId MapId { get; }
         public DateTime Created { get; }

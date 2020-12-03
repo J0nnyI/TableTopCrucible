@@ -1,0 +1,8 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:v="clr-namespace:TableTopCrucible.App.WPF.PageViews"
+                    xmlns:vm="clr-namespace:TableTopCrucible.App.WPF.PageViewModels">
+    <DataTemplate DataType="{x:Type vm:DevTestPageViewModel}">
+        <v:DevTestPage/>
+    </DataTemplate>
+</ResourceDictionary>

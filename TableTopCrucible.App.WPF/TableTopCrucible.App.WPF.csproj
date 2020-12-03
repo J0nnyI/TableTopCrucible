@@ -43,6 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="PageViews\DevTestPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
@@ -58,7 +61,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\" />
+    <Page Update="PageViews\DevTestPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   
 </Project>

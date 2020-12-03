@@ -5,7 +5,8 @@ namespace TableTopCrucible.Core.Services
 {
     public interface IInjectionProviderService
     {
-        ISubject<IServiceProvider> Provider { get; }
+        IObservable<IServiceProvider> ProviderChanges { get; }
+        IServiceProvider Provider { get; }
     }
 
 }

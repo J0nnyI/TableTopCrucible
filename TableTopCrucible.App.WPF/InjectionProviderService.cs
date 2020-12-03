@@ -7,12 +7,13 @@ namespace TableTopCrucible.App.WPF
 {
     public class InjectionProviderService : IInjectionProviderService, IDisposable
     {
-        private readonly BehaviorSubject<IServiceProvider> _provider = new BehaviorSubject<IServiceProvider>(null);
-        public ISubject<IServiceProvider> Provider => _provider;
+        private readonly BehaviorSubject<IServiceProvider> _providerChanges = new BehaviorSubject<IServiceProvider>(null);
+        public IObservable<IServiceProvider> ProviderChanges => _providerChanges;
+        public IServiceProvider Provider => _providerChanges.Value;
 
         internal void SetProvider(IServiceProvider provider)
         {
-            this._provider.OnNext(provider);
+            this._providerChanges.OnNext(provider);
         }
 
         #region IDisposable Support
@@ -23,7 +24,7 @@ namespace TableTopCrucible.App.WPF
             {
                 if (disposing)
                 {
-                    _provider.Dispose();
+                    _providerChanges.Dispose();
                 }
                 _disposedValue = true;
             }

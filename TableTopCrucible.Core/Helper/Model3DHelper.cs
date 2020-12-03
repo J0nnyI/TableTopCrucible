@@ -68,7 +68,7 @@ namespace TableTopCrucible.Core.Helper
             {
                 X = bounds.X + bounds.SizeX / 2,
                 Y = bounds.Y + bounds.SizeY / 2,
-                Z = bounds.Z + bounds.SizeZ / 2
+                Z = bounds.Z
             };
         }
 

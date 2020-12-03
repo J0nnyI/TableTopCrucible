@@ -31,9 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Pages\DevTestPage.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="Pages\FileSetupPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -56,9 +53,6 @@
 
   <ItemGroup>
     <Page Update="Converters\Converters.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Pages\DevTestPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Pages\FileSetupPage.xaml">

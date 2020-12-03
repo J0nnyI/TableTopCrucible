@@ -26,7 +26,6 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
         public LibraryViewModel(
             TabViewModel tabs,
             TabService tabService,
-            DevTestPageViewModel devTest,
             ItemEditorPageViewModel itemEditor,
             FileSetupPageViewModel fileSetup,
             AppSettingsPageViewModel settings,
@@ -37,9 +36,6 @@ namespace TableTopCrucible.Startup.WPF.ViewModels
             tabService.Append(fileSetup, false);
             tabService.Append(mapEditor, false);
             tabService.Append(settings, false);
-#if DEBUG
-            tabService.Append(devTest, false);
-#endif
         }
     }
 }

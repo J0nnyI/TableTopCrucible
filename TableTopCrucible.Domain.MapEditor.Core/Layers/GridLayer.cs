@@ -31,7 +31,6 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
         double GridSize { get; set; }
         IObservable<Rect3D> FieldMouseEnter { get; }
         IObservable<Rect3D> FieldSelected { get; }
-        void Init(FloorId floorId, double GridSize);
         Visual3D MasterModel { get; }
     }
     public class GridLayer : DisposableReactiveObjectBase, IGridLayer
@@ -62,17 +61,18 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
             var floorIdChanges = this.WhenAnyValue(vm => vm.FloorId);
 
 
-           
+
             Observable.CombineLatest(
                 floorIdChanges
                     .Select(id => floorDataService.Get().WatchValue(id))
                     .Switch(),
-                this.tileLocationDataService.SizeByFloor(floorIdChanges),
-                    this.WhenAnyValue(vm => vm.GridSize),
-                    (floor, sizes, fieldSize) => { return new { floor, sizes, fieldSize }; }
+                this.tileLocationDataService
+                    .SizeByFloor(floorIdChanges),
+                this.WhenAnyValue(vm => vm.GridSize),
+                (floor, floorSize, fieldSize) => { return new { floor, floorSize, fieldSize }; }
                 )
                 .TakeUntil(destroy)
-                .Subscribe(x => _handleSizeChange(x.floor, x.sizes, x.fieldSize));
+                .Subscribe(x => _handleSizeChange(x.floor, x.floorSize, x.fieldSize));
 
             var currentFloor = floorIdChanges
                 .Select(floor => floorDataService.Get().WatchValue(floor))
@@ -80,14 +80,21 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
 
 
         }
-        private void _handleSizeChange(Floor floor, Rect size, double fieldSize)
+        private void _handleSizeChange(Floor floor, Rect floorSize, double fieldSize)
         {
             var border = fieldSize * 10;
 
             var elements = new List<ModelUIElement3D>();
-            for (double x = size.Left - fieldSize / 2 - border; x < size.Right + border; x += fieldSize)
+
+            var minX = floorSize.Left.Max(0) - (fieldSize / 2) - border;
+            var maxX = floorSize.Right.Min(0) + border;
+            var minY = floorSize.Top.Max(0) - (fieldSize / 2) - border;
+            var maxY = floorSize.Bottom.Min(0) + border;
+
+
+            for (double x = minX; x < maxX; x += fieldSize)
             {
-                for (double y = size.Bottom - fieldSize / 2 - border; y < size.Top + border; y += fieldSize)
+                for (double y = minY; y < maxY; y += fieldSize)
                 {
                     var fullField = new Rect3D(x, y, floor.Height, fieldSize, fieldSize, floor.Height);
 
@@ -117,10 +124,5 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
             return builder.ToMesh();
         }
 
-        public void Init(FloorId floorId, double GridSize = 51)
-        {
-            this.FloorId = floorId;
-            this.GridSize = GridSize;
-        }
     }
 }

@@ -27,6 +27,7 @@ using TableTopCrucible.Domain.MapEditor.WPF.PageViewModels;
 using TableTopCrucible.FeatureCore.WPF.ViewModels;
 using TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels;
 using TableTopCrucible.Domain.MapEditor.Core.Managers;
+using TableTopCrucible.App.WPF.PageViewModels;
 
 namespace TableTopCrucible.App.WPF
 {
@@ -45,12 +46,16 @@ namespace TableTopCrucible.App.WPF
 
             var saveService = serviceProvider.GetRequiredService<ISaveService>();
             var tabService = serviceProvider.GetRequiredService<TabService>();
+            var devTest = serviceProvider.GetRequiredService<DevTestPageViewModel>();
 
             if (e.Args.Length > 0 && File.Exists(e.Args[0]) && Path.GetExtension(e.Args[0]) == ".ttcl")
             {
                 saveService.Load(e.Args[0]);
                 tabService.SetTabIndex(1);
             }
+#if DEBUG
+            tabService.Append(devTest, false);
+#endif
             var window = serviceProvider.GetRequiredService<AppWindow>();
             window.Content = serviceProvider.GetRequiredService<StartupViewModel>();
             window.Show();
@@ -142,6 +147,7 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<IFloorManager, FloorManager>();
             services.AddTransient<IMapManager, MapManager>();
             // helper
+            services.AddTransient<ICursorManager, CursorManager>();
             services.AddTransient<IGridLayer, GridLayer>();
             services.AddTransient<ITileLayer, TileLayer>();
             services.AddSingleton<IModelCache, ModelCache>();

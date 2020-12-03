@@ -84,6 +84,8 @@ namespace TableTopCrucible.Core.Helper
         {
             return list.Where(x => !sublist.Contains(selector(x)));
         }
+        public static bool ContainsAll<T>(this IEnumerable<T> list, IEnumerable<T> filter)
+            => filter.All(x => list.Contains(x));
         /**
          * {1,2,3,4,5} + (2,4) ==> {2,3,4}
          * {1,2,3,4,5} + (4,2) ==> {2,3,4}
@@ -116,7 +118,7 @@ namespace TableTopCrucible.Core.Helper
             {
                 State = TaskState.Todo
             };
-            var chunkCount= Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(list.Count()) / chunkSize));
+            var chunkCount = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(list.Count()) / chunkSize));
             var res = getSubjectList<IEnumerable<Tout>>(chunkCount);
             progress = prog;
             Observable.Start(() =>

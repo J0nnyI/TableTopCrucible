@@ -37,34 +37,15 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
         public Visual3D MasterModel => masterModel;
         [Reactive]
         public FloorId FloorId { get; set; }
-
-        public TileLayer(ITileLocationDataService tileLocationDataService, IItemDataService itemService, IMapEditorManagementService mapEditorManagementService)
+        public TileLayer(ITileLocationDataService tileLocationDataService, IItemDataService itemService,IMapEditorManagementService mapEditorManagementService, IModelCache modelCache)
         {
 
 
-            var modelImporter = new ModelImporter()
-            {
-                DefaultMaterial = Materials.LightGray
-            };
             // todo: create the cache for all maps at one location to prevent redundant memory usage
-            var modelCache = tileLocationDataService
-                .Get()
-                .Connect()
-                .DistinctValues(m => m.ItemId)
-                .InnerJoin(
-                    itemService.GetExtended().Connect(),
-                    item => item.ItemId,
-                    (_, item) => item
-                )
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Transform(item =>
-                {
-                    var model = modelImporter.Load(item.LatestFilePath);
-                    model.PlaceAtOrigin();
-                    return model;
-                });
 
             modelCache
+                .Get()
+                .Connect()
                 .InnerJoin(
                     mapEditorManagementService
                         .GetLocationEx()

@@ -1,11 +1,22 @@
 ﻿using DynamicData;
+
+using HelixToolkit.Wpf;
+
+using ReactiveUI;
+
 using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 using System.Text;
+using System.Windows.Media.Media3D;
+
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Data.MapEditor.Models.IDs;
 using TableTopCrucible.Data.MapEditor.Stores;
+using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.MapEditor.Core.Models.Views;
+using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.MapEditor.Core.Services
 {
@@ -13,12 +24,12 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
     {
         IObservable<IChangeSet<TileLocationEx, FloorId>> GetLocationEx();
     }
-    public class MapEditorManagementService:IMapEditorManagementService
+    public class MapEditorManagementService : IMapEditorManagementService
     {
         private readonly IObservable<IChangeSet<TileLocationEx, FloorId>> _getLocationEx;
         public IObservable<IChangeSet<TileLocationEx, FloorId>> GetLocationEx() => _getLocationEx;
 
-        public MapEditorManagementService(ITileLocationDataService tileLocationDataService, IFloorDataService floorDataService, IItemDataService itemDataService)
+        public MapEditorManagementService(IFloorDataService floorDataService, ITileLocationDataService tileLocationDataService)
         {
             _getLocationEx = floorDataService
                 .Get()
@@ -28,8 +39,9 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
                         .Get()
                         .Connect(),
                     location => location.FloorId,
-                    (floor, tile)=>new TileLocationEx(floor,tile));
+                    (floor, tile) => new TileLocationEx(floor, tile));
         }
-        
+      
+
     }
 }

@@ -16,6 +16,8 @@
     <ProjectReference Include="..\TableTopCrucible.Data.MapEditor.Models\TableTopCrucible.Data.MapEditor.Models.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Data.MapEditor.Stores\TableTopCrucible.Data.MapEditor.Stores.csproj" />
     <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.FeatureCore.WPF.Tagging\TableTopCrucible.FeatureCore.WPF.Tagging.csproj" />
+    <ProjectReference Include="..\TableTopCrucible.FeatureCore.WPF\TableTopCrucible.FeatureCore.WPF.csproj" />
   </ItemGroup>
 
 </Project>

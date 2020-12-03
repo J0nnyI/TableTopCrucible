@@ -15,7 +15,7 @@ using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.MapEditor.Core.Layers;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
-namespace TableTopCrucible.Domain.MapEditor.Core
+namespace TableTopCrucible.Domain.MapEditor.Core.Managers
 {
     public interface IFloorManager
     {
@@ -38,7 +38,8 @@ namespace TableTopCrucible.Domain.MapEditor.Core
 
             masterModel.Children.Add(TileLayer.MasterModel);
             this.WhenAnyValue(vm => vm.FloorId)
-                .Subscribe(id => {
+                .Subscribe(id =>
+                {
                     tileLayer.FloorId = id;
                 });
 
@@ -51,7 +52,8 @@ namespace TableTopCrucible.Domain.MapEditor.Core
             floorDataService.Get(
                 this.WhenAnyValue(vm => vm.FloorId)
                 .Skip(1))
-                .Subscribe(floor => {
+                .Subscribe(floor =>
+                {
                     tileLayer.FloorId = floor.Id;
                 });
 

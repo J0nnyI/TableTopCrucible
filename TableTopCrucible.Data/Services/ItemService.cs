@@ -45,10 +45,10 @@ namespace TableTopCrucible.Data.Services
             this._notificationCenterService = notificationCenterService;
             this._settingsService = settingsService;
 
-            this._extended =
-                this.Get()
+            this._extended = this
+                .Get()
                 .Connect()
-                .LeftJoinMany<Item, ItemId, VersionedFile, FileItemLinkId, ItemEx>(
+                .LeftJoinMany(
                     this.fileItemLinkService
                         .GetVersionedFiles()
                         .Connect(),

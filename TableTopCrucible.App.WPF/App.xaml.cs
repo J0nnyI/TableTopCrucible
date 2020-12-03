@@ -1,21 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-
-using ReactiveUI;
-
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.IO;
-using System.Linq;
 using System.Reactive.Disposables;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Navigation;
 using System.Windows.Threading;
 
 using TableTopCrucible.Core.Services;
-using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.WPF.Commands;
 using TableTopCrucible.Core.WPF.Services;
 using TableTopCrucible.Core.WPF.ViewModels;
@@ -23,7 +12,6 @@ using TableTopCrucible.Data.SaveFile.Services;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library;
 using TableTopCrucible.Domain.Library.WPF.Commands;
-using TableTopCrucible.Domain.Library.WPF.Pages;
 using TableTopCrucible.Domain.Library.WPF.PageViewModels;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.WPF.Commands;
@@ -33,12 +21,12 @@ using TableTopCrucible.Core.WPF.Windows;
 using TableTopCrucible.Data.SaveFile.WPF.ViewModels;
 using TableTopCrucible.Data.MapEditor.Stores;
 using TableTopCrucible.Domain.MapEditor.Core.Layers;
-using TableTopCrucible.Domain.MapEditor.Core;
 using TableTopCrucible.Domain.MapEditor.Core.Services;
 using TableTopCrucible.Domain.MapEditor.WPF.ViewModels;
 using TableTopCrucible.Domain.MapEditor.WPF.PageViewModels;
 using TableTopCrucible.FeatureCore.WPF.ViewModels;
 using TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels;
+using TableTopCrucible.Domain.MapEditor.Core.Managers;
 
 namespace TableTopCrucible.App.WPF
 {
@@ -150,12 +138,13 @@ namespace TableTopCrucible.App.WPF
             services.AddTransient<IMapEditorVm, MapEditorViewModel>();
             // pages
             services.AddTransient<IMapEditorPageVm, MapEditorPageViewModel>();
+            // manager
+            services.AddTransient<IFloorManager, FloorManager>();
+            services.AddTransient<IMapManager, MapManager>();
             // helper
             services.AddTransient<IGridLayer, GridLayer>();
-            services.AddTransient<IFloorManager, FloorManager>();
             services.AddTransient<ITileLayer, TileLayer>();
-            services.AddTransient<IMapManager, MapManager>();
-            services.AddScoped<IModelCache, ModelCache>();
+            services.AddSingleton<IModelCache, ModelCache>();
         }
         private ServiceProvider _createServiceProvider()
         {

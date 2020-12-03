@@ -31,6 +31,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
         double GridSize { get; set; }
         IObservable<Rect3D> FieldMouseEnter { get; }
         IObservable<Rect3D> FieldSelected { get; }
+        void Init(FloorId floorId, double GridSize);
         Visual3D MasterModel { get; }
     }
     public class GridLayer : DisposableReactiveObjectBase, IGridLayer
@@ -116,5 +117,10 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
             return builder.ToMesh();
         }
 
+        public void Init(FloorId floorId, double GridSize = 51)
+        {
+            this.FloorId = floorId;
+            this.GridSize = GridSize;
+        }
     }
 }

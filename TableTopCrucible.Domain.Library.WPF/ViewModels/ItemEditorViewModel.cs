@@ -19,7 +19,7 @@ using TableTopCrucible.Core.Services;
 using TableTopCrucible.Core.WPF.Helper;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
-using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.Core.Helper;
@@ -109,7 +109,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
             var curLink = this.newLinks.Connect()
                 .ChangeKey(link => link.Version)
-                .WatchValue(selectedVersionChanges, link => link.Version);
+                .WatchValue(selectedVersionChanges.Select(v=>v??default));
 
             var curFileFilter =
                 selectedVersionChanges.CombineLatest(SelectedItemChanges, (version, item) => new { version, item })
@@ -137,7 +137,6 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 
             DateTime mostRecentRequest = default;
             curFiles
-                .ObserveOn(RxApp.TaskpoolScheduler)
                 .TakeUntil(destroy)
                 .Select(files =>
                 {

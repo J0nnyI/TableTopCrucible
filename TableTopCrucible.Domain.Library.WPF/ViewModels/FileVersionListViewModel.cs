@@ -8,7 +8,6 @@ using System.Text;
 
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.Models.Views;
-using TableTopCrucible.Domain.Models.Sources;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {

@@ -165,7 +165,6 @@ namespace TableTopCrucible.Domain.Library.WPF.Filter.ViewModel
                         };
                     }
                 )
-                .ObserveOn(RxApp.TaskpoolScheduler)
                 .Select(filters =>
                     new Func<ItemEx, bool>((ItemEx item) =>
                             stringFilter(item.Name.ToString(), filters.nameFilter, filters.nameFilterMode, filters.nameCaseSensitivity, filters.filterMode) &&

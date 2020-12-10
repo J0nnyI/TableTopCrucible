@@ -1,7 +1,7 @@
 ﻿using System;
 
 using TableTopCrucible.Core.Models.ValueTypes.IDs;
-using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Data.Models.Sources;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes.IDs
 {

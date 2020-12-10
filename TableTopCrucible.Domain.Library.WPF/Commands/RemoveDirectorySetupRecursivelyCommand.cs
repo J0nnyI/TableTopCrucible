@@ -8,8 +8,8 @@ using System.Text;
 using System.Windows.Input;
 
 using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Data.Services;
-using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 namespace TableTopCrucible.Domain.Library.WPF.Commands

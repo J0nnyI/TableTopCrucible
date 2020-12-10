@@ -15,13 +15,13 @@ using TableTopCrucible.Core.Enums;
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.Exceptions;
-using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 
-using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
+using FileInfo = TableTopCrucible.Data.Models.Sources.FileInfo;
 using SysFileInfo = System.IO.FileInfo;
 
 namespace TableTopCrucible.Domain.Library

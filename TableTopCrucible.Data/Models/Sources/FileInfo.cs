@@ -4,7 +4,7 @@ using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
-namespace TableTopCrucible.Domain.Models.Sources
+namespace TableTopCrucible.Data.Models.Sources
 {
     public struct FileInfo : IEntity<FileInfoId>
     {

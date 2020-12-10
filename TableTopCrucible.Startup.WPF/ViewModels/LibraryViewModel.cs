@@ -14,7 +14,6 @@ using TableTopCrucible.Core.WPF.ViewModels;
 using TableTopCrucible.Domain.Library.WPF.Pages;
 using TableTopCrucible.Domain.Library.WPF.PageViewModels;
 using TableTopCrucible.Domain.MapEditor.WPF.PageViewModels;
-using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.WPF.Commands;
 

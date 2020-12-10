@@ -14,10 +14,10 @@ using System.Windows.Input;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Core.Helper;
-using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.WPF.Commands;
 using TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels;
+using TableTopCrucible.Data.Models.Sources;
 
 namespace TableTopCrucible.Domain.Library.WPF.ViewModels
 {

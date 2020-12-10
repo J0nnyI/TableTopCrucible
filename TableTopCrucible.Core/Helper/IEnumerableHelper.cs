@@ -1,4 +1,5 @@
 ﻿using DynamicData;
+using DynamicData.Kernel;
 
 using ReactiveUI;
 
@@ -156,5 +157,17 @@ namespace TableTopCrucible.Core.Helper
             }, chunkSize, out var prog);
             return prog;
         }
+        public static Optional<T> MaxBy<T>(this IEnumerable<T> source, Func<T, IComparable> selector)
+            => source.Aggregate<T, Optional<T>>
+                (
+                    Optional<T>.None,
+                    (Optional<T> acc, T value) =>
+                    {
+                        return !acc.HasValue || selector(acc.Value).CompareTo(selector(value)) > 0
+                            ? acc.Value
+                            : acc;
+                    }
+                );
+
     }
 }

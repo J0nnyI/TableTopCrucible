@@ -26,7 +26,7 @@ using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Commands;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
 using TableTopCrucible.Domain.MapEditor.Core.Services;
-using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.WPF.Commands;
 
 namespace TableTopCrucible.App.WPF.PageViewModels

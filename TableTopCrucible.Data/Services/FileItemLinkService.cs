@@ -8,8 +8,8 @@ using System.Reactive;
 using System.Text;
 
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Data.Models.Views;
-using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
@@ -61,7 +61,7 @@ namespace TableTopCrucible.Data.Services
                      GetEx().Connect(),
                     (FileItemLinkEx link) => link.FileKey,
                     (files, links) => new { files, links })
-                .TransformMany(x =>x.links.Items.Select(link=> new VersionedFile(link,x.files.Items)), vFile=>vFile.Link.Id);
+                .TransformMany(x => x.links.Items.Select(link => new VersionedFile(link, x.files.Items)), vFile => vFile.Link.Id);
         }
 
         public FileItemLinkService(
@@ -71,9 +71,24 @@ namespace TableTopCrucible.Data.Services
         {
             this.fileDataService = fileDataService;
 
+            var thumbnail = this
+                .Get()
+                .Connect()
+                .GroupWithImmutableState(link => link.ItemId)
+                .Transform(links => links.Items.Aggregate((acc, item) => acc.Version < item.Version && item.ThumbnailKey.HasValue ? item : acc))
+                .ChangeKey(link => link.FileKey)
+                .LeftJoin(
+                    this.fileDataService
+                        .GetExtended()
+                        .Connect()
+                        .Filter(file=>file.HashKey.HasValue),
+                    file => file.HashKey.Value,
+                    (link, file) => file
+                );
+
             _getEx = BuildEx(this.cache.Connect()).AsObservableCache();
             _versionedFiles = BuildversionedFiles(_getEx.Connect()).AsObservableCache();
-            _versionedFilesByHash = _versionedFiles.Connect().Group(x => x.HashKey).AsObservableCache();            
+            _versionedFilesByHash = _versionedFiles.Connect().Group(x => x.HashKey).AsObservableCache();
         }
 
     }

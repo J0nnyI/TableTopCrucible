@@ -2,7 +2,7 @@
 using System.Windows.Input;
 
 using TableTopCrucible.Data.Services;
-using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Data.Models.Sources;
 
 namespace TableTopCrucible.WPF.Commands
 {

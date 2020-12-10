@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 

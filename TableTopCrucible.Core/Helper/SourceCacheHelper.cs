@@ -29,52 +29,8 @@ namespace TableTopCrucible.Core.Helper
                 new Func<Tcache, bool>(item => filter(item,value))
             );
         }
+        public static IObservable<TObject> WatchValue<TObject, TKey>(this IObservable<IChangeSet<TObject, TKey>> source, IObservable<TKey> keyChanges)
+            => keyChanges.Select(key => source.WatchValue(key)).Switch();
 
-        //cache
-        public static IObservable<Tres?> WatchValue<Tres, Tkey>(
-            this ISourceCache<Tres, Tkey> cache,
-            IObservable<Tkey?> idChanges,
-            Func<Tres, Tkey> selector = null) where Tkey : struct where Tres : struct
-            => cache.WatchValue(idChanges, _optionalSelector(selector, cache.KeySelector));
-
-
-
-        public static IObservable<Tres?> WatchValue<Tres, Tkey>(
-            this ISourceCache<Tres, Tkey> cache,
-            IObservable<Tkey?> idChanges,
-            Func<Tres, Tkey?> selector = null) where Tkey : struct where Tres : struct
-            => cache.Connect().WatchValue(idChanges, selector);
-
-        //observer
-        public static IObservable<Tres?> WatchValue<Tres, Tkey>(
-            this IObservable<IChangeSet<Tres, Tkey>> cache,
-            IObservable<Tkey?> idChanges,
-            Func<Tres, Tkey> selector) where Tkey : struct where Tres : struct
-            => cache.WatchValue(idChanges, val => (Tkey?)selector(val));
-
-
-        public static IObservable<Tres?> WatchValue<Tres, Tkey>(
-            this IObservable<IChangeSet<Tres, Tkey>> cache,
-            IObservable<Tkey?> idChanges,
-            Func<Tres, Tkey?> selector) where Tkey : struct where Tres : struct
-        {
-            var filter = idChanges.Select(version =>
-                new Func<Tres, bool>(item => selector(item).Equals(version))
-            );
-
-            return cache
-                .Filter(filter)
-                .Select(x => x.Select(x => x.Current).Cast<Tres?>().FirstOrDefault());
-        }
-
-        //public static IObservable<IChangeSet<Tres, Tkey>> WatchValues
-        //    <Tres, Tkey, Tfilter>
-        //    (this IObservable<IChangeSet<)
-        //    where Tres : struct
-        //    where Tkey : struct
-        //    where Tfilter : struct
-        //{
-
-        //}
     }
 }

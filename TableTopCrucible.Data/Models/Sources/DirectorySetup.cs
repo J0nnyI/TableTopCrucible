@@ -5,7 +5,7 @@ using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
-namespace TableTopCrucible.Domain.Models.Sources
+namespace TableTopCrucible.Data.Models.Sources
 {
     public struct DirectorySetup : IEntity<DirectorySetupId>
     {
@@ -37,15 +37,15 @@ namespace TableTopCrucible.Domain.Models.Sources
 
         public DirectorySetup(Uri path, DirectorySetupName name, Description description, DirectorySetupId id, DateTime created, DateTime? lastChange = null)
         {
-            this.Path = path;
-            this.Name = name;
-            this.Description = description;
-            this.ThumbnailUri = new Uri(@"\Thumbnails", UriKind.Relative);
+            Path = path;
+            Name = name;
+            Description = description;
+            ThumbnailUri = new Uri(@"\Thumbnails", UriKind.Relative);
 
-            this.Id = id;
-            this.Identity = Guid.NewGuid();
-            this.LastChange = lastChange ?? DateTime.Now;
-            this.Created = created;
+            Id = id;
+            Identity = Guid.NewGuid();
+            LastChange = lastChange ?? DateTime.Now;
+            Created = created;
         }
 
         public override string ToString() => $"directory setup {Id} ({Name})";
@@ -56,7 +56,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             => directorySetupA.Identity != directorySetupB.Identity;
 
         public override bool Equals(object obj) => obj is DirectorySetup dirSetup && this == dirSetup;
-        public override int GetHashCode() => HashCode.Combine(this.Identity);
+        public override int GetHashCode() => HashCode.Combine(Identity);
 
     }
 }

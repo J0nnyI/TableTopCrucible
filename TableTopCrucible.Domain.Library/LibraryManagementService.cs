@@ -25,14 +25,14 @@ using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Enums;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
-using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
-using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
+using FileInfo = TableTopCrucible.Data.Models.Sources.FileInfo;
 using SysFileInfo = System.IO.FileInfo;
 using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 
@@ -467,13 +467,9 @@ namespace TableTopCrucible.Domain.Library
 
                     process.Details = $"posting {items.Count()} items";
 
-                    Observable.Start(() =>
-                        this.itemService.Post(patches.Select(x => x.item)),
-                        RxApp.TaskpoolScheduler);
+                    this.itemService.Post(patches.Select(x => x.item), RxApp.TaskpoolScheduler);
 
-                    Observable.Start(() =>
-                        this.fileItemLinkService.Post(patches.Select(x => x.link)),
-                    RxApp.TaskpoolScheduler);
+                    this.fileItemLinkService.Post(patches.Select(x => x.link), RxApp.TaskpoolScheduler);
 
                     process.State = AsyncState.Done;
                 }

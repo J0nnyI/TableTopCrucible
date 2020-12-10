@@ -113,9 +113,6 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
         {
             this.WhenAnyValue(vm => vm.MapId)
                 .Pairwise()
-                .Subscribe(x => { });
-            this.WhenAnyValue(vm => vm.MapId)
-                .Pairwise()
                 .TakeUntil(destroy)
                 .Subscribe(
                     change =>

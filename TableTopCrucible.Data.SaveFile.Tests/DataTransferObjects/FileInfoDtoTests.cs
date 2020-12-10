@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json;
 
 using TableTopCrucible.Data.SaveFile.DataTransferObjects;
-using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 

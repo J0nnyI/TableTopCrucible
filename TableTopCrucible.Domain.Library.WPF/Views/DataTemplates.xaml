@@ -3,7 +3,7 @@
                     xmlns:views="clr-namespace:TableTopCrucible.Domain.Library.WPF.Views"
                     xmlns:viewModels="clr-namespace:TableTopCrucible.Domain.Library.WPF.ViewModels"
                     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
-                    xmlns:sourceModels="clr-namespace:TableTopCrucible.Domain.Models.Sources;assembly=TableTopCrucible.Data"
+                    xmlns:sourceModels="clr-namespace:TableTopCrucible.Data.Models.Sources;assembly=TableTopCrucible.Data"
                     xmlns:dataViews="clr-namespace:TableTopCrucible.Data.Models.Views;assembly=TableTopCrucible.Data">
 
     <!--views-->

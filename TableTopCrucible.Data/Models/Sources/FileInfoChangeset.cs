@@ -3,15 +3,15 @@
 using System;
 using System.Collections.Generic;
 
-using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.WPF.Helper;
 
 using SysFileInfo = System.IO.FileInfo;
 
-namespace TableTopCrucible.Domain.Models.Sources
+namespace TableTopCrucible.Data.Models.Sources
 {
     public class FileInfoChangeset : EntityChangesetBase<FileInfo, FileInfoId>, IEntityChangeset<FileInfo, FileInfoId>
     {
@@ -42,19 +42,19 @@ namespace TableTopCrucible.Domain.Models.Sources
         {
             if (origin.HasValue)
             {
-                this.Path = origin.Value.Path;
-                this.CreationTime = origin.Value.FileCreationTime;
-                this.FileHash = origin.Value.FileHash;
-                this.LastWriteTime = origin.Value.LastWriteTime;
-                this.DirectorySetupId = origin.Value.DirectorySetupId;
-                this.IsAccessible = origin.Value.IsAccessible;
-                this.FileSize = origin.Value.FileSize;
+                Path = origin.Value.Path;
+                CreationTime = origin.Value.FileCreationTime;
+                FileHash = origin.Value.FileHash;
+                LastWriteTime = origin.Value.LastWriteTime;
+                DirectorySetupId = origin.Value.DirectorySetupId;
+                IsAccessible = origin.Value.IsAccessible;
+                FileSize = origin.Value.FileSize;
             }
         }
-        public FileInfoChangeset(DirectorySetup directorySetup, SysFileInfo fileInfo, FileHash hash):this(null)
+        public FileInfoChangeset(DirectorySetup directorySetup, SysFileInfo fileInfo, FileHash hash) : this(null)
         {
             SetSysFileInfo(directorySetup, fileInfo);
-            this.FileHash = hash;
+            FileHash = hash;
         }
         public void SetSysFileInfo(DirectorySetup directorySetup, SysFileInfo fileInfo)
         {
@@ -66,7 +66,7 @@ namespace TableTopCrucible.Domain.Models.Sources
             IsAccessible = fileInfo != null;
         }
         public override FileInfo Apply()
-            => new FileInfo(this.Origin.Value, Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, FileSize, IsAccessible);
+            => new FileInfo(Origin.Value, Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, FileSize, IsAccessible);
         public override IEnumerable<string> GetErrors() => throw new NotImplementedException();
         public override FileInfo ToEntity()
             => new FileInfo(Path, CreationTime, FileHash, LastWriteTime, DirectorySetupId, FileSize, IsAccessible);

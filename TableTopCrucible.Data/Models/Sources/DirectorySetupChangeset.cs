@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
-namespace TableTopCrucible.Domain.Models.Sources
+namespace TableTopCrucible.Data.Models.Sources
 {
     public class DirectorySetupChangeset : ReactiveEntityBase<DirectorySetupChangeset, DirectorySetup, DirectorySetupId>, IEntityChangeset<DirectorySetup, DirectorySetupId>
     {
@@ -21,7 +20,7 @@ namespace TableTopCrucible.Domain.Models.Sources
         public override IEnumerable<Validator<DirectorySetupChangeset>> Validators { get; }
 
         public override DirectorySetup Apply()
-            => new DirectorySetup(this.Origin.Value, new Uri(Path), (DirectorySetupName)Name, (Description)Description);
+            => new DirectorySetup(Origin.Value, new Uri(Path), (DirectorySetupName)Name, (Description)Description);
         public override DirectorySetup ToEntity()
             => new DirectorySetup(new Uri(Path), (DirectorySetupName)Name, (Description)Description);
 

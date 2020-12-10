@@ -72,10 +72,5 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
                 .Subscribe();
 
         }
-
-        public void PlaceItem(ItemId item, Rect3D slot)
-        {
-
-        }
     }
 }

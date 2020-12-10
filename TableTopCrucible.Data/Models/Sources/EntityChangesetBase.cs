@@ -5,10 +5,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
+using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Core.Models.ValueTypes.IDs;
 
-namespace TableTopCrucible.Core.Models.Sources
+namespace TableTopCrucible.Data.Models.Sources
 {
 
     public abstract class EntityChangesetBase<Tentity, Tid> : IEntityChangeset<Tentity, Tid>, INotifyPropertyChanged
@@ -26,7 +27,7 @@ namespace TableTopCrucible.Core.Models.Sources
 
         public EntityChangesetBase(Tentity? origin)
         {
-            this.Origin = origin;
+            Origin = origin;
         }
         protected Tchangeset getValue<Tchangeset, Torigin>(Tchangeset field, Torigin originalValue, Func<Torigin, Tchangeset> converter, [CallerMemberName] string propertyName = "")
             => changedValues.Contains(propertyName) || Origin == null ? field : converter(originalValue);
@@ -38,38 +39,38 @@ namespace TableTopCrucible.Core.Models.Sources
         protected void setValue<Tchangeset, Torigin>(Tchangeset value, ref Tchangeset field, Torigin originalValue, Func<Tchangeset, Torigin, bool> comparer, [CallerMemberName] string propName = "")
         {
             if (value == null && originalValue == null || comparer(value, originalValue))
-                this._changedValues.Remove(propName);
+                _changedValues.Remove(propName);
             else
             {
-                if (!this._changedValues.Contains(propName))
-                    this._changedValues.Add(propName);
+                if (!_changedValues.Contains(propName))
+                    _changedValues.Add(propName);
             }
             if (value?.Equals(field) != true)
             {
                 field = value;
-                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
             }
         }
         protected void setValue<T>(T value, ref T field, T originalValue, [CallerMemberName] string propName = "")
-            => this.setValue<T, T>(value, ref field, originalValue, (c, o) => c?.Equals(o) == true);
+            => setValue(value, ref field, originalValue, (c, o) => c?.Equals(o) == true);
 
         protected void setStructValue<T>(T value, ref T field, T? originalValue, [CallerMemberName] string propName = "")
             where T : struct
         {
-            if (this.Origin != null)
+            if (Origin != null)
             {
                 if (value.Equals(originalValue.Value) == true)
-                    this._changedValues.Remove(propName);
+                    _changedValues.Remove(propName);
                 else
                 {
-                    if (!this._changedValues.Contains(propName))
-                        this._changedValues.Add(propName);
+                    if (!_changedValues.Contains(propName))
+                        _changedValues.Add(propName);
                 }
             }
             if (value.Equals(field) != true)
             {
                 field = value;
-                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
             }
         }
 

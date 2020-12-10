@@ -2,11 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using TableTopCrucible.Domain.Models.Sources;
+
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
-using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
+using FileInfo = TableTopCrucible.Data.Models.Sources.FileInfo;
 
 namespace TableTopCrucible.Data.Models.Views
 {

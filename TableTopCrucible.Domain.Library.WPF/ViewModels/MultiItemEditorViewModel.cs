@@ -16,7 +16,7 @@ using TableTopCrucible.Data.Models.ValueTypes;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.Library.WPF.Commands;
-using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.FeatureCore.WPF.Tagging.Models;
 using TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels;
 using TableTopCrucible.WPF.Commands;

@@ -8,6 +8,8 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 
+using static TableTopCrucible.Core.Helper.DynamicDataHelper;
+
 namespace TableTopCrucible.Core.Helper
 {
     public static class DynamicDataHelper
@@ -84,5 +86,7 @@ namespace TableTopCrucible.Core.Helper
             => source.Adapt(new remoteChangeSetAdaptor<TObject, TKey>(adaptor));
 
         #endregion
+
+
     }
 }

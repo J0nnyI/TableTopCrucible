@@ -43,7 +43,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
         public ModelCache(IItemDataService itemDataService, IFloorDataService floorDataService, ITileLocationDataService tileLocationDataService)
         {
             _cachedMaps.Connect().Subscribe(x => { });
-            var maps = _cachedMaps
+            _modelCache = _cachedMaps
                 .Connect()
                 .AddKey(id => id)
                 .InnerJoinMany(
@@ -53,10 +53,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
                     floor => floor.MapId,
                     (mapId, floors) => floors.Items.Select(floor => floor.Id)
                 )
-                .TransformMany(floorIds => floorIds, id => id);
-            maps.Subscribe(x => { });
-
-            var floors = maps
+                .TransformMany(floorIds => floorIds, id => id)
                 .InnerJoinMany(
                     tileLocationDataService
                         .Get()
@@ -64,10 +61,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
                     location => location.FloorId,
                     (floorId, locations) => locations.Items.Select(location => location.ItemId)
                 )
-                .TransformMany(locations => locations, id => id);
-            floors.Subscribe(x => { });
-
-            _modelCache = floors
+                .TransformMany(locations => locations, id => id)
                 .InnerJoin(
                     itemDataService.GetExtended().Connect(),
                     item => item.ItemId,

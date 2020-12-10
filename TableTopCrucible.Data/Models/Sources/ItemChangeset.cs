@@ -9,15 +9,13 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-
-using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.Data.Models.ValueTypes;
 
-namespace TableTopCrucible.Domain.Models.Sources
+namespace TableTopCrucible.Data.Models.Sources
 {
     public class ItemChangeset : ReactiveEntityBase<ItemChangeset, Item, ItemId>, IEntityChangeset<Item, ItemId>
     {
@@ -28,7 +26,7 @@ namespace TableTopCrucible.Domain.Models.Sources
         public ItemChangeset(Item? origin = null) : base(origin)
         {
             NameChanges = this.WhenAnyValue(x => x.Name);
-            
+
             TagsChanges = this.WhenAnyValue(x => x.Tags);
 
             if (Origin.HasValue)
@@ -52,18 +50,18 @@ namespace TableTopCrucible.Domain.Models.Sources
             => Apply(true);
         public Item Apply(bool dispose)
         {
-            var res = new Item(this.Origin.Value, (ItemName)this.Name, this.Tags);
+            var res = new Item(Origin.Value, (ItemName)Name, Tags);
             if (dispose)
-                this.Dispose();
+                Dispose();
             return res;
         }
         public override Item ToEntity()
             => ToEntity(true);
         public Item ToEntity(bool dispose)
         {
-            var res = new Item((ItemName)this.Name, this.Tags);
+            var res = new Item((ItemName)Name, Tags);
             if (dispose)
-                this.Dispose();
+                Dispose();
             return res;
         }
         public override IEnumerable<string> GetErrors() => throw new NotImplementedException();

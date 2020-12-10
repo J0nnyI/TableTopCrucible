@@ -2,8 +2,8 @@
 using System.Globalization;
 using System.Windows.Data;
 
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Domain.Library.WPF.ViewModels;
-using TableTopCrucible.Domain.Models.Sources;
 
 namespace TableTopCrucible.Domain.Library.WPF.Converters
 {

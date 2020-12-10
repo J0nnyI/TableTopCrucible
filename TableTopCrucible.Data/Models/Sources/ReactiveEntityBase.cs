@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Core.Models.ValueTypes.IDs;
 
-namespace TableTopCrucible.Core.Models.Sources
+namespace TableTopCrucible.Data.Models.Sources
 {
     public abstract class ReactiveEntityBase<Tself, Tentity, Tid> : DisposableReactiveValidationObject, IEntityChangeset<Tentity, Tid>
         where Tentity : struct, IEntity<Tid>
@@ -24,7 +25,7 @@ namespace TableTopCrucible.Core.Models.Sources
         public abstract Tentity ToEntity();
         public ReactiveEntityBase(Tentity? origin)
         {
-            this.Origin = origin;
+            Origin = origin;
         }
     }
 }

@@ -20,16 +20,18 @@ using TableTopCrucible.Core.Services;
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.ValueTypes;
 using TableTopCrucible.Data.Models.Views;
-using TableTopCrucible.Domain.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 using TableTopCrucible.WPF.Helper;
 
-using FileInfo = TableTopCrucible.Domain.Models.Sources.FileInfo;
+using FileInfo = TableTopCrucible.Data.Models.Sources.FileInfo;
 using SysFileInfo = System.IO.FileInfo;
+using TableTopCrucible.Data.Models.Sources;
 
 namespace TableTopCrucible.Data.Services
 {
+    public interface IModelFileDataService : IFileDataService { }
+    public interface IImageFileDataService : IFileDataService { }
     public interface IFileDataService : IDataService<FileInfo, FileInfoId, FileInfoChangeset>
     {
         public IObservableCache<FileInfoEx, FileInfoId> GetExtended();
@@ -63,7 +65,7 @@ namespace TableTopCrucible.Data.Services
             IDirectoryDataService directorySetupService,
             INotificationCenterService notificationCenterService,
             ISettingsService settingsService)
-            :base(settingsService, notificationCenterService)
+            : base(settingsService, notificationCenterService)
         {
             this._directorySetupService = directorySetupService;
             this._notificationCenterService = notificationCenterService;

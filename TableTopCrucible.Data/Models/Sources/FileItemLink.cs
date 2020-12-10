@@ -6,7 +6,7 @@ using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
 using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 
-namespace TableTopCrucible.Domain.Models.Sources
+namespace TableTopCrucible.Data.Models.Sources
 {
     public struct FileItemLink : IEntity<FileItemLinkId>
     {
@@ -50,13 +50,13 @@ namespace TableTopCrucible.Domain.Models.Sources
             DateTime created,
             DateTime? lastChange = null)
         {
-            this.Id = id;
-            this.ItemId = itemId;
-            this.FileKey = fileKey;
-            this.Version = version;
-            this.Created = created;
-            this.ThumbnailKey = thumbnailKey;
-            this.LastChange = lastChange ?? DateTime.Now;
+            Id = id;
+            ItemId = itemId;
+            FileKey = fileKey;
+            Version = version;
+            Created = created;
+            ThumbnailKey = thumbnailKey;
+            LastChange = lastChange ?? DateTime.Now;
         }
 
         public FileItemLinkId Id { get; }

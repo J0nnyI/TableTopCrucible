@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes
 {
-    public struct Version : IComparable<Version>
+    public struct Version : IComparable<Version>,IComparable
     {
         public Version(int major, int minor, int patch)
         {
@@ -45,6 +45,21 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
         => v1.Equals(v2);
         public static bool operator !=(Version v1, Version v2)
         => !v1.Equals(v2);
+        public static bool operator >=(Version v1, Version v2)
+            => v1.CompareTo(v2) >= 0;
+        public static bool operator >(Version v1, Version v2)
+            => v1.CompareTo(v2) > 0;
+        public static bool operator <=(Version v1, Version v2)
+            => v1.CompareTo(v2) <= 0;
+        public static bool operator <(Version v1, Version v2)
+            => v1.CompareTo(v2) > 0;
         public override string ToString() => $"{Major}.{Minor}.{Patch}";
+
+        public int CompareTo(object obj)
+        {
+            if (obj is Version ver)
+                return this.CompareTo(ver);
+            return -1;
+        }
     }
 }

@@ -24,7 +24,7 @@ using TableTopCrucible.Data.SaveFile.DataTransferObjects;
 using TableTopCrucible.Data.SaveFile.Models;
 using TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects;
 using TableTopCrucible.Data.Services;
-using TableTopCrucible.Domain.Models.Sources;
+using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
 
 namespace TableTopCrucible.Data.SaveFile.Services
@@ -84,7 +84,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     fileItemLinkService.Clear();
                     _itemService.Clear();
 
-                    var dir = _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()),RxApp.TaskpoolScheduler, settingsService.LoadingPatchSize);
+                    var dir = _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()),null, settingsService.LoadingPatchSize);
                     dir.Title = "loading directories";
                     progression.DirectoryTaskState = dir;
                     progression.DirectoryTaskState.DoneChanges.Subscribe(
@@ -123,7 +123,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     progression.OnError(ex);
                 }
 
-            }, Scheduler.Default);
+            }, RxApp.TaskpoolScheduler);
             return progression;
         }
 

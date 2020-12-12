@@ -20,15 +20,15 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     {
         private readonly ReadOnlyObservableCollection<FileInfoEx> _files;
         public ReadOnlyObservableCollection<FileInfoEx> Files => _files;
-        private readonly IFileDataService _fileInfoService;
+        private readonly IModelFileDataService _modelFileInfoService;
 
         public ICommand GenerateItems { get; }
-        public FileListViewModel(IFileDataService fileInfoService, GenerateItemsFromFilesCommand generateItems)
+        public FileListViewModel(IModelFileDataService modelFileInfoService, GenerateItemsFromFilesCommand generateItems)
         {
             this.GenerateItems = generateItems;
 
-            this._fileInfoService = fileInfoService;
-            this._fileInfoService
+            this._modelFileInfoService = modelFileInfoService;
+            this._modelFileInfoService
                 .GetExtended()
                 .Connect()
                 .Sort(file => file.AbsolutePath)

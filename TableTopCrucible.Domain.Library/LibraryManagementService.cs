@@ -42,7 +42,6 @@ namespace TableTopCrucible.Domain.Library
     public interface ILibraryManagementService
     {
         void FullSync();
-        void FullSync(IEnumerable<DirectorySetup> dirSetups);
         void AutoGenerateItems();
         FileInfo? UpdateFile(DirectorySetup dirSetup, Uri relativePath);
         void RemoveDirectorySetupRecursively(DirectorySetupId dirSetupId);
@@ -63,7 +62,8 @@ namespace TableTopCrucible.Domain.Library
         }
 
         private readonly IDirectoryDataService directoryDataService;
-        private readonly IFileDataService fileDataService;
+        private readonly IModelFileDataService modelFileDataService;
+        private readonly IImageFileDataService imageFileDataService;
         private readonly IFileItemLinkService fileItemLinkService;
         private readonly IItemDataService itemService;
         private readonly INotificationCenterService notificationCenter;
@@ -72,7 +72,8 @@ namespace TableTopCrucible.Domain.Library
 
         public LibraryManagementService(
             IDirectoryDataService directoryDataService,
-            IFileDataService fileDataService,
+            IModelFileDataService modelFileDataService,
+            IImageFileDataService imageFileDataService,
             IFileItemLinkService fileItemLinkService,
             IItemDataService itemService,
             INotificationCenterService notificationCenter,
@@ -80,7 +81,8 @@ namespace TableTopCrucible.Domain.Library
             IFileManagementService fileManagementService)
         {
             this.directoryDataService = directoryDataService;
-            this.fileDataService = fileDataService;
+            this.modelFileDataService = modelFileDataService;
+            this.imageFileDataService = imageFileDataService;
             this.fileItemLinkService = fileItemLinkService;
             this.itemService = itemService;
             this.notificationCenter = notificationCenter;
@@ -89,7 +91,7 @@ namespace TableTopCrucible.Domain.Library
         }
 
 
-        public Version GetNextVersion(Version previousVersion, IEnumerable<Version> takenVersions)
+        public static Version GetNextVersion(Version previousVersion, IEnumerable<Version> takenVersions)
         {
             var nextMajor = previousVersion.Major + 1;
             var nextMinor = previousVersion.Minor + 1;
@@ -136,8 +138,95 @@ namespace TableTopCrucible.Domain.Library
             public FileHash Hash { get; }
         }
         public void FullSync()
-            => FullSync(getDirSetups());
-        public void FullSync(IEnumerable<DirectorySetup> dirSetups)
+        {
+            //FullSync(getDirSetups(), this.modelFileDataService);
+
+            _getFiles(
+                modelFileDataService,
+                new string[] { "stl", "obj", "off", "objz", "lwo", "3ds" },
+                out var deletedModelFiles,
+                out var updatedModelFiles,
+                out var newModelFiles);
+            var modelUpdateHashes = _hashFiles(updatedModelFiles.Select(file => file.AbsolutePath));
+            var newModelHashes = _hashFiles(newModelFiles.Select(file => file.FileInfo.FullName));
+            modelFileDataService.Delete(deletedModelFiles.Select(file => file.Id));
+
+            _getFiles(
+                imageFileDataService,
+                new string[] { "png", "jpg", "jpeg", "bmp", "gif", "hdp", "jp2", "pbm", "psd", "tga", "tiff", "img" },
+                out var deletedImageFiles,
+                out var updatedImageFiles,
+                out var newImageFiles);
+            var imageUpdateHashes = _hashFiles(updatedImageFiles.Select(file => file.AbsolutePath));
+            var newImageHashes = _hashFiles(newImageFiles.Select(file => file.FileInfo.FullName));
+            imageFileDataService.Delete(deletedModelFiles.Select(file => file.Id));
+        }
+        private void createFileInfo(IDictionary<string, FileHash>)
+        {
+
+        }
+        private void _handleItemUpdate(IEnumerable<FileInfoEx> files)
+        {
+            var links = fileItemLinkService.Get().Items;
+            //files.Select(file =>
+            //{
+            //    //links.Where(link => link.FileKey ==  )
+            //});
+
+            foreach (FileInfoEx file in files)
+            {
+
+            }
+        }
+        private void _getFiles(
+            IFileDataService fileService,
+            IEnumerable<string> fileExtensions,
+            out IEnumerable<FileInfoEx> deletedFiles,
+            out IEnumerable<FileInfoEx> updatedFiles,
+            out IEnumerable<LocalFile> newFiles)
+        {
+            var dirSetups = this.directoryDataService.Get().Items;
+            var localFiles = getLocalFiles(dirSetups, fileExtensions);
+            var definedFiles = getDefinedFiles(dirSetups, fileService);
+            var paths = getDistinctPaths(localFiles, definedFiles);
+
+            var allFiles = (from file in paths
+                            join localFile in localFiles
+                                on file.ToLower() equals localFile.FileInfo.FullName.ToLower() into mLocalFile
+                            join definedFile in definedFiles
+                                on file.ToLower() equals definedFile.AbsolutePath.ToLower() into mDefinedFile
+                            select new
+                            {
+                                localFile = mLocalFile.Any() ? (mLocalFile.First() as LocalFile?) : null,
+                                definedFile = mDefinedFile.Any() ? mDefinedFile.First() as FileInfoEx? : null,
+                                isNew = mLocalFile.Any() && !mDefinedFile.Any(),
+                                isDeleted = !mLocalFile.Any() & mDefinedFile.Any(),
+                                isUpdated = mLocalFile.Any() && mDefinedFile.Any() && mLocalFile.First().FileInfo.LastWriteTime != mDefinedFile.First().LastWriteTime || !mDefinedFile.FirstOrDefault().HashKey.HasValue,
+                                unchanged = mLocalFile.Any() && mDefinedFile.Any() && mLocalFile.First().FileInfo.LastWriteTime == mDefinedFile.First().LastWriteTime
+                            }).ToArray();
+
+            deletedFiles = allFiles.Where(file => file.isDeleted).Select(file => file.definedFile.Value);
+            updatedFiles = allFiles.Where(file => file.isUpdated).Select(file => file.definedFile.Value);
+            newFiles = allFiles.Where(file => file.isNew).Select(file => file.localFile.Value);
+        }
+
+        private IDictionary<string, FileHash> _hashFiles(
+            IEnumerable<string> files
+            )
+        {
+            var res = new Dictionary<string, FileHash>();
+            files.ToList().ForEach(file =>
+            {
+                var hash = fileManagementService.HashFile(file);
+                res.Add(file, hash);
+            });
+            return res;
+        }
+        public void deleteFiles(IFileDataService fileService, IEnumerable<FileInfo> files)
+        {
+
+        }
+        public void FullSync(IEnumerable<DirectorySetup> dirSetups, IFileDataService fileService, params string[] fileExtensions)
         {
             Observable.Start(() =>
             {
@@ -153,7 +242,7 @@ namespace TableTopCrucible.Domain.Library
 
 
                     var localFiles = getLocalFiles(dirSetups);
-                    var definedFiles = getDefinedFiles(dirSetups);
+                    var definedFiles = getDefinedFiles(dirSetups, fileService);
 
 
                     var paths = getDistinctPaths(localFiles, definedFiles);
@@ -306,7 +395,7 @@ namespace TableTopCrucible.Domain.Library
                                 }
 
                                 updateProc.OnNextStep("patching...");
-                                this.fileDataService.Patch(fileUpdateChangesets);
+                                fileService.Patch(fileUpdateChangesets);
                                 this.fileItemLinkService.Patch(fileItemLinkChangesets);
                             }
                             else
@@ -329,7 +418,7 @@ namespace TableTopCrucible.Domain.Library
                                 .ToArray();
 
                             if (newFiles != null)
-                                this.fileDataService.Patch(newFiles);
+                                fileService.Patch(newFiles);
 
                             updateProc.OnNextStep("done");
                             updateProc.State = AsyncState.Done;
@@ -346,7 +435,7 @@ namespace TableTopCrucible.Domain.Library
                     // stage 3: remove deleted Files
                     mainProc.OnNextStep("deleting old files");
 
-                    this.fileDataService.Delete(allFiles.Where(x => x.isDeleted).Select(x => x.definedFile.Value.Id));
+                    fileService.Delete(allFiles.Where(x => x.isDeleted).Select(x => x.definedFile.Value.Id));
                     mainProc.OnNextStep("done");
                     mainProc.State = AsyncState.Done;
                 }
@@ -361,10 +450,10 @@ namespace TableTopCrucible.Domain.Library
 
         #region file sync utils
 
-        private IEnumerable<FileInfoEx> getDefinedFiles(IEnumerable<DirectorySetup> dirSetups)
+        private static IEnumerable<FileInfoEx> getDefinedFiles(IEnumerable<DirectorySetup> dirSetups, IFileDataService dataService)
         {
             var dirIDs = dirSetups.Select(x => x.Id);
-            return fileDataService.GetExtended()
+            return dataService.GetExtended()
                 .KeyValues
                 .Select(x => x.Value)
                 .Where(file => dirIDs
@@ -372,16 +461,18 @@ namespace TableTopCrucible.Domain.Library
         }
 
 
-        private IEnumerable<LocalFile> getLocalFiles(DirectorySetup directorySetup)
+        private static IEnumerable<LocalFile> getLocalFiles(DirectorySetup directorySetup, IEnumerable<string> fileExtensions)
         {
-            return Directory.GetFiles(directorySetup.Path.LocalPath, "*", SearchOption.AllDirectories)
+            return Directory
+                .EnumerateFiles(directorySetup.Path.LocalPath, "*", SearchOption.AllDirectories)
+                .Where(file => fileExtensions.Contains(Path.GetExtension(file)))
                 .Select(file => new LocalFile(directorySetup, file));
         }
 
-        private IEnumerable<LocalFile> getLocalFiles(IEnumerable<DirectorySetup> dirSetups)
-            => dirSetups.SelectMany(setup => getLocalFiles(setup));
+        private static IEnumerable<LocalFile> getLocalFiles(IEnumerable<DirectorySetup> dirSetups, IEnumerable<string> fileExtensions)
+            => dirSetups.SelectMany(setup => getLocalFiles(setup, fileExtensions));
 
-        private IEnumerable<string> getDistinctPaths(IEnumerable<LocalFile> localFiles, IEnumerable<FileInfoEx> definedFiles)
+        private static IEnumerable<string> getDistinctPaths(IEnumerable<LocalFile> localFiles, IEnumerable<FileInfoEx> definedFiles)
         {
             var localPaths = localFiles.Select(file => file.FileInfo.FullName);
             var definedPaths = definedFiles.Select(file => file.AbsolutePath);
@@ -401,7 +492,7 @@ namespace TableTopCrucible.Domain.Library
         {
             var localPath = new Uri(dirSetup.Path, relativePath).LocalPath;
             var fileInfo = new SysFileInfo(localPath);
-            return this.fileDataService.Patch(
+            return this.modelFileDataService.Patch(
             new FileInfoChangeset()
             {
                 Path = relativePath,
@@ -429,7 +520,7 @@ namespace TableTopCrucible.Domain.Library
                     var object3dExtensions = new string[] { ".obj", ".stl" };
                     var threadcount = settingsService.ThreadCount;
 
-                    var files = this.fileDataService
+                    var files = this.modelFileDataService
                         .GetExtendedByHash()
                         .KeyValues
                         .Where(x =>
@@ -500,14 +591,14 @@ namespace TableTopCrucible.Domain.Library
 
                     process.OnNextStep("looking for files");
                     var files =
-                        fileDataService
+                        modelFileDataService
                         .Get()
                         .Items
                         .Where(file => file.DirectorySetupId == dirSetupId)
                         .ToList();
 
                     process.OnNextStep("removing files");
-                    fileDataService
+                    modelFileDataService
                         .Delete(
                             files
                             .Select(file => file.Id)
@@ -555,6 +646,12 @@ namespace TableTopCrucible.Domain.Library
                     MessageBox.Show(ex.ToString(), $"{nameof(LibraryManagementService)}.{nameof(RemoveDirectorySetupRecursively)}");
                 }
             }, RxApp.TaskpoolScheduler);
+        }
+        private class FileUpdateInfo
+        {
+            FileInfoEx? virtualFile { get; set; }
+            SysFileInfo actualFile { get; set; }
+            FileHash? updatedHash { get; set; }
         }
     }
 }

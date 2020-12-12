@@ -31,13 +31,14 @@ namespace TableTopCrucible.Data.Services
         private IObservableCache<IGroup<VersionedFile, FileItemLinkId, FileInfoHashKey>, FileInfoHashKey> _versionedFilesByHash { get; }
         public IObservableCache<IGroup<VersionedFile, FileItemLinkId, FileInfoHashKey>, FileInfoHashKey> GetVersionedFilesByHash() => _versionedFilesByHash;
         private IObservableCache<FileItemLinkEx, FileItemLinkId> _getEx;
-        private readonly IFileDataService fileDataService;
+        private readonly IModelFileDataService modelFileDataService;
+        private readonly IImageFileDataService _imageFileDataService;
 
         public IObservableCache<FileItemLinkEx, FileItemLinkId> GetEx() => _getEx;
 
         public IObservable<IChangeSet<FileItemLinkEx, FileItemLinkId>> BuildEx(IObservable<IChangeSet<FileItemLink, FileItemLinkId>> cache)
         {
-            return fileDataService
+            return _imageFileDataService
                 .GetExtendedByHash()
                 .Connect()
                 .RightJoin(
@@ -51,7 +52,7 @@ namespace TableTopCrucible.Data.Services
             => BuildversionedFiles(this.BuildEx(cache));
         public IObservable<IChangeSet<VersionedFile, FileItemLinkId>> BuildversionedFiles(IObservable<IChangeSet<FileItemLinkEx, FileItemLinkId>> cache)
         {
-            return fileDataService
+            return modelFileDataService
                 .GetExtended()
                 .Connect()
                 .Filter(file => file.HashKey.HasValue)
@@ -65,12 +66,13 @@ namespace TableTopCrucible.Data.Services
         }
 
         public FileItemLinkService(
-            IFileDataService fileDataService,
+            IModelFileDataService modelFileDataService,
+            IImageFileDataService imageFileDataService,
             ISettingsService settingsService,
             INotificationCenterService notificationCenter) : base(settingsService, notificationCenter)
         {
-            this.fileDataService = fileDataService;
-
+            this.modelFileDataService = modelFileDataService;
+            _imageFileDataService = imageFileDataService;
             var thumbnail = this
                 .Get()
                 .Connect()
@@ -78,7 +80,7 @@ namespace TableTopCrucible.Data.Services
                 .Transform(links => links.Items.Aggregate((acc, item) => acc.Version < item.Version && item.ThumbnailKey.HasValue ? item : acc))
                 .ChangeKey(link => link.FileKey)
                 .LeftJoin(
-                    this.fileDataService
+                    this.modelFileDataService
                         .GetExtended()
                         .Connect()
                         .Filter(file=>file.HashKey.HasValue),

@@ -75,7 +75,8 @@ namespace TableTopCrucible.App.WPF
             // data services
             services.AddSingleton<IItemDataService, ItemService>();
             services.AddSingleton<IFileItemLinkService, FileItemLinkService>();
-            services.AddSingleton<IFileDataService, FileDataService>();
+            services.AddSingleton<IModelFileDataService, FileDataService>();
+            services.AddSingleton<IImageFileDataService, FileDataService>();
             services.AddSingleton<IDirectoryDataService, DirectoryDataService>();
             // library domain services
             services.AddSingleton<ILibraryManagementService, LibraryManagementService>();

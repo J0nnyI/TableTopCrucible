@@ -40,20 +40,20 @@ namespace TableTopCrucible.Domain.Library
         private readonly IItemDataService itemService;
         private readonly ISettingsService settingsService;
         private readonly IFileItemLinkService fileItemLinkService;
-        private readonly IFileDataService fileDataService;
+        private readonly IModelFileDataService modelFileDataService;
         private readonly IFileManagementService fileManagement;
 
         public ThumbnailManagementService(
             IItemDataService itemService,
             ISettingsService settingsService,
             IFileItemLinkService fileItemLinkService,
-            IFileDataService fileDataService,
+            IModelFileDataService modelFileDataService,
             IFileManagementService fileManagement)
         {
             this.itemService = itemService;
             this.settingsService = settingsService;
             this.fileItemLinkService = fileItemLinkService;
-            this.fileDataService = fileDataService;
+            this.modelFileDataService = modelFileDataService;
             this.fileManagement = fileManagement;
         }
 
@@ -111,7 +111,7 @@ namespace TableTopCrucible.Domain.Library
 
             file = new FileInfoChangeset(item.DirectorySetups.FirstOrDefault(), new SysFileInfo(thumbnailPath), hash).ToEntity();
 
-            var existing = fileDataService.GetExtendedByHash().Lookup(file.HashKey.Value);
+            var existing = modelFileDataService.GetExtendedByHash().Lookup(file.HashKey.Value);
             if (existing.HasValue)
                 file = existing.Value.FileInfo;
 
@@ -120,7 +120,7 @@ namespace TableTopCrucible.Domain.Library
                 ThumbnailKey = file.HashKey
             };
 
-            this.fileDataService.Post(file);
+            this.modelFileDataService.Post(file);
         }
 
 

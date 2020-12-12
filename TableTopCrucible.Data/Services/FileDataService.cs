@@ -38,7 +38,7 @@ namespace TableTopCrucible.Data.Services
         public IObservableCache<FileInfo, FileInfoId> Get(DirectorySetupId directorySetupId);
         public IObservableCache<FileInfoEx, FileInfoHashKey> GetExtendedByHash();
     }
-    public class FileDataService : DataServiceBase<FileInfo, FileInfoId, FileInfoChangeset>, IFileDataService
+    public class FileDataService : DataServiceBase<FileInfo, FileInfoId, FileInfoChangeset>, IFileDataService, IModelFileDataService, IImageFileDataService
     {
         private struct DirSetupFile
         {

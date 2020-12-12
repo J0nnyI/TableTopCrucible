@@ -28,19 +28,22 @@ namespace TableTopCrucible.Data.Services
     public class ItemService : DataServiceBase<Item, ItemId, ItemChangeset>, IItemDataService
     {
 
-        private IFileDataService _fileService;
+        private IModelFileDataService _modelFileService;
+        private readonly IImageFileDataService _imageFileDataService;
         private readonly IFileItemLinkService fileItemLinkService;
         private readonly INotificationCenterService _notificationCenterService;
         private readonly ISettingsService _settingsService;
         private readonly IObservable<IChangeSet<ThumbnailItem, ItemId>> _thumbnailItems;
         public ItemService(
-            IFileDataService fileInfoService,
+            IModelFileDataService modelFileDataService,
+            IImageFileDataService imageFileDataService,
             IFileItemLinkService fileItemLinkService,
             INotificationCenterService notificationCenterService,
             ISettingsService settingsService)
             : base(settingsService, notificationCenterService)
         {
-            this._fileService = fileInfoService;
+            this._modelFileService = modelFileDataService;
+            _imageFileDataService = imageFileDataService;
             this.fileItemLinkService = fileItemLinkService;
             this._notificationCenterService = notificationCenterService;
             this._settingsService = settingsService;
@@ -68,7 +71,7 @@ namespace TableTopCrucible.Data.Services
                 .Transform(link=>link.Value)
                 .ChangeKey(link=>link.ThumbnailKey.Value)
                 .LeftJoin(
-                    this._fileService
+                    this._imageFileDataService
                         .GetExtended()
                         .Connect()
                         .Filter(file=>file.HashKey.HasValue),

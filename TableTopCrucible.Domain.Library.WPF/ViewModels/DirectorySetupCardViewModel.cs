@@ -27,7 +27,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
     {
         public BehaviorSubject<DirectorySetup> DirectorySetupChanges = new BehaviorSubject<DirectorySetup>(default);
 
-        private IFileDataService _fileInfoService { get; }
+        private IModelFileDataService _fileInfoService { get; }
         public ICommand OpenFile { get; }
         public ICommand EnterEditmode { get; }
         public ICommand Save { get; }
@@ -72,7 +72,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
         [Reactive] public DirectorySetupChangeset Changeset { get; set; }
 
         public DirectorySetupCardViewModel(
-            IFileDataService fileService,
+            IModelFileDataService modelFileService,
             IItemDataService itemService,
             OpenFileDialogCommand openFile,
             SaveDirectorySetupCommand save,
@@ -80,7 +80,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             RemoveDirectorySetupRecursivelyCommand deleteRecursively
             )
         {
-            this._fileInfoService = fileService;
+            this._fileInfoService = modelFileService;
             OpenFile = openFile;
 
             this.ItemCountChanges = itemService.GetExtended()
@@ -88,7 +88,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .Filter(DirectorySetupChanges.Select<DirectorySetup, Func<ItemEx, bool>>(dir => item => item.Directories.Contains(dir)))
                 .Count();
 
-            var FileCountChanges = fileService.Get()
+            var FileCountChanges = modelFileService.Get()
                 .Connect()
                 .Filter(DirectorySetupChanges.Select<DirectorySetup, Func<FileInfo, bool>>(dir => file => file.DirectorySetupId == dir.Id))
                 .Count();

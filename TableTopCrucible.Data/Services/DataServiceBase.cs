@@ -46,6 +46,8 @@ namespace TableTopCrucible.Data.Services
             => cache.Remove(key);
         public void Delete(IEnumerable<Tid> keys)
         {
+            if (keys?.Any() != true)
+                return;
             var job = this.notificationCenter.CreateSingleTaskJob(out var process, $"deleting {keys.Count()} entities of type {typeof(Tentity).Name}");
             var chunks = keys.ChunkBy(settingsService.MaxPatchSize)
                   .ToList();

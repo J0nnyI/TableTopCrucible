@@ -107,7 +107,7 @@ namespace TableTopCrucible.Domain.Library
 
         public void LinkThumbnail(ItemEx item, string thumbnailPath, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null)
         {
-            FileHash hash = fileManagement.HashFile(thumbnailPath);
+            FileHash hash = FileHash.Create(thumbnailPath);
 
             file = new FileInfoChangeset(item.DirectorySetups.FirstOrDefault(), new SysFileInfo(thumbnailPath), hash).ToEntity();
 

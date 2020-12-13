@@ -1,33 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 using System.Text;
+using System.Windows;
 using System.Windows.Input;
+
+using TableTopCrucible.Core.Models.Sources;
 
 namespace TableTopCrucible.Domain.Library.WPF.Commands
 {
-    public class FullSyncCommand : ICommand
+    public class FullSyncCommand : DisposableReactiveObjectBase, ICommand
     {
-        private readonly ILibraryManagementService libraryManagement;
+        private readonly IFileManagementService _fileManagementService;
 
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
+        public event EventHandler CanExecuteChanged;
 
-        public FullSyncCommand(ILibraryManagementService libraryManagement)
+        public FullSyncCommand(IFileManagementService fileManagementService)
         {
-            this.libraryManagement = libraryManagement;
+            _fileManagementService = fileManagementService;
+            _fileManagementService.IsSynchronizingChanges.TakeUntil(destroy).Subscribe(canSync => this.CanExecuteChanged?.Invoke(this, new EventArgs()));
         }
 
         public bool CanExecute(object parameter)
         {
-            return true;
+            return !_fileManagementService.IsSynchronizing;
         }
 
         public void Execute(object parameter)
         {
-            this.libraryManagement.FullSync();
+            try
+            {
+                this._fileManagementService.StartSynchronization();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "File Synchronization failed");
+            }
         }
     }
 }

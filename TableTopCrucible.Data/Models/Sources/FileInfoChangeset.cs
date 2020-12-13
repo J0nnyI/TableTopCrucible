@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 using TableTopCrucible.Core.Models.ValueTypes;
 using TableTopCrucible.Data.Models.Sources;
@@ -38,6 +39,19 @@ namespace TableTopCrucible.Data.Models.Sources
 
 
 
+        public FileInfoChangeset(DirectorySetup dirSetup, Uri relativePath) : base(null)
+        {
+            var localPath = new Uri(dirSetup.Path, relativePath).LocalPath;
+            var fileInfo = new SysFileInfo(localPath);
+            Path = relativePath;
+            CreationTime = fileInfo.CreationTime;
+            FileHash = Domain.Models.ValueTypes.FileHash.Create(localPath);
+            DirectorySetupId = dirSetup.Id;
+            FileSize = fileInfo.Length;
+            IsAccessible = File.Exists(localPath);
+            LastWriteTime = fileInfo.LastWriteTime;
+
+        }
         public FileInfoChangeset(FileInfo? origin = null) : base(origin)
         {
             if (origin.HasValue)
@@ -51,7 +65,7 @@ namespace TableTopCrucible.Data.Models.Sources
                 FileSize = origin.Value.FileSize;
             }
         }
-        public FileInfoChangeset(DirectorySetup directorySetup, SysFileInfo fileInfo, FileHash hash) : this(null)
+        public FileInfoChangeset(DirectorySetup directorySetup, SysFileInfo fileInfo, FileHash hash, FileInfo? origin = null) : this(origin)
         {
             SetSysFileInfo(directorySetup, fileInfo);
             FileHash = hash;

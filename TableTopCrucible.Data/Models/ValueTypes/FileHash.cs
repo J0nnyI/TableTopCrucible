@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes
 {
@@ -26,5 +28,19 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
             => !hashA.Equals(hashB);
         public static bool operator ==(FileHash hashA, FileHash hashB)
             => hashA.Equals(hashB);
+        public static FileHash Create(string path, HashAlgorithm hashAlgorithm)
+        {
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"could not find file {path}");
+
+            using FileStream stream = File.OpenRead(path);
+            byte[] data = hashAlgorithm.ComputeHash(stream);
+            return new FileHash(data);
+        }
+        public static FileHash Create(string path)
+        {
+            using var hashAlgorithm = SHA512.Create();
+            return Create(path, hashAlgorithm);
+        }
     }
 }

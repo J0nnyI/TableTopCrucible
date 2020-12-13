@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+
+using TableTopCrucible.Core.Helper;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes
 {
@@ -60,6 +64,37 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
             if (obj is Version ver)
                 return this.CompareTo(ver);
             return -1;
+        }
+        public static Version GetNextVersion(Version previousVersion, IEnumerable<Version> takenVersions)
+        {
+            var nextMajor = previousVersion.Major + 1;
+            var nextMinor = previousVersion.Minor + 1;
+            var nextPatch = previousVersion.Patch + 10000;
+
+            if (!takenVersions.Any(x =>
+                    x.Major == nextMajor))
+                return new Version(nextMajor, 0, 0);
+
+            if (!takenVersions.Any(x =>
+                    x.Major == previousVersion.Major &&
+                    x.Minor == nextMinor))
+                return new Version(previousVersion.Major, nextMinor, 0);
+
+
+
+            var patchRange = takenVersions.Where(x =>
+                    x.Major == previousVersion.Major &&
+                    x.Minor == previousVersion.Minor &&
+                    x.Patch.Between(previousVersion.Patch + 1, nextPatch));
+
+            if (!patchRange.Any())
+                return new Version(previousVersion.Major, previousVersion.Minor, nextPatch);
+
+            var nextTakenVersion = patchRange.Min();
+
+            var fallbackPatch = (nextTakenVersion.Patch - previousVersion.Patch) / 2 + previousVersion.Patch;
+
+            return new Version(previousVersion.Major, previousVersion.Minor, fallbackPatch);
         }
     }
 }

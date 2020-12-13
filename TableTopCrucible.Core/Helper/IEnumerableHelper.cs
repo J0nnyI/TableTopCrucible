@@ -21,6 +21,11 @@ using TableTopCrucible.Core.Models.Sources;
 
 namespace TableTopCrucible.Core.Helper
 {
+    public enum SplitMode
+    {
+        Patchsize,
+        Threadcount
+    }
     public static class IEnumerableHelper
     {
         private class proxyComparer<T> : IEqualityComparer<T>, IEqualityComparer
@@ -113,7 +118,12 @@ namespace TableTopCrucible.Core.Helper
                 res.Add(new Subject<T>());
             return res.ToArray();
         }
-        public static IEnumerable<IObservable<IEnumerable<Tout>>> SelectAsync<Tin, Tout>(this IEnumerable<Tin> list, Func<Tin, Tout> selector, int chunkSize, out ITaskProgressionInfo progress)
+        public static IEnumerable<IObservable<IEnumerable<Tout>>> SelectAsync<Tin, Tout>(
+            this IEnumerable<Tin> list,
+            Func<IEnumerable<Tin>, IEnumerable<Tout>> selector,
+            int chunkSize,
+            out ITaskProgressionInfo progress,
+            SplitMode splitMode = SplitMode.Patchsize)
         {
             var prog = new TaskProgression()
             {
@@ -127,12 +137,18 @@ namespace TableTopCrucible.Core.Helper
                 try
                 {
                     prog.State = TaskState.InProgress;
-                    var chunks = list.ChunkBy(chunkSize).ToArray();
+                    IEnumerable<Tin>[] chunks;
+
+                    if (splitMode == SplitMode.Patchsize)
+                        chunks = list.ChunkBy(chunkSize).ToArray();
+                    else
+                        chunks = list.SplitEvenly(chunkSize).ToArray();
+
                     prog.RequiredProgress = chunks.Length;
                     var i = 0;
                     foreach (var chunk in chunks)
                     {
-                        res.ElementAt(i).OnNext(chunk.Select(selector).ToArray());
+                        res.ElementAt(i).OnNext(selector(chunk).ToArray());
                         prog.CurrentProgress++;
                         i++;
                     }
@@ -146,17 +162,21 @@ namespace TableTopCrucible.Core.Helper
                 }
             }, RxApp.TaskpoolScheduler);
             return res;
-        }
 
-        public static ITaskProgressionInfo ForEachAsync<T>(this IEnumerable<T> list, Action<T> action, int chunkSize)
+        }
+        public static IEnumerable<IObservable<IEnumerable<Tout>>> SelectAsync<Tin, Tout>(this IEnumerable<Tin> list, Func<Tin, Tout> selector, int chunkSize, out ITaskProgressionInfo progress, SplitMode splitMode = SplitMode.Patchsize)
+        => SelectAsync(list, new Func<IEnumerable<Tin>, IEnumerable<Tout>>(lst => lst.Select(selector)), chunkSize, out progress, splitMode);
+        public static ITaskProgressionInfo ForEachAsync<T>(this IEnumerable<T> list, Action<IEnumerable<T>> action, int chunkSize, SplitMode splitMode = SplitMode.Patchsize)
         {
             SelectAsync(list, x =>
             {
                 action(x);
-                return new Unit();
-            }, chunkSize, out var prog);
-            return prog;
+                return new Unit().AsArray();
+            }, chunkSize, out var progress,splitMode);
+            return progress;
         }
+        public static ITaskProgressionInfo ForEachAsync<T>(this IEnumerable<T> list, Action<T> action, int chunkSize, SplitMode splitMode = SplitMode.Patchsize)
+        => ForEachAsync(list, new Action<IEnumerable<T>>(lst => lst.ToList().ForEach(action)), chunkSize, splitMode);
         public static Optional<T> MaxBy<T>(this IEnumerable<T> source, Func<T, IComparable> selector)
             => source.Aggregate<T, Optional<T>>
                 (

@@ -68,6 +68,7 @@ namespace TableTopCrucible.App.WPF
             services.AddScoped<IInjectionProviderService, InjectionProviderService>();
             services.AddSingleton<ISaveService, SaveService>();
             services.AddSingleton<LibraryInfoService>();
+            services.AddSingleton<ITaskProgressBar, TaskProgressBarViewModel>();
 
         }
         private void createLibraryServices(IServiceCollection services)

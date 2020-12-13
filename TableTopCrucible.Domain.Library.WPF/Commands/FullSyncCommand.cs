@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ReactiveUI;
+
+using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Text;
@@ -18,7 +20,11 @@ namespace TableTopCrucible.Domain.Library.WPF.Commands
         public FullSyncCommand(IFileManagementService fileManagementService)
         {
             _fileManagementService = fileManagementService;
-            _fileManagementService.IsSynchronizingChanges.TakeUntil(destroy).Subscribe(canSync => this.CanExecuteChanged?.Invoke(this, new EventArgs()));
+            _fileManagementService
+                .IsSynchronizingChanges
+                .TakeUntil(destroy)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(canSync => this.CanExecuteChanged?.Invoke(this, new EventArgs()));
         }
 
         public bool CanExecute(object parameter)

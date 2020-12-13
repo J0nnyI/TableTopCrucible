@@ -33,5 +33,7 @@
                 <md:PackIcon Kind="ContentSave"/>
             </Button>
         </StackPanel>
+        <ContentPresenter Content="{Binding TaskProgressBar}"
+                          VerticalAlignment="Top"/>
     </Grid>
 </Page>

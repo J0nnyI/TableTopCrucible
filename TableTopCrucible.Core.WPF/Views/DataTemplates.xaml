@@ -6,4 +6,7 @@
     <DataTemplate DataType="{x:Type viewModels:TabViewModel}">
         <views:TabView/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:TaskProgressBarViewModel}">
+        <views:TaskProgressBarView/>
+    </DataTemplate>
 </ResourceDictionary>

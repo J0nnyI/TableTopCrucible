@@ -9,23 +9,29 @@ using TableTopCrucible.Domain.Library.WPF.Commands;
 using System.Windows.Input;
 using TableTopCrucible.Core.Services;
 using TableTopCrucible.Core.WPF.Commands;
+using TableTopCrucible.Core.WPF.ViewModels;
+using ReactiveUI;
+using System.Reactive.Linq;
 
 namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 {
     public class FileSetupPageViewModel : PageViewModelBase
     {
-        private readonly ISaveService saveService;
+        private readonly IFileManagementService _fileManagementService;
 
         public DirectoryListViewModel DirList { get; }
         public NotificationCenterViewModel NotificationCenter { get; }
         public ICommand OpenFile { get; }
         public ICommand SaveFile { get; }
+        public ITaskProgressBar TaskProgressBar { get; }
 
         public FileSetupPageViewModel(
             DirectoryListViewModel dirList,
             NotificationCenterViewModel notificationCenter,
             OpenFileDialogCommand openFile,
             SaveFileDialogCommand saveFile,
+            ITaskProgressBar taskProgressBar,
+            IFileManagementService fileManagementService,
             ISaveService saveService
             ) : base("File Setup", PackIconKind.File)
         {
@@ -33,11 +39,19 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
             this.NotificationCenter = notificationCenter;
             OpenFile = openFile;
             SaveFile = saveFile;
-            this.saveService = saveService;
+            TaskProgressBar = taskProgressBar;
+            _fileManagementService = fileManagementService;
             this.SaveFileAction = (path) => saveService.Save(path);
+            this.WhenAnyValue(vm => vm._fileManagementService.TotalProgress)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
+                .BindTo(this, vm => vm.TaskProgressBar.PrimaryProgress);
+            this.WhenAnyValue(vm => vm._fileManagementService.SubProgress)
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
+                .BindTo(this, vm => vm.TaskProgressBar.SecondaryProgress);
         }
 
-        public Action<string> OpenFileAction => throw new NotImplementedException("moved to another location");
         public Action<string> SaveFileAction { get; }
     }
 }

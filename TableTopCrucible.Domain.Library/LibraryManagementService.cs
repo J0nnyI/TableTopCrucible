@@ -77,21 +77,6 @@ namespace TableTopCrucible.Domain.Library
             this.fileManagementService = fileManagementService;
         }
 
-
-        #region file sync utils
-
-
-
-
-
-        private IEnumerable<DirectorySetup> getDirSetups()
-            => this.directoryDataService.Get().KeyValues.Select(x => x.Value);
-
-
-        #endregion
-
-
-
         public void AutoGenerateItems()
         {
             Observable.Start(() =>

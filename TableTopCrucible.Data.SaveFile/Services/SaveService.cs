@@ -26,6 +26,7 @@ using TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Domain.Models.ValueTypes;
+using FileInfo = TableTopCrucible.Data.Models.Sources.FileInfo;
 
 namespace TableTopCrucible.Data.SaveFile.Services
 {
@@ -34,6 +35,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
     {
         private readonly IItemDataService _itemService;
         private readonly IModelFileDataService _modelFileDataService;
+        private readonly IImageFileDataService _imageFileDataService;
         private readonly IFileItemLinkService _fileItemLinkService;
         private readonly IDirectoryDataService _directoryDataService;
         private readonly INotificationCenterService _notificationCenterService;
@@ -41,15 +43,17 @@ namespace TableTopCrucible.Data.SaveFile.Services
 
         public SaveService(
             IItemDataService itemService,
-            IModelFileDataService _modelFileDataService,
-            IFileItemLinkService _fileItemLinkService,
+            IModelFileDataService modelFileDataService,
+            IImageFileDataService imageFileDataService,
+            IFileItemLinkService fileItemLinkService,
             IDirectoryDataService directoryDataService,
             INotificationCenterService notificationCenterService,
             ISettingsService settingsService)
         {
             this._itemService = itemService ?? throw new ArgumentNullException(nameof(itemService));
-            this._modelFileDataService = _modelFileDataService;
-            this._fileItemLinkService = _fileItemLinkService;
+            this._modelFileDataService = modelFileDataService;
+            _imageFileDataService = imageFileDataService;
+            this._fileItemLinkService = fileItemLinkService;
             this._directoryDataService = directoryDataService ?? throw new ArgumentNullException(nameof(directoryDataService));
             this._notificationCenterService = notificationCenterService;
             this._settingsService = settingsService;
@@ -63,7 +67,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                 Observable.Start(() => loadFile(file))
                     .Subscribe(dto => applyFile(dto, progression));
             }
-            catch ( Exception ex)
+            catch (Exception ex)
             {
                 progression.OnError(ex);
             }
@@ -84,7 +88,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     _fileItemLinkService.Clear();
                     _itemService.Clear();
 
-                    var dir = _directoryDataService.Set(dto.Directories.Select(dto => dto.ToEntity()),null, _settingsService.LoadingPatchSize);
+                    var dir = _directoryDataService.Set(dto.Directories?.Select(dto => dto.ToEntity()) ?? new DirectorySetup[0], null, _settingsService.LoadingPatchSize);
                     dir.Title = "loading directories";
                     progression.DirectoryTaskState = dir;
                     progression.DirectoryTaskState.DoneChanges.Subscribe(
@@ -92,27 +96,33 @@ namespace TableTopCrucible.Data.SaveFile.Services
                     {
                         if (dirState != TaskState.Done)
                             return;
-                        var file = _modelFileDataService.Set(dto.Files.Select(dto => dto.ToEntity()), null, _settingsService.LoadingPatchSize);
-                        file.Title = "loading files";
-                        progression.FileTaskState = file;
-                        progression.FileTaskState.DoneChanges.Subscribe(fileState =>
+                        var modelFile = _modelFileDataService.Set(dto.ModelFiles?.Select(dto => dto.ToEntity())??(new FileInfo[0]).AsEnumerable(), null, _settingsService.LoadingPatchSize);
+                        modelFile.Title = "loading model files";
+                        progression.ModelFileTaskState = modelFile;
+                        progression.ModelFileTaskState.DoneChanges.Subscribe(fileState =>
                         {
-                            if (fileState != TaskState.Done)
-                                return;
-                            var link = _fileItemLinkService.Set(dto.FileItemLinks.Select(dto => dto.ToEntity()), null, _settingsService.LoadingPatchSize);
-                            link.Title = "loading links";
-                            progression.LinkTaskState = link;
-                            progression.LinkTaskState.DoneChanges.Subscribe(linkState =>
+                            var imageFile = _imageFileDataService.Set(dto.ModelFiles?.Select(dto => dto.ToEntity()) ?? (new FileInfo[0]).AsEnumerable(), null, _settingsService.LoadingPatchSize);
+                            imageFile.Title = "loading image files";
+                            progression.ImageFileTaskState = imageFile;
+                            progression.ImageFileTaskState.DoneChanges.Subscribe(fileState =>
                             {
-                                if (linkState != TaskState.Done)
+                                if (fileState != TaskState.Done)
                                     return;
-                                var item = _itemService.Set(dto.Items.Select(dto => dto.ToEntity()), null, _settingsService.LoadingPatchSize);
-                                item.Title = "loading links";
-                                progression.ItemTaskState = item;
-                                progression.ItemTaskState.DoneChanges.Subscribe(itemState =>
+                                var link = _fileItemLinkService.Set(dto.FileItemLinks?.Select(dto => dto.ToEntity()) ?? (new FileItemLink[0]).AsEnumerable(), null, _settingsService.LoadingPatchSize);
+                                link.Title = "loading links";
+                                progression.LinkTaskState = link;
+                                progression.LinkTaskState.DoneChanges.Subscribe(linkState =>
                                 {
-                                    if (itemState != TaskState.Done)
+                                    if (linkState != TaskState.Done)
                                         return;
+                                    var item = _itemService.Set(dto.Items?.Select(dto => dto.ToEntity()) ?? (new Item[0]).AsEnumerable(), null, _settingsService.LoadingPatchSize);
+                                    item.Title = "loading links";
+                                    progression.ItemTaskState = item;
+                                    progression.ItemTaskState.DoneChanges.Subscribe(itemState =>
+                                    {
+                                        if (itemState != TaskState.Done)
+                                            return;
+                                    });
                                 });
                             });
                         });
@@ -135,7 +145,8 @@ namespace TableTopCrucible.Data.SaveFile.Services
             MasterDTO masterDTO = new MasterDTO()
             {
                 Items = _itemService.Get().KeyValues.Select(item => new ItemDTO(item.Value)).ToArray(),
-                Files = _modelFileDataService.Get().KeyValues.Select(file => new FileInfoDTO(file.Value)).ToArray(),
+                ModelFiles = _modelFileDataService.Get().KeyValues.Select(file => new FileInfoDTO(file.Value)).ToArray(),
+                ImageFiles = _imageFileDataService.Get().KeyValues.Select(file => new FileInfoDTO(file.Value)).ToArray(),
                 FileItemLinks = _fileItemLinkService.Get().KeyValues.Select(file => new FileItemLinkDTO(file.Value)).ToArray(),
                 Directories = _directoryDataService.Get().KeyValues.Select(dir => new DirectorySetupDTO(dir.Value))
             };

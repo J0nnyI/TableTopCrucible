@@ -11,7 +11,9 @@ namespace TableTopCrucible.Data.SaveFile.Tests.DataTransferObjects
     public class MasterDTO
     {
         [DataMember]
-        public IEnumerable<FileInfoDTO> Files { get; set; }
+        public IEnumerable<FileInfoDTO> ModelFiles { get; set; }
+        [DataMember]
+        public IEnumerable<FileInfoDTO> ImageFiles { get; set; }
         [DataMember]
         public IEnumerable<ItemDTO> Items { get; set; }
         [DataMember]

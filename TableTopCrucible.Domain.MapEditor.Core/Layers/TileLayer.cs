@@ -51,6 +51,12 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
                     (model, locations) => locations.Items.Select(location =>
                          {
                              var visual = new ModelVisual3D { Content = model };
+                             var matrix = visual.Transform.Value;
+                             //matrix.OffsetX=location.Origin.X;
+                             //matrix.OffsetY=location.Origin.Y;
+                             //matrix.OffsetZ=location.Origin.Z;
+                             matrix.Rotate(new Quaternion(new Vector3D(0, 0, 1), location.HorizontalRotation));
+                             visual.Transform = new MatrixTransform3D(matrix);
                              visual.Move(location.Origin);
                              return new { visual, location.LocationId };
                          })

@@ -101,7 +101,7 @@ namespace TableTopCrucible.Data.SaveFile.Services
                         progression.ModelFileTaskState = modelFile;
                         progression.ModelFileTaskState.DoneChanges.Subscribe(fileState =>
                         {
-                            var imageFile = _imageFileDataService.Set(dto.ModelFiles?.Select(dto => dto.ToEntity()) ?? (new FileInfo[0]).AsEnumerable(), null, _settingsService.LoadingPatchSize);
+                            var imageFile = _imageFileDataService.Set(dto.ImageFiles?.Select(dto => dto.ToEntity()) ?? (new FileInfo[0]).AsEnumerable(), null, _settingsService.LoadingPatchSize);
                             imageFile.Title = "loading image files";
                             progression.ImageFileTaskState = imageFile;
                             progression.ImageFileTaskState.DoneChanges.Subscribe(fileState =>

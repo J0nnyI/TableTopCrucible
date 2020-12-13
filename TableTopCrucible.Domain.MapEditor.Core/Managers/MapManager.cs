@@ -20,6 +20,7 @@ using TableTopCrucible.Data.MapEditor.Models.Sources;
 using TableTopCrucible.Data.MapEditor.Stores;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.MapEditor.Core.Layers;
+using TableTopCrucible.Domain.MapEditor.Core.Models;
 using TableTopCrucible.Domain.MapEditor.Core.Services;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
 
@@ -32,6 +33,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
         void OpenMap(MapId mapId);
 
         public IObservable<ItemId> SelectedItemIdChanges { get; set; }
+        IObservable<RotationDirection> OnModelRotation { get; set; }
     }
     public class MapManager : DisposableReactiveObjectBase, IMapManager
     {
@@ -51,6 +53,9 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
 
         [Reactive]
         public MapId MapId { get; set; }
+        [Reactive]
+        public IObservable<RotationDirection> OnModelRotation { get; set; }
+
         public MapManager(
             IGridLayer gridLayer,
             IMapDataService mapDataService,
@@ -80,10 +85,15 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
                 .WithLatestFrom(itemIdChanges, (x, itemId) => { return new { x.location, x.FloorId, itemId }; })
                 .Subscribe(x =>
                 {
-                    var location = new TileLocation(x.itemId, x.FloorId, new Point(Convert.ToInt32(x.location.X + x.location.SizeX / 2), Convert.ToInt32(x.location.Y + x.location.SizeY / 2)));
+                    var location = new TileLocation(
+                        x.itemId,
+                        x.FloorId,
+                        new Point(Convert.ToInt32(x.location.X + x.location.SizeX / 2), Convert.ToInt32(x.location.Y + x.location.SizeY / 2)),
+                        cursorManager.CurrentRotation);
                     tileLocationDataService.Post(location);
                 });
 
+            cursorManager.OnModelRotation = this.WhenAnyObservable(vm => vm.OnModelRotation);
 
             var floors =
                 this._floorDataService.Get()

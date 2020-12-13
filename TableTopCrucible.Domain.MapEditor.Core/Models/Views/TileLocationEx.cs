@@ -21,6 +21,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Models.Views
 
         public Point3D Origin
             => new Point3D(Location.Location.X, Location.Location.Y, Floor.Height);
+        public double HorizontalRotation => Location.HorizontalRotation;
         public TileLocationId LocationId
             => Location.Id;
         public ItemId ItemId

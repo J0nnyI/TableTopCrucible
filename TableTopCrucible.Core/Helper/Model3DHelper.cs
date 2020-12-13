@@ -11,7 +11,6 @@ namespace TableTopCrucible.Core.Helper
             if (model?.Content?.Bounds == null)
                 return;
 
-            var bounds = model.Content.Bounds;
             var matrix = model.Transform.Value;
 
             matrix.OffsetX = location.X;
@@ -19,6 +18,10 @@ namespace TableTopCrucible.Core.Helper
             matrix.OffsetZ = location.Z;
 
             model.Transform = new MatrixTransform3D(matrix);
+        }
+        public static void RotateHorizontal()
+        {
+
         }
         public static void Move(this Model3D model, double x, double y, double z) 
             => Move(model, new Point3D(x, y, z));

@@ -85,7 +85,7 @@ namespace TableTopCrucible.Domain.Library
     }
     public interface IFileManagementService
     {
-        ITaskProgressionInfo HashingProgress { get; }
+        ITaskProgressionInfo SubProgress { get; }
         ITaskProgressionInfo TotalProgress { get; }
         IObservable<bool> IsSynchronizingChanges { get; }
         bool IsSynchronizing { get; }
@@ -96,15 +96,15 @@ namespace TableTopCrucible.Domain.Library
 
     public class FileManagementService : IFileManagementService
     {
-        public static readonly IEnumerable<string> SupportedModelTypes = new string[] { "stl", "obj", "off", "objz", "lwo", "3ds" };
-        public static readonly IEnumerable<string> SupportedImageTypes = new string[] { "png", "jpg", "jpeg", "bmp", "gif", "hdp", "jp2", "pbm", "psd", "tga", "tiff", "img" };
+        public static readonly IEnumerable<string> SupportedModelTypes = new string[] { ".stl", ".obj", ".off", ".objz", ".lwo", ".3ds" };
+        public static readonly IEnumerable<string> SupportedImageTypes = new string[] { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".hdp", ".jp2", ".pbm", ".psd", ".tga", ".tiff", ".img" };
         public static readonly IEnumerable<string> SupportedArchiveTypes = new string[] { };
         private readonly IImageFileDataService _imageFileDataService;
         private readonly IModelFileDataService _modelFileDataService;
         private readonly IDirectoryDataService _directoryDataService;
         private readonly ISettingsService _settingsService;
 
-        [Reactive] public ITaskProgressionInfo HashingProgress { get; private set; }
+        [Reactive] public ITaskProgressionInfo SubProgress { get; private set; }
         [Reactive] public ITaskProgressionInfo TotalProgress { get; private set; }
         public IObservable<bool> IsSynchronizingChanges { get; }
         [Reactive] public bool IsSynchronizing { get; private set; } = false;
@@ -120,14 +120,14 @@ namespace TableTopCrucible.Domain.Library
             _directoryDataService = directoryDataService;
             _settingsService = settingsService;
 
-            IsSynchronizingChanges = this.WhenAnyValue(vm => vm.HashingProgress, vm => vm.TotalProgress, (hash, total) => hash != null || total != null);
+            IsSynchronizingChanges = this.WhenAnyValue(vm => vm.SubProgress, vm => vm.TotalProgress, (hash, total) => hash != null || total != null);
             IsSynchronizingChanges.Subscribe(isSyncing => this.IsSynchronizing = isSyncing);
 
 
         }
         public void StartSynchronization()
         {
-            if (HashingProgress != null || TotalProgress != null)
+            if (SubProgress != null || TotalProgress != null)
                 throw new InvalidOperationException("hashing is already in progress");
             var prog = new TaskProgression()
             {
@@ -136,8 +136,8 @@ namespace TableTopCrucible.Domain.Library
             };
             this.TotalProgress = prog;
             prog.Details = "reading files";
-            prog.DoneChanges.Subscribe(_=>this.TotalProgress = null);
-            prog.DoneChanges.Subscribe(_=>this.TotalProgress = null);
+            prog.DoneChanges.Subscribe(_ => this.TotalProgress = null);
+            prog.DoneChanges.Subscribe(_ => this.TotalProgress = null);
 
             _getFiles(
                 _modelFileDataService,
@@ -150,31 +150,48 @@ namespace TableTopCrucible.Domain.Library
 
             using HashAlgorithm hashAlgorithm = SHA512.Create();
 
-            HashingProgress = newFiles
+            SubProgress = newFiles
                 .Concat(updatedFiles)
                 .Where(file => file.RequiresHashUpdate)
                 .ForEachAsync(file => file.UpdateHash(), _settingsService.ThreadCount, SplitMode.Threadcount);
-            HashingProgress.Title = "Hashing";
-            HashingProgress.DoneChanges.Subscribe(res =>
+            SubProgress.Title = "Hashing";
+            
+            SubProgress.DoneChanges.Subscribe(res =>
             {
-                this.HashingProgress = null;
+                this.SubProgress = null;
+                prog.CurrentProgress++;
                 try
                 {
                     if (res == TaskState.Done)
                     {
                         prog.Details = "detecting deleted files";
                         var deleteProgs = _handleDeletedFiles(deletedFiles);
+
+                        deleteProgs.ImageProgressChanges.Subscribe(subProg => this.SubProgress = subProg);
+                        deleteProgs.ModelProgressChanges.Subscribe(subProg => this.SubProgress = subProg);
+
                         deleteProgs.OnAllComplete.Subscribe(_ =>
                         {
+                            prog.CurrentProgress++;
 
                             prog.Details = "detecting new files";
                             var newFileProgs = _handleNewFiles(newFiles);
+
+                            newFileProgs.ImageProgressChanges.Subscribe(subProg => this.SubProgress = subProg);
+                            newFileProgs.ModelProgressChanges.Subscribe(subProg => this.SubProgress = subProg);
+
                             newFileProgs.OnAllComplete.Subscribe(_ =>
                             {
+                                prog.CurrentProgress++;
                                 prog.Details = "detecting updated files";
                                 var updatedProgs = _handleUpdatedFiles(updatedFiles);
+
+                                updatedProgs.ImageProgressChanges.Subscribe(subProg => this.SubProgress = subProg);
+                                updatedProgs.ModelProgressChanges.Subscribe(subProg => this.SubProgress = subProg);
+
                                 updatedProgs.OnAllComplete.Subscribe(_ =>
                                 {
+                                    prog.CurrentProgress++;
                                     prog.State = TaskState.Done;
                                     prog.Details = "done";
                                 });
@@ -205,7 +222,7 @@ namespace TableTopCrucible.Domain.Library
                     gFile.LocalFile.Value.FileInfo,
                     gFile.UpdatedHash.Value,
                     gFile.VirtualFile.Value.FileInfo)
-                )));
+                )), "Updating Models", "Updating Images");
         }
         private DualPatchResult _handleNewFiles(IEnumerable<FileUpdateInfo> files)
         {
@@ -214,14 +231,14 @@ namespace TableTopCrucible.Domain.Library
                     gFile.LocalFile.Value.DirectorySetup,
                     gFile.LocalFile.Value.FileInfo,
                     gFile.UpdatedHash.Value)
-                )));
+                )), "adding new models", "adding new images");
         }
         private DualPatchResult _handleDeletedFiles(IEnumerable<FileUpdateInfo> files)
         {
             return _handleMultiCacheAction(files, (service, gFiles)
-                => service.Delete(files.Select(file => file.VirtualFile.Value.Id)));
+                => service.Delete(files.Select(file => file.VirtualFile.Value.Id)), "removing deleted models", "removing deleted images");
         }
-        private DualPatchResult _handleMultiCacheAction(IEnumerable<FileUpdateInfo> files, Action<IFileDataService, IEnumerable<FileUpdateInfo>> action)
+        private DualPatchResult _handleMultiCacheAction(IEnumerable<FileUpdateInfo> files, Action<IFileDataService, IEnumerable<FileUpdateInfo>> action, string modelJobTitle = "ModelJob", string imageJobTitle = "Image Job")
         {
             var res = new DualPatchResult();
             var groupedFiles = files.GroupBy(file => file.FileType);
@@ -234,7 +251,7 @@ namespace TableTopCrucible.Domain.Library
             if (res.ModelProgress == null)
                 res.ModelProgress = new TaskProgression()
                 {
-                    Title = "Model Job",
+                    Title = modelJobTitle,
                     RequiredProgress = 0,
                     CurrentProgress = 0,
                     State = TaskState.Done
@@ -248,7 +265,7 @@ namespace TableTopCrucible.Domain.Library
                 if (res.ImageProgress == null)
                     res.ImageProgress = new TaskProgression()
                     {
-                        Title = "Image Job",
+                        Title = imageJobTitle,
                         RequiredProgress = 0,
                         CurrentProgress = 0,
                         State = TaskState.Done
@@ -321,20 +338,28 @@ namespace TableTopCrucible.Domain.Library
                 {
                     ModelResult = modelResult;
                     ImageResult = imageResult;
+                    
                 }
 
                 public TaskState ModelResult { get; }
                 public TaskState ImageResult { get; }
 
             }
+
+
+
             [Reactive]
             public ITaskProgressionInfo ImageProgress { get; set; }
             [Reactive]
             public ITaskProgressionInfo ModelProgress { get; set; }
             public IObservable<DualPatchResultState> OnAllComplete { get; }
+            public IObservable<ITaskProgressionInfo> ImageProgressChanges { get; }
+            public IObservable<ITaskProgressionInfo> ModelProgressChanges { get; }
             public DualPatchResult()
             {
                 this.OnAllComplete = this.WhenAnyObservable(vm => vm.ImageProgress.DoneChanges, vm => vm.ModelProgress.DoneChanges, (image, model) => new DualPatchResultState(image, model));
+                this.ImageProgressChanges = this.WhenAnyValue(vm => vm.ImageProgress);
+                this.ModelProgressChanges = this.WhenAnyValue(vm => vm.ModelProgress);
             }
         }
     }

@@ -33,11 +33,12 @@ namespace TableTopCrucible.Domain.Library.WPF.Commands
 
         public void Execute(object parameter)
         {
-            ITaskProgressionInfo prog = null;
+            //ITaskProgressionInfo prog = null;
             switch (parameter)
             {
                 case IEnumerable<ItemEx> items:
-                    prog = thumbnailManagementService.CreateAndLinkThumbnail(items.ToArray());
+                    //prog=
+                    thumbnailManagementService.CreateAndLinkThumbnail(items.ToArray());
                     break;
                 case ItemEx item:
                     Observable.Start(
@@ -52,7 +53,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Commands
                 default:
                     throw new NotImplementedException($"{nameof(CreateThumbnailsCommand)}.{nameof(Execute)}: invalid parameter {parameter}");
             }
-            prog.ErrorChanges.TakeUntil(prog.DoneChanges).Where(ex=>ex != null).Subscribe(ex => MessageBox.Show(ex?.ToString(), "thumbnails could not be created"));
+            //prog.ErrorChanges.TakeUntil(prog.DoneChanges).Where(ex=>ex != null).Subscribe(ex => MessageBox.Show(ex?.ToString(), "thumbnails could not be created"));
 
         }
     }

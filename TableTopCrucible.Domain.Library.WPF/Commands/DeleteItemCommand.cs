@@ -40,7 +40,6 @@ namespace TableTopCrucible.WPF.Commands
                 .Get()
                 .Connect()
                 .Transform(x => x.Id)
-                .DistinctUntilChanged()
                 .TakeUntil(destroy)
                 .Subscribe(
                 _ => CanExecuteChanged?.Invoke(this, new EventArgs()));

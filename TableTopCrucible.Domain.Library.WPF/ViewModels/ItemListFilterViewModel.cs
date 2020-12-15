@@ -1,5 +1,7 @@
 ﻿using DynamicData;
 
+using ReactiveUI;
+
 using System;
 using System.Linq;
 using System.Reactive.Linq;
@@ -32,7 +34,8 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 itemWhitelist.FilterChanges,
                 itemBlacklist.FilterChanges
             )
-            .Select(filters => new Func<ItemEx, bool>((ItemEx item) => filters.All(filter => filter(item))));
+            .Select(filters => new Func<ItemEx, bool>((ItemEx item) => filters.All(filter => filter(item))))
+            .ObserveOn(RxApp.TaskpoolScheduler);
 
             var tagPool = itemService.GetTags(FilterChanges).AsObservableList();
             itemWhitelist.SetTagpool(tagPool);

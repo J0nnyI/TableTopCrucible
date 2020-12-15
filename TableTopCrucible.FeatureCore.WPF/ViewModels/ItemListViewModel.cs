@@ -59,6 +59,7 @@ namespace TableTopCrucible.FeatureCore.WPF.ViewModels
                 selectionProvider
                 .SelectedItemIDs
                 .Connect()
+                .ObserveOn(RxApp.TaskpoolScheduler)
                 .Filter(id => id == item.ItemId)
                 .ToCollection()
                 .Select(lst => lst.Any())
@@ -113,6 +114,7 @@ namespace TableTopCrucible.FeatureCore.WPF.ViewModels
             var itemList = _itemService
                 .GetExtended()
                 .Connect()
+                .ObserveOn(RxApp.TaskpoolScheduler)
                 .Filter(FilterChanges)
                 .TakeUntil(destroy);
 
@@ -121,7 +123,9 @@ namespace TableTopCrucible.FeatureCore.WPF.ViewModels
                 .DisposeMany();
 
             var _selection =
-                SelectedItemIDs.Connect()
+                SelectedItemIDs
+                .Connect()
+                .ObserveOn(RxApp.TaskpoolScheduler)
                 .AddKey(id => id)
                 .LeftJoin(
                     itemList,

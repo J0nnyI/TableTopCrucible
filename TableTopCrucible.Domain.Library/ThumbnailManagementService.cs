@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 using TableTopCrucible.Core.Enums;
@@ -32,7 +33,7 @@ namespace TableTopCrucible.Domain.Library
         void LinkThumbnail(ItemEx item, string thumbnailPath, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null);
         void CreateAndLinkThumbnail(ItemEx item, Action<FileStream> streamWriter, out FileInfo file, out FileItemLinkChangeset linkCs, FileItemLink? linkSource = null);
         void CreateAndLinkThumbnail(ItemEx item);
-        ITaskProgressionInfo CreateAndLinkThumbnail(IEnumerable<ItemEx> items);
+        void CreateAndLinkThumbnail(IEnumerable<ItemEx> items);
 
     }
     public class ThumbnailManagementService : IThumbnailManagementService
@@ -42,19 +43,22 @@ namespace TableTopCrucible.Domain.Library
         private readonly IFileItemLinkService fileItemLinkService;
         private readonly IModelFileDataService modelFileDataService;
         private readonly IFileManagementService fileManagement;
+        private readonly IImageFileDataService _imageFileDataService;
 
         public ThumbnailManagementService(
             IItemDataService itemService,
             ISettingsService settingsService,
             IFileItemLinkService fileItemLinkService,
             IModelFileDataService modelFileDataService,
-            IFileManagementService fileManagement)
+            IFileManagementService fileManagement,
+            IImageFileDataService imageFileDataService)
         {
             this.itemService = itemService;
             this.settingsService = settingsService;
             this.fileItemLinkService = fileItemLinkService;
             this.modelFileDataService = modelFileDataService;
             this.fileManagement = fileManagement;
+            _imageFileDataService = imageFileDataService;
         }
 
         private void createThumbnail(string sourcePath, FileStream fs)
@@ -85,6 +89,7 @@ namespace TableTopCrucible.Domain.Library
 
             LinkThumbnail(item, absolutePath, out file, out linkCs, linkSource);
         }
+
         public void CreateAndLinkThumbnail(ItemEx item)
         {
             try
@@ -122,11 +127,6 @@ namespace TableTopCrucible.Domain.Library
 
             this.modelFileDataService.Post(file);
         }
-
-
-
-        public ITaskProgressionInfo CreateAndLinkThumbnail(IEnumerable<ItemEx> items)
-            => items.Where(x=>x.Versions.Any()).ForEachAsync(CreateAndLinkThumbnail, settingsService.MaxPatchSize);
 
         public IEnumerable<ITaskProgressionInfo> CreateAndLinkThumbnail()
         {
@@ -218,5 +218,58 @@ namespace TableTopCrucible.Domain.Library
             public string FilePath { get; }
             public string ThumbnailPath { get; }
         }
+
+        #region rework
+
+        private struct ThumbnailGenerationInfo
+        {
+            public ItemEx Item { get; set; }
+            public string ThumbnailPath { get; set; }
+            public FileHash FileHash { get; set; }
+            public FileInfo? FileInfo { get; set; }
+            public FileItemLinkChangeset FileItemLinkChangeset { get; set; }
+            public Exception Error { get; set; }
+        }
+
+        public void CreateAndLinkThumbnail(IEnumerable<ItemEx> items)
+        {
+            Observable.Start(() =>
+            {
+                items
+                .Where(item => item.LatestFile.HasValue)
+                .SelectAsync((ItemEx rawItem) =>
+                {
+                    var item = new ThumbnailGenerationInfo { Item = rawItem };
+                    try
+                    {
+                        item.ThumbnailPath = item.Item.GenerateAbsoluteThumbnailPath();
+                        createThumbnailDir(item.ThumbnailPath);
+                        using (FileStream fs = File.Create(item.ThumbnailPath))
+                        {
+                            createThumbnail(item.Item.LatestFilePath, fs);
+                        }
+                        item.FileHash = FileHash.Create(item.ThumbnailPath, SHA512.Create());
+
+                        item.FileInfo = new FileInfoChangeset(item.Item.LatestFile.Value.DirectorySetup, new SysFileInfo(item.ThumbnailPath), item.FileHash).ToEntity();
+                        item.FileItemLinkChangeset = new FileItemLinkChangeset(item.Item.LatestVersionedFile.Value.Link.Link) { ThumbnailKey = item.FileInfo.Value.HashKey };
+                    }
+                    catch (Exception ex)
+                    {
+                        item.Error = ex;
+                    }
+                    return item;
+                }, settingsService.MaxPatchSize, out var progress)
+                .CombineLatest()
+                .Select(groups => groups.SelectMany(group => group).Where(item=>item.Error == null))
+                .Subscribe(items =>
+                {
+                    this._imageFileDataService.Post(items.Select(file => file.FileInfo.Value));
+                    this.fileItemLinkService.Patch(items.Select(file => file.FileItemLinkChangeset));
+                });
+            }, RxApp.TaskpoolScheduler);
+        }
+
+        #endregion
+
     }
 }

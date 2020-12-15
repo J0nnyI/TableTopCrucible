@@ -58,6 +58,7 @@ namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 
             this.ItemList.Selection.Connect()
                 .ToCollection()
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x =>
                 {
 

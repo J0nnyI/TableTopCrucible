@@ -100,6 +100,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.SelectedItemChanges =
                 this._itemService
                 .GetExtended(this.SelectedItemIdChanges)
+                .ObserveOn(RxApp.TaskpoolScheduler)
                 .TakeUntil(destroy);
 
             this.Save = new RelayCommand(_ => _save());

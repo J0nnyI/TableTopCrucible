@@ -24,7 +24,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
     }
     public class FloorManager : DisposableReactiveObjectBase, IFloorManager
     {
-        public ModelVisual3D masterModel = new ModelVisual3D();
+        public ContainerUIElement3D masterModel = new ContainerUIElement3D();
         public Visual3D MasterModel => masterModel;
         public ITileLayer TileLayer { get; }
 

@@ -37,7 +37,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
         private readonly IItemDataService _itemDataService;
         private ModelImporter _modelImporter = new ModelImporter()
         {
-            DefaultMaterial = Materials.LightGray
+            DefaultMaterial = Materials.Rainbow
         };
         private readonly ISourceList<MapId> _cachedMaps = new SourceList<MapId>();
         public ModelCache(IItemDataService itemDataService, IFloorDataService floorDataService, ITileLocationDataService tileLocationDataService)

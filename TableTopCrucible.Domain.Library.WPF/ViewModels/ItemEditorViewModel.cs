@@ -145,14 +145,11 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                     var orderTime = DateTime.Now;
                     if (!files.HasValue || files?.File.AbsolutePath == null)
                         return null;
-                    this.MaterialBrush = new SolidColorBrush(Colors.LightGray);
-                    var mat = new DiffuseMaterial(this.MaterialBrush);
                     ModelImporter importer = new ModelImporter()
                     {
-                        DefaultMaterial = mat
+                        DefaultMaterial = Materials.LightGray
                     };
                     Model3DGroup model = importer.Load(files.Value.File.AbsolutePath);
-                    model.SetMaterial(mat);
                     model.PlaceAtOrigin();
                     model.Freeze();
                     return new { timestamp = mostRecentRequest, model };

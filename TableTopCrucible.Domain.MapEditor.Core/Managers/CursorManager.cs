@@ -1,12 +1,16 @@
-﻿using ReactiveUI;
+﻿using HelixToolkit.Wpf;
+
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Text;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
+using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Domain.MapEditor.Core.Models;
 using TableTopCrucible.Domain.MapEditor.Core.Services;
@@ -32,6 +36,8 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
         [Reactive]
         public IObservable<Rect3D> LocationChanges { get; set; }
         [Reactive]
+        public bool Visible { get; set; }
+        [Reactive]
         public IObservable<RotationDirection> OnModelRotation { get; set; }
         [Reactive]
         public double CurrentRotation { get; private set; } = 0;
@@ -43,8 +49,13 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
             _masterModel.Model = _rotationModel;
             modelCache.Get(idChanges)
             .Subscribe(x => { });
-
+            var mat = new DiffuseMaterial(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFA7BEFB")));
             modelCache.Get(idChanges)
+                .Select(model=> {
+                    var res = model?.Clone();
+                    res?.SetMaterial(mat);
+                    return res;
+                })
                 .CombineLatest(
                     this.WhenAnyObservable(vm => vm.LocationChanges),
                     (model, location) => { return new { model, location }; }

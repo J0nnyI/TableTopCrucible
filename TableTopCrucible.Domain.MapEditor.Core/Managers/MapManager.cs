@@ -7,7 +7,7 @@ using ReactiveUI.Fody.Helpers;
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Windows;
 using System.Reactive.Linq;
 using System.Text;
 using System.Windows.Media.Media3D;
@@ -37,7 +37,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
     }
     public class MapManager : DisposableReactiveObjectBase, IMapManager
     {
-        private ModelVisual3D masterModel = new ModelVisual3D();
+        private ContainerUIElement3D masterModel = new ContainerUIElement3D();
         public Visual3D MasterModel => masterModel;
         private readonly IGridLayer _gridLayer;
         private readonly IMapDataService _mapDataService;

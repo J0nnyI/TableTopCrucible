@@ -20,4 +20,8 @@
     <ProjectReference Include="..\TableTopCrucible.FeatureCore.WPF\TableTopCrucible.FeatureCore.WPF.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ExtendedClasses\" />
+  </ItemGroup>
+
 </Project>

@@ -146,12 +146,14 @@ namespace TableTopCrucible.App.WPF
             // pages
             services.AddTransient<IMapEditorPageVm, MapEditorPageViewModel>();
             // manager
+            services.AddScoped<IMapManager, MapManager>();
             services.AddTransient<IFloorManager, FloorManager>();
-            services.AddTransient<IMapManager, MapManager>();
-            // helper
-            services.AddTransient<ICursorManager, CursorManager>();
-            services.AddTransient<IGridLayer, GridLayer>();
+            services.AddScoped<ISelectionManager, SelectionManager>();
+            services.AddScoped<ICursorManager, CursorManager>();
+            // layer
+            services.AddScoped<IGridLayer, GridLayer>();
             services.AddTransient<ITileLayer, TileLayer>();
+            // helper
             services.AddSingleton<IModelCache, ModelCache>();
         }
         private ServiceProvider _createServiceProvider()

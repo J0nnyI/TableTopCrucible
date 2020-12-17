@@ -25,6 +25,7 @@ using TableTopCrucible.Data.MapEditor.Models.Sources;
 using TableTopCrucible.Data.MapEditor.Stores;
 using TableTopCrucible.Data.Services;
 using TableTopCrucible.Domain.MapEditor.Core.Managers;
+using TableTopCrucible.Domain.MapEditor.Core.Models;
 using TableTopCrucible.Domain.MapEditor.Core.Models.Views;
 using TableTopCrucible.Domain.MapEditor.Core.Services;
 using TableTopCrucible.Domain.Models.ValueTypes.IDs;
@@ -45,17 +46,19 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
         [Reactive]
         public FloorId FloorId { get; set; }
         private Subject<TileManagerMouseArgs> _tileMouseDown = new Subject<TileManagerMouseArgs>();
+        private readonly ISelectionManager _selectionManager;
+
         public IObservable<TileManagerMouseArgs> TileMouseDown { get; }
-        [Reactive]
-        public TileManager SelectedTile { get; private set; }
 
         public TileLayer(
             ITileLocationDataService tileLocationDataService,
             IItemDataService itemService,
             IMapEditorManagementService mapEditorManagementService,
-            IModelCache modelCache)
+            IModelCache modelCache,
+            ISelectionManager selectionManager)
         {
             TileMouseDown = _tileMouseDown.AsObservable();
+            _selectionManager = selectionManager;
             var managers = new Dictionary<TileLocationId, TileManager>();
             var visuals = modelCache
                 .Get()
@@ -71,11 +74,8 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
                 .TransformMany(group => group.locations.Items.Select(location => { return new { location, group.model }; }), x => x.location.LocationId)
                 .OnItemAdded(x =>
                 {
-                    var mgr = new TileManager(x.model, x.location, this._masterModel);
+                    var mgr = new TileManager(x.model, x.location, this._masterModel, this._selectionManager);
                     managers.Add(x.location.LocationId, mgr);
-                    mgr.TileMouseDown
-                        .Where(tileEx=>tileEx.MouseEventArgs.LeftButton == MouseButtonState.Pressed)
-                        .Subscribe(tileEx => { SelectedTile = tileEx.TileManager; });
                 })
                 .OnItemRemoved(x =>
                 {
@@ -92,22 +92,8 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
                     mgr.Location = current.location.Location.Location;
 
                 })
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .Subscribe();
-
-            this.WhenAnyValue(vm => vm.SelectedTile).Subscribe(x => { });
-            this.WhenAnyValue(vm => vm.SelectedTile)
-                .TakeUntil(destroy)
-                .Pairwise()
-                .Subscribe(change =>
-                {
-                    if (change.Previous.HasValue && change.Previous.Value != null)
-                        change.Previous.Value.IsSelected = false;
-                    
-                    if (change.Current.HasValue && change.Current.Value != null)
-                        change.Current.Value.IsSelected = true;
-                });
-
         }
 
     }

@@ -19,15 +19,15 @@ namespace TableTopCrucible.FeatureCore.WPF.Tagging.Models
 
 
             _count = countChanges
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .ToProperty(this, m => m.Count);
 
             _total = totalChanges
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .ToProperty(this, m => m.Total);
 
             _portionPercent = Observable.CombineLatest(countChanges, totalChanges)
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .Select((values) => values[0] / (double)values[1])
                 .ToProperty(this, nameof(PortionPercent));
         }

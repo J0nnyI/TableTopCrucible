@@ -37,7 +37,7 @@ namespace TableTopCrucible.Data.SaveFile.WPF.ViewModels
             progression
                 .MainTaskProgression
                 .TaskProgressionStateChanges
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .SubscribeOn(RxApp.MainThreadScheduler)
                 .Subscribe(v =>
@@ -50,7 +50,7 @@ namespace TableTopCrucible.Data.SaveFile.WPF.ViewModels
                 });
             progression
                 .SubTaskProgressionChanges
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .SubscribeOn(RxApp.MainThreadScheduler)
                 .Subscribe(v =>

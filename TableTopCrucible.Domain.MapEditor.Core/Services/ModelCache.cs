@@ -97,7 +97,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
                             .WatchValue(id)
                     )
                 )
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .Switch();
         }
         private Model3DGroup _itemToModel(ItemEx item)

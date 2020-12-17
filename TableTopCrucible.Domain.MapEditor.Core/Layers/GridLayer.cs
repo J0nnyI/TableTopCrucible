@@ -22,6 +22,8 @@ using System.Windows.Media;
 using HelixToolkit.Wpf;
 using System.Reactive.Subjects;
 using System.Windows.Input;
+using TableTopCrucible.Domain.MapEditor.Core.Managers;
+using TableTopCrucible.Domain.MapEditor.Core.Models;
 
 namespace TableTopCrucible.Domain.MapEditor.Core.Layers
 {
@@ -29,35 +31,29 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
     {
         FloorId FloorId { get; set; }
         double GridSize { get; set; }
-        IObservable<Rect3D> FieldMouseEnter { get; }
-        IObservable<Rect3D> FieldSelected { get; }
         Visual3D MasterModel { get; }
     }
     public class GridLayer : DisposableReactiveObjectBase, IGridLayer
     {
         private readonly ITileLocationDataService tileLocationDataService;
+        private readonly ISelectionManager _selectionManager;
 
         [Reactive]
         public FloorId FloorId { get; set; }
         [Reactive]
         public double GridSize { get; set; } = 51;
 
-        private readonly Subject<Rect3D> fieldMouseEnter = new Subject<Rect3D>();
-        public IObservable<Rect3D> FieldMouseEnter => fieldMouseEnter;
-        private readonly Subject<Rect3D> fieldSelected = new Subject<Rect3D>();
-        public IObservable<Rect3D> FieldSelected => fieldSelected;
 
         public Visual3D MasterModel => masterModel;
         private readonly ContainerUIElement3D masterModel = new ContainerUIElement3D();
 
-        public GridLayer(IFloorDataService floorDataService, ITileLocationDataService tileLocationDataService)
+        public GridLayer(
+            IFloorDataService floorDataService,
+            ITileLocationDataService tileLocationDataService,
+            ISelectionManager selectionManager)
         {
             this.tileLocationDataService = tileLocationDataService;
-
-
-
-
-
+            _selectionManager = selectionManager;
             var floorIdChanges = this.WhenAnyValue(vm => vm.FloorId);
 
 
@@ -71,7 +67,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
                 this.WhenAnyValue(vm => vm.GridSize),
                 (floor, floorSize, fieldSize) => { return new { floor, floorSize, fieldSize }; }
                 )
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .Subscribe(x => _handleSizeChange(x.floor, x.floorSize, x.fieldSize));
 
             var currentFloor = floorIdChanges
@@ -80,10 +76,6 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
 
 
         }
-
-        private readonly Material _borderMaterial = Materials.Gray;
-        private readonly Material _centerMaterial = new DiffuseMaterial(Brushes.Transparent);
-
         private void _handleSizeChange(Floor floor, Rect floorSize, double fieldSize)
         {
             var border = fieldSize * 10;
@@ -102,43 +94,25 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Layers
                 {
                     var fullField = new Rect3D(x, y, floor.Height, fieldSize, fieldSize, floor.Height);
 
-                    var centerModel = new ModelUIElement3D()
+                    var uiElement = new ModelUIElement3D()
                     {
-                        Model = new GeometryModel3D(_buildRect(x, y, fieldSize, floor.Height, .5), _centerMaterial),
-                        IsHitTestVisible = false
-                    };
-                    var uiElement = new ModelUIElement3D
-                    {
-                        Model = new GeometryModel3D(_buildRect(x, y, fieldSize, floor.Height - .5, 0), _borderMaterial)
+                        Model = new GeometryModel3D(_buildRect(x, y, fieldSize, floor.Height), Materials.LightGray)
                     };
 
                     uiElement.MouseEnter += (s, args) =>
-                    {
-                        fieldMouseEnter.OnNext(fullField);
-                        if (args.LeftButton == MouseButtonState.Pressed)
-                            fieldSelected.OnNext(fullField);
-                    };
-                    uiElement.MouseLeftButtonDown += (s, _) =>
-                        fieldSelected.OnNext(fullField);
-                    elements.Add(centerModel);
+                        _selectionManager.FieldMouseEnter(new GridLayerMouseArgs(fullField, args));
+                    uiElement.MouseDown += (s, args) =>
+                        _selectionManager.FieldMouseDown(fullField, args);
                     elements.Add(uiElement);
                 }
             }
             masterModel.Children.Clear();
             masterModel.Children.AddRange(elements);
         }
-        private MeshGeometry3D _buildRect(double x, double y, double size, double height, double margin = 2)
+        private MeshGeometry3D _buildRect(double x, double y, double size, double height)
         {
             var builder = new MeshBuilder();
-            
-            builder.AddBox(new Rect3D(
-                x: x + margin,
-                y: y + margin,
-                z: height - margin - 1,
-                sizeX: size - (margin * 2),
-                sizeY: size - (margin * 2),
-                sizeZ: 1),
-                BoxFaces.Top);
+            builder.AddBox(new Rect3D(x + 2, y + 2, height - 2, size - 4, size - 4, 1)/*, BoxFaces.Top*/);
             return builder.ToMesh();
         }
 

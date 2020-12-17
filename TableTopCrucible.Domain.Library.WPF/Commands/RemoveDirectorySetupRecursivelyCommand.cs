@@ -26,7 +26,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Commands
             directoryDataService
                 .Get()
                 .Connect()
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(_ =>
                 {

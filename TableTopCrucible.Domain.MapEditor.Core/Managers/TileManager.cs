@@ -15,24 +15,21 @@ using System.Windows.Media.Media3D;
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Data.MapEditor.Models.IDs;
+using TableTopCrucible.Domain.MapEditor.Core.Managers;
+using TableTopCrucible.Domain.MapEditor.Core.Models;
 using TableTopCrucible.Domain.MapEditor.Core.Models.Views;
-
+namespace TableTopCrucible.Domain.MapEditor.Core.Models
+{
+}
 namespace TableTopCrucible.Domain.MapEditor.Core.Managers
 {
     public class TileManager : DisposableReactiveObjectBase
     {
-        public struct TileManagerMouseArgs
-        {
-            public TileManagerMouseArgs(TileManager tile, MouseEventArgs mouseEventArgs)
-            {
-                TileManager = tile ?? throw new ArgumentNullException(nameof(tile));
-                MouseEventArgs = mouseEventArgs ?? throw new ArgumentNullException(nameof(mouseEventArgs));
-            }
-
-            public TileManager TileManager { get; }
-            public MouseEventArgs MouseEventArgs { get; }
-        }
-        public TileManager(Model3DGroup model, TileLocationEx location, ContainerUIElement3D parent)
+        public TileManager(
+            Model3DGroup model, 
+            TileLocationEx location, 
+            ContainerUIElement3D parent
+            ,ISelectionManager selectionManager)
         {
             this._uiElement = new ModelUIElement3D { Model = model };
             this.LocationId = location.LocationId;
@@ -45,25 +42,23 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
 
             parent.Children.Add(this._uiElement);
 
-            this.TileMouseDown = Observable.FromEventPattern<MouseButtonEventHandler, MouseButtonEventArgs>
-                (action => this._uiElement.MouseDown += action, action => this._uiElement.MouseDown -= action)
-                .Select(args => new TileManagerMouseArgs(this, args.EventArgs))
-                .TakeUntil(destroy);
 
-            this.destroy
+            this.Destroy
                 .Take(1)
                 .Subscribe(_ =>
                 {
                     parent.Children.Remove(this._uiElement);
                 }
             );
-            var mat = new DiffuseMaterial(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFA7BEFB")));
+            var selectionMat = new DiffuseMaterial(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFA7BEFB")));
+            var selectionHoverMat = new DiffuseMaterial(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFc4d4ff")));
+            var hoverMat = new DiffuseMaterial(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#e8eeff")));
             this.WhenAnyValue(vm => vm.IsSelected).Subscribe(isSelected =>
              {
                  if (IsSelected)
                  {
                      var newModel = model.Clone();
-                     newModel.SetMaterial(mat);
+                     newModel.SetMaterial(selectionMat);
                      this._uiElement.Model = newModel;
                  }
                  else
@@ -81,27 +76,43 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
                 {
                     if (x.isSelected)
                     {
-                        var newModel = model.Clone();
-                        newModel.SetMaterial(mat);
-                        this._uiElement.Model = newModel;
+                        if (x.mouseOver)
+                        {
+
+                            var newModel = model.Clone();
+                            newModel.SetMaterial(selectionMat);
+                            this._uiElement.Model = newModel;
+                        }
+                        else
+                        {
+                            var newModel = model.Clone();
+                            newModel.SetMaterial(selectionHoverMat);
+                            this._uiElement.Model = newModel;
+                        }
                         return;
                     }
                     if (x.mouseOver)
                     {
                         var clone = model.Clone();
-                        clone.SetMaterial(Materials.White);
+                        clone.SetMaterial(hoverMat);
                         this._uiElement.Model = clone;
                         return;
                     }
                     this._uiElement.Model = model;
 
                 });
+
+            Observable.FromEventPattern<MouseEventHandler, MouseEventArgs>(
+                action => this._uiElement.MouseEnter += action,
+                action => this._uiElement.MouseEnter -= action)
+                .Subscribe(_ => selectionManager.TileMouseEnter(this));
+
+            Observable.FromEventPattern<MouseButtonEventHandler, MouseButtonEventArgs>
+                (action => this._uiElement.MouseDown += action, action => this._uiElement.MouseDown -= action)
+                .Subscribe(x => selectionManager.TileMouseDown(this, x.EventArgs));
         }
         private ModelUIElement3D _uiElement { get; }
         public TileLocationId LocationId { get; }
-        public IObservable<TileManagerMouseArgs> TileMouseEnter { get; }
-        public IObservable<TileManagerMouseArgs> TileMouseLeave { get; }
-        public IObservable<TileManagerMouseArgs> TileMouseDown { get; }
         [Reactive]
         public Point Location { get; set; }
         [Reactive]

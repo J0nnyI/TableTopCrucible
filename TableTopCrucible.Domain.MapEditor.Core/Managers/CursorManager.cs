@@ -21,8 +21,6 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
     public interface ICursorManager
     {
         Visual3D MasterModel { get; }
-        IObservable<ItemId> SelectedItemIdChanges { get; set; }
-        IObservable<Rect3D> LocationChanges { get; set; }
         public IObservable<RotationDirection> OnModelRotation { get; set; }
         double CurrentRotation { get; }
     }
@@ -30,25 +28,24 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
     {
         private readonly ModelUIElement3D _masterModel = new ModelUIElement3D() { IsHitTestVisible = false };
         private readonly Model3DGroup _rotationModel = new Model3DGroup();
+        private readonly ISelectionManager _selectionManager;
+
         public Visual3D MasterModel => _masterModel;
-        [Reactive]
-        public IObservable<ItemId> SelectedItemIdChanges { get; set; }
-        [Reactive]
-        public IObservable<Rect3D> LocationChanges { get; set; }
-        [Reactive]
-        public bool Visible { get; set; }
         [Reactive]
         public IObservable<RotationDirection> OnModelRotation { get; set; }
         [Reactive]
         public double CurrentRotation { get; private set; } = 0;
 
-        public CursorManager(IModelCache modelCache)
+        public CursorManager(IModelCache modelCache, ISelectionManager selectionManager)
         {
-            var idChanges = this.WhenAnyObservable(vm => vm.SelectedItemIdChanges);
+            var idChanges =selectionManager.WhenAnyValue(vm=>vm.SelectedItem).Select(item=>item.ItemId);
+            this._selectionManager = selectionManager;
 
             _masterModel.Model = _rotationModel;
+
             modelCache.Get(idChanges)
-            .Subscribe(x => { });
+                .Subscribe(x => { });
+
             var mat = new DiffuseMaterial(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFA7BEFB")));
             modelCache.Get(idChanges)
                 .Select(model=> {
@@ -57,12 +54,21 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
                     return res;
                 })
                 .CombineLatest(
-                    this.WhenAnyObservable(vm => vm.LocationChanges),
-                    (model, location) => { return new { model, location }; }
+                    selectionManager
+                        .OnFieldMouseEnter
+                        .DistinctUntilChanged()
+                        .Do(x=> { }),
+                     this._selectionManager
+                        .WhenAnyValue(vm => vm.ShowTileCursor),
+                    (model, mouseEnterArgs, showCursor) => { return new { model, mouseEnterArgs, showCursor }; }
                 )
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x =>
                 {
+                    if (!x.showCursor) { 
+                        _rotationModel.Children.Clear();
+                        return;
+                    }
                     if (!_rotationModel.Children.Contains(x.model))
                     {
                         _rotationModel.Children.Clear();
@@ -70,7 +76,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
                             _rotationModel.Children.Add(x.model);
                     }
 
-                    moveModel(x.location);
+                    moveModel(x.mouseEnterArgs.Location);
                 });
 
             this.WhenAnyObservable(vm => vm.OnModelRotation)
@@ -80,6 +86,9 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
                 {
                     rotateModel(value);
                 });
+
+            this.WhenAnyValue(vm => vm.CurrentRotation)
+                .BindTo(this._selectionManager, vm => vm.CursorRotation);
         }
         private void moveModel(Rect3D location)
         {

@@ -26,7 +26,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this._notificationCenterService
                 .GetJobs()
                 .Connect()
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(out _jobs)
                 .Subscribe();

@@ -31,16 +31,19 @@ namespace TableTopCrucible.Domain.MapEditor.WPF.ViewModels
     {
         private readonly IMapDataService _mapDataService;
         private readonly IMapManager _mapManager;
+        private readonly ISelectionManager _selectionManager;
 
         public HelixViewport3D Viewport { get; } = new HelixViewport3D();
         private Subject<RotationDirection> CursorRotationDeltaChanges { get; } = new Subject<RotationDirection>();
         [Reactive]
         public IObservable<ItemId> SelectedItemIdChanges { get; set; }
 
-        public MapEditorViewModel(IMapDataService mapDataService, IMapManager mapManager)
+        public MapEditorViewModel(IMapDataService mapDataService, IMapManager mapManager,
+            ISelectionManager selectionManager)
         {
             _mapDataService = mapDataService;
             _mapManager = mapManager;
+            _selectionManager = selectionManager;
             Viewport.Children.Add(new DefaultLights(), mapManager.MasterModel);
             Viewport.ZoomGesture = new MouseGesture()
             {
@@ -53,7 +56,11 @@ namespace TableTopCrucible.Domain.MapEditor.WPF.ViewModels
 
             mapManager.SelectedItemIdChanges = this.WhenAnyObservable(vm => vm.SelectedItemIdChanges);
             mapManager.OnModelRotation = CursorRotationDeltaChanges;
+
+            this.Viewport.KeyUp += _viewport_KeyUp;
         }
+
+        private void _viewport_KeyUp(object sender, KeyEventArgs e)=> this._selectionManager.OnViewportKeyUp(e);
 
         private void _viewport_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {

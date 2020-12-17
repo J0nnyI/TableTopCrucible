@@ -34,7 +34,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                 .Sort(file => file.AbsolutePath)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(out _files)
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .Subscribe();
         }
     }

@@ -44,6 +44,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
         private readonly IFloorDataService _floorDataService;
         private readonly ICursorManager _cursorManager;
         private readonly IModelCache _modelCache;
+        private readonly ISelectionManager _selectionManager;
 
         [Reactive]
         public IObservable<ItemId> SelectedItemIdChanges { get; set; }
@@ -65,7 +66,8 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
             ICursorManager cursorManager,
             IModelCache modelCache,
             ITileLocationDataService tileLocationDataService,
-            IInjectionProviderService injectionProviderService)
+            IInjectionProviderService injectionProviderService,
+            ISelectionManager selectionManager)
         {
 
             _gridLayer = gridLayer;
@@ -73,6 +75,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
             _floorDataService = floorDataService;
             _cursorManager = cursorManager;
             _modelCache = modelCache;
+            _selectionManager = selectionManager;
             handleCaching();
 
             var floorIdChanges = this.WhenAnyValue(vm => vm.FloorId);
@@ -80,18 +83,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
 
             var itemIdChanges = this.WhenAnyObservable(vm => vm.SelectedItemIdChanges);
 
-            _gridLayer.FieldSelected
-                .WithLatestFrom(floorIdChanges, (location, floorId) => { return new { location, FloorId }; })
-                .WithLatestFrom(itemIdChanges, (x, itemId) => { return new { x.location, x.FloorId, itemId }; })
-                .Subscribe(x =>
-                {
-                    var location = new TileLocation(
-                        x.itemId,
-                        x.FloorId,
-                        new Point(Convert.ToInt32(x.location.X + x.location.SizeX / 2), Convert.ToInt32(x.location.Y + x.location.SizeY / 2)),
-                        cursorManager.CurrentRotation);
-                    tileLocationDataService.Post(location);
-                });
+
 
             cursorManager.OnModelRotation = this.WhenAnyObservable(vm => vm.OnModelRotation);
 
@@ -111,9 +103,11 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
                 .AsObservableCache();
 
             floors.Connect().OnItemRemoved(floorMgr => masterModel.Children.Remove(floorMgr.MasterModel));
-
-            _cursorManager.LocationChanges = _gridLayer.FieldMouseEnter;
-            _cursorManager.SelectedItemIdChanges = itemIdChanges;
+            this.WhenAnyValue(vm => vm.FloorId).BindTo(this, vm => vm._selectionManager.SelectedFloor);
+            this.WhenAnyObservable(vm => vm.SelectedItemIdChanges)
+                .Select(id=>itemDataService.GetExtended(id))
+                .Switch()
+                .BindTo(this, vm => vm._selectionManager.SelectedItem);
 
 
             masterModel.Children.Add(_gridLayer.MasterModel, _cursorManager.MasterModel);
@@ -123,7 +117,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
         {
             this.WhenAnyValue(vm => vm.MapId)
                 .Pairwise()
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .Subscribe(
                     change =>
                     {

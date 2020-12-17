@@ -12,7 +12,7 @@ namespace TableTopCrucible.Core.Models.Sources
     {
         private readonly Subject<Unit> _destroy = new Subject<Unit>();
         protected readonly CompositeDisposable disposables = new CompositeDisposable();
-        protected IObservable<Unit> destroy => _destroy;
+        public IObservable<Unit> Destroy => _destroy;
         protected virtual void onDispose() { }
 
         #region IDisposable Support

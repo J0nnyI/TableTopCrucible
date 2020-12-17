@@ -105,14 +105,14 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
             this.FileCountChanges =
                 fileCount
                 .QueryWhenChanged(query => query.Count)
-                .TakeUntil(destroy);
+                .TakeUntil(Destroy);
             this.ItemCountChanges =
                 fileCount
                 .Filter(fileInfo => fileInfo.HashKey.HasValue)
                 .Transform(fileInfo => fileInfo.HashKey)
                 .RemoveKey()
                 .QueryWhenChanged(query => query.Distinct().Count())
-                .TakeUntil(destroy);
+                .TakeUntil(Destroy);
 
             this.Save = save;
             this.Delete = delete;

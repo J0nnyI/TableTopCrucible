@@ -22,7 +22,7 @@ namespace TableTopCrucible.Domain.Library.WPF.Commands
             _fileManagementService = fileManagementService;
             _fileManagementService
                 .IsSynchronizingChanges
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(canSync => this.CanExecuteChanged?.Invoke(this, new EventArgs()));
         }

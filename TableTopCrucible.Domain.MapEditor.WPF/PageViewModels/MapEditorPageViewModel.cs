@@ -54,7 +54,7 @@ namespace TableTopCrucible.Domain.MapEditor.WPF.PageViewModels
                 .Connect()
                 .ToCollection()
                 .ToFilter((ItemEx item, IReadOnlyCollection<Tag> tags) => item.Tags.ContainsAll(tags))
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .Subscribe(ItemList.FilterChanges.OnNext);
 
             mapEditor.SelectedItemIdChanges = 

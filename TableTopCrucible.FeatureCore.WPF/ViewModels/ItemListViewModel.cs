@@ -63,7 +63,7 @@ namespace TableTopCrucible.FeatureCore.WPF.ViewModels
                 .Filter(id => id == item.ItemId)
                 .ToCollection()
                 .Select(lst => lst.Any())
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, nameof(IsSelected));
         }
@@ -116,7 +116,7 @@ namespace TableTopCrucible.FeatureCore.WPF.ViewModels
                 .Connect()
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .Filter(FilterChanges)
-                .TakeUntil(destroy);
+                .TakeUntil(Destroy);
 
             var selectionList =
                 itemList.Transform(item => new ItemSelectionInfo(item, this, DragCommand))

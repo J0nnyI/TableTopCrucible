@@ -56,7 +56,7 @@ namespace TableTopCrucible.Domain.Library.WPF.ViewModels
                         })
                 )
                 .Switch()
-                .TakeUntil(destroy)
+                .TakeUntil(Destroy)
                 .DisposeMany()
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Bind(out _directories)

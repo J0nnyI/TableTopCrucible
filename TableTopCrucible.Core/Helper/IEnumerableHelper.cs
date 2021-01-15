@@ -6,6 +6,7 @@ using ReactiveUI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
@@ -43,6 +44,9 @@ namespace TableTopCrucible.Core.Helper
             public int GetHashCode([DisallowNull] T obj) => _hashGenerator != null ? _hashGenerator(obj) : obj.GetHashCode();
             public int GetHashCode(object obj) => _hashGenerator != null && obj is T obje ? _hashGenerator(obje) : obj.GetHashCode();
         }
+
+        public static Collection<T> ToCollection<T>(this IEnumerable<T> list)
+            =>new Collection<T>(list.ToList());
 
         public static IEnumerable<T> Distinct<T>(this IEnumerable<T> list, Func<T, T, bool> comparer)
             => list.Distinct(new proxyComparer<T>(comparer));

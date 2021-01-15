@@ -12,6 +12,7 @@ using TableTopCrucible.Core.WPF.Commands;
 using TableTopCrucible.Core.WPF.ViewModels;
 using ReactiveUI;
 using System.Reactive.Linq;
+using TableTopCrucible.Data.Files.Scanner;
 
 namespace TableTopCrucible.Domain.Library.WPF.PageViewModels
 {

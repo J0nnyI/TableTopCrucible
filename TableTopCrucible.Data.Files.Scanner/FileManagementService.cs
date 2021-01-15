@@ -23,7 +23,7 @@ using FileInfo = TableTopCrucible.Data.Models.Sources.FileInfo;
 using SysFileInfo = System.IO.FileInfo;
 using Version = TableTopCrucible.Domain.Models.ValueTypes.Version;
 
-namespace TableTopCrucible.Domain.Library
+namespace TableTopCrucible.Data.Files.Scanner
 {
     internal enum FileType
     {
@@ -42,35 +42,17 @@ namespace TableTopCrucible.Domain.Library
                 : Path.GetExtension(VirtualFile.Value.AbsolutePath);
         public FileHash? UpdatedHash { get; set; }
         public FileType FileType =>
-            FileManagementService.SupportedModelTypes.Contains(FileExtension)
+            FileSupportHelper.ModelExtensions.Contains(FileExtension)
                 ? FileType.Model :
-            FileManagementService.SupportedImageTypes.Contains(FileExtension)
+            FileSupportHelper.ImageExtensions.Contains(FileExtension)
                 ? FileType.Image :
                 FileType.Unknown;
-        public bool IsNew => this.LocalFile.HasValue && !this.VirtualFile.HasValue;
-        public bool IsDeleted => !this.LocalFile.HasValue && this.VirtualFile.HasValue;
-        public bool IsUpdated => this.LocalFile?.FileInfo.LastWriteTime != this.VirtualFile?.LastWriteTime && this.LocalFile.HasValue && this.VirtualFile.HasValue;
-        public bool IsUnchanged => this.LocalFile?.FileInfo.LastWriteTime == this.VirtualFile?.LastWriteTime && this.LocalFile.HasValue && this.VirtualFile.HasValue;
+        public bool IsNew => LocalFile.HasValue && !VirtualFile.HasValue;
+        public bool IsDeleted => !LocalFile.HasValue && VirtualFile.HasValue;
+        public bool IsUpdated => LocalFile?.FileInfo.LastWriteTime != VirtualFile?.LastWriteTime && LocalFile.HasValue && VirtualFile.HasValue;
+        public bool IsUnchanged => LocalFile?.FileInfo.LastWriteTime == VirtualFile?.LastWriteTime && LocalFile.HasValue && VirtualFile.HasValue;
         public bool RequiresHashUpdate => (IsNew || IsUpdated) && !UpdatedHash.HasValue;
-        public void UpdateHash(HashAlgorithm hashAlgorithm)
-        {
-            if (!RequiresHashUpdate)
-                return;
-            string path = LocalFile.Value.FileInfo.FullName;
 
-            if (!File.Exists(path))
-                throw new FileNotFoundException($"could not find file {path}");
-
-            using FileStream stream = File.OpenRead(path);
-            byte[] data = hashAlgorithm.ComputeHash(stream);
-            UpdatedHash = FileHash.Create(path, hashAlgorithm);
-
-        }
-        public void UpdateHash()
-        {
-            using HashAlgorithm hashAlgorithm = SHA512.Create();
-            UpdateHash(hashAlgorithm);
-        }
     }
     internal struct LocalFile
     {
@@ -96,8 +78,6 @@ namespace TableTopCrucible.Domain.Library
 
     public class FileManagementService : DisposableReactiveObjectBase, IFileManagementService
     {
-        public static readonly IEnumerable<string> SupportedModelTypes = new string[] { ".stl", ".obj", ".off", ".objz", ".lwo", ".3ds" };
-        public static readonly IEnumerable<string> SupportedImageTypes = new string[] { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".hdp", ".jp2", ".pbm", ".psd", ".tga", ".tiff", ".img" };
         public static readonly IEnumerable<string> SupportedArchiveTypes = new string[] { };
         private readonly IImageFileDataService _imageFileDataService;
         private readonly IModelFileDataService _modelFileDataService;
@@ -121,7 +101,7 @@ namespace TableTopCrucible.Domain.Library
             _settingsService = settingsService;
 
             IsSynchronizingChanges = this.WhenAnyValue(vm => vm.SubProgress, vm => vm.TotalProgress, (hash, total) => hash != null || total != null && !total.State.IsIn(TaskState.Done, TaskState.PartialSuccess, TaskState.Failed));
-            IsSynchronizingChanges.Subscribe(isSyncing => this.IsSynchronizing = isSyncing);
+            IsSynchronizingChanges.Subscribe(isSyncing => IsSynchronizing = isSyncing);
 
         }
         public void StartSynchronization()
@@ -133,23 +113,29 @@ namespace TableTopCrucible.Domain.Library
                 RequiredProgress = 9,
                 Title = "Synchronization Progress"
             };
-            this.TotalProgress = prog;
+            TotalProgress = prog;
             prog.Details = "reading files";
 
             _getFiles(
                 _modelFileDataService,
-                SupportedModelTypes.Concat(SupportedImageTypes),
+                FileSupportHelper.ModelExtensions.Concat(FileSupportHelper.ImageExtensions),
                 out var deletedFiles,
                 out var updatedFiles,
                 out var newFiles);
             prog.CurrentProgress++;
             prog.Details = "Hashing";
 
-            this.SubProgress = _hashFiles(newFiles.Concat(updatedFiles));
+            SubProgress = FileHash.CreateMany(
+                newFiles
+                    .Concat(updatedFiles)
+                    .Where(x=>x.RequiresHashUpdate),
+                model=>model.LocalFile.Value.FileInfo.FullName,
+                (model, hash)=>model.UpdatedHash = hash,
+                _settingsService.ThreadCount);
 
             SubProgress.DoneChanges.Subscribe(res =>
             {
-                this.SubProgress = null;
+                SubProgress = null;
                 prog.CurrentProgress++;
                 try
                 {
@@ -158,8 +144,8 @@ namespace TableTopCrucible.Domain.Library
                         prog.Details = "detecting deleted files";
                         var deleteProgs = _handleDeletedFiles(deletedFiles);
 
-                        deleteProgs.ImageProgressChanges.Subscribe(subProg => { this.SubProgress = subProg; prog.CurrentProgress++; });
-                        deleteProgs.ModelProgressChanges.Subscribe(subProg => { this.SubProgress = subProg; prog.CurrentProgress++; });
+                        deleteProgs.ImageProgressChanges.Subscribe(subProg => { SubProgress = subProg; prog.CurrentProgress++; });
+                        deleteProgs.ModelProgressChanges.Subscribe(subProg => { SubProgress = subProg; prog.CurrentProgress++; });
 
                         deleteProgs.OnAllComplete.Subscribe(_ =>
                         {
@@ -168,8 +154,8 @@ namespace TableTopCrucible.Domain.Library
                             prog.Details = "detecting new files";
                             var newFileProgs = _handleNewFiles(newFiles);
 
-                            newFileProgs.ImageProgressChanges.Subscribe(subProg => { this.SubProgress = subProg; prog.CurrentProgress++; });
-                            newFileProgs.ModelProgressChanges.Subscribe(subProg => { this.SubProgress = subProg; prog.CurrentProgress++; });
+                            newFileProgs.ImageProgressChanges.Subscribe(subProg => { SubProgress = subProg; prog.CurrentProgress++; });
+                            newFileProgs.ModelProgressChanges.Subscribe(subProg => { SubProgress = subProg; prog.CurrentProgress++; });
 
                             newFileProgs.OnAllComplete.Subscribe(_ =>
                             {
@@ -177,8 +163,8 @@ namespace TableTopCrucible.Domain.Library
                                 prog.Details = "detecting updated files";
                                 var updatedProgs = _handleUpdatedFiles(updatedFiles);
 
-                                updatedProgs.ImageProgressChanges.Subscribe(subProg => { this.SubProgress = subProg; prog.CurrentProgress++; });
-                                updatedProgs.ModelProgressChanges.Subscribe(subProg => { this.SubProgress = subProg; prog.CurrentProgress++; });
+                                updatedProgs.ImageProgressChanges.Subscribe(subProg => { SubProgress = subProg; prog.CurrentProgress++; });
+                                updatedProgs.ModelProgressChanges.Subscribe(subProg => { SubProgress = subProg; prog.CurrentProgress++; });
 
                                 updatedProgs.OnAllComplete.Subscribe(_ =>
                                 {
@@ -204,50 +190,6 @@ namespace TableTopCrucible.Domain.Library
             });
 
 
-        }
-        private ITaskProgressionInfo _hashFiles(IEnumerable<FileUpdateInfo> files)
-        {
-
-            using HashAlgorithm hashAlgorithm = SHA512.Create();
-            var prog = new TaskProgression();
-            prog.Title = "Hashing";
-            prog.Details = $"with {_settingsService.ThreadCount} threads";
-            var filesToHash = files.Where(file => file.RequiresHashUpdate);
-            prog.RequiredProgress = filesToHash.Count();
-            var _lock = new object();
-            var results = filesToHash.ToList()
-                .SplitEvenly(_settingsService.ThreadCount)
-                .Select(group => Observable.Start(() =>
-                {
-                    group.ToList().ForEach(file =>
-                    {
-                        lock (_lock)
-                            prog.CurrentProgress++;
-                        file.UpdateHash();
-                    });
-                }
-                , RxApp.TaskpoolScheduler))
-                .ToArray();
-            results.CombineLatest()
-                .Subscribe(results =>
-                {
-                    try
-                    {
-                        prog.State = TaskState.Done;
-                        prog.Details = "done";
-                    }
-                    catch (Exception ex)
-                    {
-                        prog.State = TaskState.Failed;
-                        prog.Details = "could not trigger the next step: " + ex.Message;
-                    }
-                },
-                ex =>
-                {
-                    prog.State = TaskState.Failed;
-                    prog.Details = "failed: " + ex.Message;
-                });
-            return prog;
         }
         private DualPatchResult _handleUpdatedFiles(IEnumerable<FileUpdateInfo> files)
         {
@@ -316,7 +258,7 @@ namespace TableTopCrucible.Domain.Library
             out IEnumerable<FileUpdateInfo> updatedFiles,
             out IEnumerable<FileUpdateInfo> newFiles)
         {
-            var dirSetups = this._directoryDataService.Get().Items;
+            var dirSetups = _directoryDataService.Get().Items;
             var localFiles = _getLocalFiles(dirSetups, fileExtensions);
             var definedFiles = _getDefinedFiles(dirSetups, fileService);
             var paths = _getDistinctPaths(localFiles, definedFiles);
@@ -328,7 +270,7 @@ namespace TableTopCrucible.Domain.Library
                                 on file.ToLower() equals definedFile.AbsolutePath.ToLower() into mDefinedFile
                             select new FileUpdateInfo
                             {
-                                LocalFile = mLocalFile.Any() ? (mLocalFile.First() as LocalFile?) : null,
+                                LocalFile = mLocalFile.Any() ? mLocalFile.First() as LocalFile? : null,
                                 VirtualFile = mDefinedFile.Any() ? mDefinedFile.First() as FileInfoEx? : null
                             }).ToArray();
 
@@ -392,9 +334,9 @@ namespace TableTopCrucible.Domain.Library
             public IObservable<ITaskProgressionInfo> ModelProgressChanges { get; }
             public DualPatchResult()
             {
-                this.OnAllComplete = this.WhenAnyObservable(vm => vm.ImageProgress.DoneChanges, vm => vm.ModelProgress.DoneChanges, (image, model) => new DualPatchResultState(image, model));
-                this.ImageProgressChanges = this.WhenAnyValue(vm => vm.ImageProgress);
-                this.ModelProgressChanges = this.WhenAnyValue(vm => vm.ModelProgress);
+                OnAllComplete = this.WhenAnyObservable(vm => vm.ImageProgress.DoneChanges, vm => vm.ModelProgress.DoneChanges, (image, model) => new DualPatchResultState(image, model));
+                ImageProgressChanges = this.WhenAnyValue(vm => vm.ImageProgress);
+                ModelProgressChanges = this.WhenAnyValue(vm => vm.ModelProgress);
             }
         }
     }

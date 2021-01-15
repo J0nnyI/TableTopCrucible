@@ -10,20 +10,8 @@
     <PackageReference Include="MaterialDesignThemes" Version="3.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.0" />
     <PackageReference Include="ReactiveUI" Version="12.1.5" />
     <PackageReference Include="ReactiveUI.Fody" Version="12.1.5" />
     <PackageReference Include="ReactiveUI.Validation" Version="1.8.6" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
-    <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\TableTopCrucible.Core.WPF\TableTopCrucible.Core.WPF.csproj" />
-    <ProjectReference Include="..\TableTopCrucible.Core\TableTopCrucible.Core.csproj" />
-    <ProjectReference Include="..\TableTopCrucible.Data.Files.Scanner\TableTopCrucible.Data.Files.Scanner.csproj" />
-    <ProjectReference Include="..\TableTopCrucible.Data\TableTopCrucible.Data.csproj" />
-  </ItemGroup>
-
 </Project>

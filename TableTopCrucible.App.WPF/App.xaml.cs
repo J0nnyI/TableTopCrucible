@@ -28,6 +28,7 @@ using TableTopCrucible.FeatureCore.WPF.ViewModels;
 using TableTopCrucible.FeatureCore.WPF.Tagging.ViewModels;
 using TableTopCrucible.Domain.MapEditor.Core.Managers;
 using TableTopCrucible.App.WPF.PageViewModels;
+using TableTopCrucible.Data.Files.Scanner;
 
 namespace TableTopCrucible.App.WPF
 {

@@ -46,6 +46,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
             _modelCache = _cachedMaps
                 .Connect()
                 .AddKey(id => id)
+                .ObserveOn(RxApp.TaskpoolScheduler)
                 .InnerJoinMany(
                     floorDataService
                         .Get()
@@ -67,7 +68,9 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Services
                     item => item.ItemId,
                     (_, item) => item
                 )
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Transform(_itemToModel)
+                .ObserveOn(RxApp.TaskpoolScheduler)
                 .AsObservableCache();
 
             _modelCache.Connect().Subscribe(x => { });

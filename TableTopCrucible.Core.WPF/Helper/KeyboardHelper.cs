@@ -8,6 +8,6 @@ namespace TableTopCrucible.Core.WPF.Helper
     public static class KeyboardHelper
     {
         public static bool IsKeyPressed(ModifierKeys key)
-         => ((Keyboard.Modifiers & key) == key);
+         => Keyboard.Modifiers.HasFlag(key);
     }
 }

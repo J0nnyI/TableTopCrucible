@@ -1,8 +1,16 @@
-﻿using System;
+﻿using ReactiveUI;
+
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Security.Cryptography;
+
+using TableTopCrucible.Core.Enums;
+using TableTopCrucible.Core.Helper;
+using TableTopCrucible.Core.Models.Sources;
 
 namespace TableTopCrucible.Domain.Models.ValueTypes
 {
@@ -41,6 +49,49 @@ namespace TableTopCrucible.Domain.Models.ValueTypes
         {
             using var hashAlgorithm = SHA512.Create();
             return Create(path, hashAlgorithm);
+        }
+        public static ITaskProgressionInfo CreateMany<T>(IEnumerable<T> fileModel,Func<T,string> pathReader, Action<T, FileHash> hashWriter, int threadcount)
+        {
+            using HashAlgorithm hashAlgorithm = SHA512.Create();
+            var prog = new TaskProgression();
+            prog.Title = "Hashing";
+            prog.Details = $"with {threadcount} threads";
+            prog.RequiredProgress = fileModel.Count();
+            var _lock = new object();
+            var results = fileModel.ToList()
+                .SplitEvenly(threadcount)
+                .Select(group => Observable.Start(() =>
+                {
+                    group.ToList().ForEach(file =>
+                    {
+                        lock (_lock)
+                            prog.CurrentProgress++;
+                        hashWriter(file, Create(pathReader(file)));
+                    });
+                }
+                , RxApp.TaskpoolScheduler))
+                .ToArray();
+            results.CombineLatest()
+                .Subscribe(results =>
+                {
+                    try
+                    {
+                        prog.State = TaskState.Done;
+                        prog.Details = "done";
+                    }
+                    catch (Exception ex)
+                    {
+                        prog.State = TaskState.Failed;
+                        prog.Details = "could not trigger the next step: " + ex.Message;
+                    }
+                },
+                ex =>
+                {
+                    prog.State = TaskState.Failed;
+                    prog.Details = "failed: " + ex.Message;
+                });
+            return prog;
+
         }
     }
 }

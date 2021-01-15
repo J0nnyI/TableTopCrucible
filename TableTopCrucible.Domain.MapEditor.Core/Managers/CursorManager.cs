@@ -48,6 +48,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
 
             var mat = new DiffuseMaterial(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFA7BEFB")));
             modelCache.Get(idChanges)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .Select(model=> {
                     var res = model?.Clone();
                     res?.SetMaterial(mat);
@@ -62,7 +63,6 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
                         .WhenAnyValue(vm => vm.ShowTileCursor),
                     (model, mouseEnterArgs, showCursor) => { return new { model, mouseEnterArgs, showCursor }; }
                 )
-                .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(x =>
                 {
                     if (!x.showCursor) { 

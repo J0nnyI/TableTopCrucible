@@ -53,7 +53,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
             var selectionMat = new DiffuseMaterial(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFA7BEFB")));
             var selectionHoverMat = new DiffuseMaterial(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFc4d4ff")));
             var hoverMat = new DiffuseMaterial(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#e8eeff")));
-            this.WhenAnyValue(vm => vm.IsSelected).Subscribe(isSelected =>
+            this.WhenAnyValue(vm => vm.IsSelected).ObserveOn(RxApp.TaskpoolScheduler).Subscribe(isSelected =>
              {
                  if (IsSelected)
                  {
@@ -72,6 +72,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
                 vm => vm.IsSelected,
                 (mouseOver, isSelected) => { return new { mouseOver, isSelected }; }
                 )
+                .ObserveOn(RxApp.TaskpoolScheduler)
                 .Subscribe(x =>
                 {
                     if (x.isSelected)

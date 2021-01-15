@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Input;
 
 using TableTopCrucible.Core.Models.Sources;
+using TableTopCrucible.Data.Files.Scanner;
 
 namespace TableTopCrucible.Domain.Library.WPF.Commands
 {

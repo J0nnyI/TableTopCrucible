@@ -63,6 +63,7 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
                 .WithLatestFrom(this.WhenAnyValue(vm => vm.SelectedFloor), (location, floorId) => { return new { location, floorId }; })
                 .WithLatestFrom(this.WhenAnyValue(vm => vm.SelectedItem), (x, item) => { return new { x.location, x.floorId, item }; })
                 .WithLatestFrom(this.WhenAnyValue(vm => vm.CursorRotation), (x, rotation) => { return new { x.location, x.floorId, x.item, rotation }; })
+                .ObserveOn(RxApp.TaskpoolScheduler)
                 .Subscribe(x =>
                 {
                     var location = new TileLocation(
@@ -100,10 +101,22 @@ namespace TableTopCrucible.Domain.MapEditor.Core.Managers
         {
             if (args.LeftButton == MouseButtonState.Pressed)
             {
-                if (!KeyboardHelper.IsKeyPressed(ModifierKeys.Control))
-                    SelectedTiles.Clear();
-                SelectedTiles.Add(tileManager);
-                tileManager.Destroy.Subscribe(_ => SelectedTiles.Remove(tileManager));
+                Observable.Start(() =>
+                {
+                    if (!KeyboardHelper.IsKeyPressed(ModifierKeys.Control))
+                        SelectedTiles.Clear();
+                    if (tileManager.IsSelected)
+                    {
+                        SelectedTiles.Remove(tileManager);
+                    }
+                    else
+                    {
+                        SelectedTiles.Add(tileManager);
+                        tileManager
+                            .Destroy
+                            .Subscribe(_ => SelectedTiles.Remove(tileManager));
+                    }
+                }, RxApp.TaskpoolScheduler);
             }
         }
         public void OnViewportKeyUp(KeyEventArgs args)

@@ -16,6 +16,7 @@ using TableTopCrucible.Core.Enums;
 using TableTopCrucible.Core.Helper;
 using TableTopCrucible.Core.Models.Sources;
 using TableTopCrucible.Core.Services;
+using TableTopCrucible.Data.Files.Scanner;
 using TableTopCrucible.Data.Models.Sources;
 using TableTopCrucible.Data.Models.Views;
 using TableTopCrucible.Data.Services;
